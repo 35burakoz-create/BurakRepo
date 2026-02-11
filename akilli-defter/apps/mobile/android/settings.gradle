@@ -1,0 +1,2 @@
+rootProject.name = 'duo_ledger_mobile'
+include ':app'

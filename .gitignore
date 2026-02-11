@@ -1,0 +1,15 @@
+# Build artifacts
+*.apk
+*.aab
+
+# Sensitive binaries
+*.keystore
+
+# Binary document/media artifacts
+*.png
+*.jpg
+*.jpeg
+*.ico
+*.pdf
+
+# Allow text/source files under docs and code as usual.
