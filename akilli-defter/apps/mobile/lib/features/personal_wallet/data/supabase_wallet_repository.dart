@@ -13,15 +13,13 @@ class SupabaseWalletRepository implements WalletRepository {
     required this.cache,
     required this.workspaceId,
     required this.isOnline,
-    required this.isAiEnabled,
   });
 
   final LocalWalletCache cache;
   final String workspaceId;
   final IsOnline isOnline;
-  final bool Function() isAiEnabled;
   final _uuid = const Uuid();
-  late final AiService _aiService = AiService(isAiEnabled: isAiEnabled);
+  late final AiService _aiService = AiService();
 
   bool get _canRemote => isOnline() && Supabase.initialized;
 

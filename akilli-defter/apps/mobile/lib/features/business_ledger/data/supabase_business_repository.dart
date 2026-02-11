@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../core/ai/ai_gateway.dart';
 import '../models/business_models.dart';
 import '../models/cost_allocation_models.dart';
 import 'business_repository.dart';
@@ -12,6 +13,7 @@ class SupabaseBusinessRepository implements BusinessRepository {
   final LocalBusinessCache cache;
   final String workspaceId;
   final _uuid = const Uuid();
+  final AiGateway _aiGateway = AiGateway();
 
   bool get _canRemote => Supabase.initialized;
   SupabaseClient get _client => Supabase.instance.client;
@@ -250,24 +252,20 @@ class SupabaseBusinessRepository implements BusinessRepository {
     required MessageTone tone,
   }) async {
     if (_canRemote) {
-      try {
-        final res = await _client.functions.invoke(
-          'collection_message',
-          body: {
-            'workspace_id': workspaceId,
-            'contact': contact,
-            'overdue_days': overdueDays,
-            'amount': amount,
-            'currency': currency,
-            'tone': tone.name,
-          },
-        );
-        final data = res.data as Map<String, dynamic>?;
-        if (data != null) {
-          return CollectionMessageDraft.fromMap(data);
-        }
-      } catch (_) {
-        // fallback below
+      final response = await _aiGateway.request(
+        endpoint: 'collection_message',
+        payload: {
+          'workspace_id': workspaceId,
+          'contact': contact,
+          'overdue_days': overdueDays,
+          'amount': amount,
+          'currency': currency,
+          'tone': tone.name,
+        },
+      );
+
+      if (response.success && response.data != null) {
+        return CollectionMessageDraft.fromMap(response.data!);
       }
     }
 

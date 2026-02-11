@@ -1,4 +1,4 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/ai/ai_gateway.dart';
 
 class CategorySuggestion {
   const CategorySuggestion({
@@ -25,9 +25,9 @@ class WeeklySummary {
 }
 
 class AiService {
-  AiService({required this.isAiEnabled});
+  AiService({AiGateway? gateway}) : _gateway = gateway ?? AiGateway();
 
-  final bool Function() isAiEnabled;
+  final AiGateway _gateway;
 
   Future<CategorySuggestion?> suggestCategory({
     required String workspaceId,
@@ -36,29 +36,34 @@ class AiService {
     required double amount,
     required String currency,
   }) async {
-    if (!isAiEnabled() || !Supabase.initialized) return null;
+    final response = await _gateway.request(
+      endpoint: 'categorize_transaction',
+      payload: {
+        'workspace_id': workspaceId,
+        'text': text,
+        'merchant': merchant,
+        'amount': amount,
+        'currency': currency,
+      },
+    );
 
-    try {
-      final result = await Supabase.instance.client.functions.invoke(
-        'categorize_transaction',
-        body: {
-          'workspace_id': workspaceId,
-          'text': text,
-          'merchant': merchant,
-          'amount': amount,
-          'currency': currency,
-        },
-      );
-      final data = result.data as Map<String, dynamic>?;
-      if (data == null) return null;
-      return CategorySuggestion(
-        categoryId: data['category_id'] as String?,
-        confidence: (data['confidence'] as num?)?.toDouble() ?? 0,
-        explanation: (data['explanation'] ?? '') as String,
-      );
-    } catch (_) {
+    if (!response.success || response.data == null) {
+      if (response.message != null && response.message!.isNotEmpty) {
+        return CategorySuggestion(
+          categoryId: null,
+          confidence: 0,
+          explanation: response.message!,
+        );
+      }
       return null;
     }
+
+    final data = response.data!;
+    return CategorySuggestion(
+      categoryId: data['category_id'] as String?,
+      confidence: (data['confidence'] as num?)?.toDouble() ?? 0,
+      explanation: (data['explanation'] ?? '') as String,
+    );
   }
 
   Future<WeeklySummary?> weeklySummary({
@@ -66,28 +71,33 @@ class AiService {
     required DateTime start,
     required DateTime end,
   }) async {
-    if (!isAiEnabled() || !Supabase.initialized) return null;
-
-    try {
-      final result = await Supabase.instance.client.functions.invoke(
-        'weekly_summary',
-        body: {
-          'workspace_id': workspaceId,
-          'date_range': {
-            'start': start.toIso8601String().split('T').first,
-            'end': end.toIso8601String().split('T').first,
-          },
+    final response = await _gateway.request(
+      endpoint: 'weekly_summary',
+      payload: {
+        'workspace_id': workspaceId,
+        'date_range': {
+          'start': start.toIso8601String().split('T').first,
+          'end': end.toIso8601String().split('T').first,
         },
-      );
-      final data = result.data as Map<String, dynamic>?;
-      if (data == null) return null;
-      return WeeklySummary(
-        summaryTr: (data['summary_text_tr'] ?? '') as String,
-        summaryEn: (data['summary_text_en'] ?? '') as String,
-        actionItems: ((data['action_items'] ?? []) as List).map((e) => '$e').toList(),
-      );
-    } catch (_) {
+      },
+    );
+
+    if (!response.success || response.data == null) {
+      if (response.message != null && response.message!.isNotEmpty) {
+        return WeeklySummary(
+          summaryTr: response.message!,
+          summaryEn: 'AI coach is currently disabled. You can enable it from Settings > AI.',
+          actionItems: const [],
+        );
+      }
       return null;
     }
+
+    final data = response.data!;
+    return WeeklySummary(
+      summaryTr: (data['summary_text_tr'] ?? '') as String,
+      summaryEn: (data['summary_text_en'] ?? '') as String,
+      actionItems: ((data['action_items'] ?? []) as List).map((e) => '$e').toList(),
+    );
   }
 }

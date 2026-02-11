@@ -33,7 +33,6 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
         cache: LocalWalletCache(),
         workspaceId: 'demo_workspace',
         isOnline: () => online,
-        isAiEnabled: () => widget.appState.aiEnabled,
       ),
     )..initialize();
   }
