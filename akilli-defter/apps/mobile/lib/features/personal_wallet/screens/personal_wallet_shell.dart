@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/app_state.dart';
+import '../../../core/config/supabase_guard.dart';
 import '../../../core/monetization/entitlement_service.dart';
 import '../../../core/design_system/components.dart';
 import '../../../core/design_system/tokens.dart';
@@ -47,13 +48,15 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final supabaseReady = isSupabaseReady();
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
         return AppScaffold(
           title: l10n.personalWorkspace,
           actions: [
-            IconButton(
+            if (supabaseReady)
+              IconButton(
               tooltip: online ? l10n.online : l10n.offline,
               onPressed: () async {
                 if (!widget.appState.entitlements.canUseCloudSync) {
@@ -185,6 +188,7 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
   }
 
   Widget _buildHome(AppLocalizations l10n) {
+    final supabaseReady = isSupabaseReady();
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.x2),
       children: [
@@ -217,28 +221,30 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.x2),
-        InsightCard(
-          title: l10n.aiInsightOfWeek,
-          subtitle: controller.weeklyAiSummary == null
-              ? l10n.aiFallbackSummary
-              : (widget.appState.locale.languageCode == 'tr'
-                    ? controller.weeklyAiSummary!.summaryTr
-                    : controller.weeklyAiSummary!.summaryEn),
-        ),
-        const SizedBox(height: AppSpacing.x1),
-        PrimaryButton(
-          label: controller.weeklyAiLoading ? l10n.loading : l10n.aiSuggestCategory,
-          onPressed: controller.weeklyAiLoading
-              ? () {}
-              : () async {
-                  final summary = await controller.requestWeeklyAiSummary();
-                  if (!context.mounted) return;
-                  if (summary?.errorCode == 'quota_exceeded') {
-                    await _showAiQuotaSheet(context, l10n);
-                  }
-                },
-        ),
+        if (supabaseReady) ...[
+          const SizedBox(height: AppSpacing.x2),
+          InsightCard(
+            title: l10n.aiInsightOfWeek,
+            subtitle: controller.weeklyAiSummary == null
+                ? l10n.aiFallbackSummary
+                : (widget.appState.locale.languageCode == 'tr'
+                      ? controller.weeklyAiSummary!.summaryTr
+                      : controller.weeklyAiSummary!.summaryEn),
+          ),
+          const SizedBox(height: AppSpacing.x1),
+          PrimaryButton(
+            label: controller.weeklyAiLoading ? l10n.loading : l10n.aiSuggestCategory,
+            onPressed: controller.weeklyAiLoading
+                ? () {}
+                : () async {
+                    final summary = await controller.requestWeeklyAiSummary();
+                    if (!context.mounted) return;
+                    if (summary?.errorCode == 'quota_exceeded') {
+                      await _showAiQuotaSheet(context, l10n);
+                    }
+                  },
+          ),
+        ],
       ],
     );
   }

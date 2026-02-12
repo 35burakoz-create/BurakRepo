@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config/supabase_guard.dart';
 enum PlanType { free, personalPremium, business }
 
 class AiQuota {
@@ -110,13 +111,13 @@ abstract class BillingProvider {
 class SupabaseBillingProvider implements BillingProvider {
   @override
   Future<void> purchasePlan(PlanType plan) async {
-    if (!Supabase.initialized) return;
+    if (!isSupabaseReady()) return;
     await Supabase.instance.client.functions.invoke('billing_manage', body: {'action': 'set_plan', 'plan_type': plan.name});
   }
 
   @override
   Future<void> restorePurchases() async {
-    if (!Supabase.initialized) return;
+    if (!isSupabaseReady()) return;
     await Supabase.instance.client.functions.invoke('billing_manage', body: {'action': 'restore'});
   }
 }
@@ -140,7 +141,7 @@ class EntitlementService {
   }
 
   Future<Entitlements> refresh() async {
-    if (!Supabase.initialized) {
+    if (!isSupabaseReady()) {
       final local = await loadCached();
       return local;
     }

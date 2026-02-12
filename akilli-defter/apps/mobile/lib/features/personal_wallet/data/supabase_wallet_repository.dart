@@ -1,4 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../core/config/supabase_guard.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/wallet_models.dart';
@@ -21,7 +23,7 @@ class SupabaseWalletRepository implements WalletRepository {
   final _uuid = const Uuid();
   late final AiService _aiService = AiService();
 
-  bool get _canRemote => isOnline() && Supabase.initialized;
+  bool get _canRemote => isOnline() && isSupabaseReady();
 
   SupabaseClient get _client => Supabase.instance.client;
 

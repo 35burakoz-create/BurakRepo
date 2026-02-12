@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/app_state.dart';
+import '../../../core/config/supabase_guard.dart';
 import '../../../core/design_system/components.dart';
 import '../../../core/design_system/tokens.dart';
 import '../../../l10n/app_localizations.dart';
@@ -119,6 +120,7 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final supabaseReady = isSupabaseReady();
     return AppScaffold(
       title: widget.current == null ? l10n.addTransaction : l10n.editTransaction,
       body: ListView(
@@ -192,11 +194,13 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
           ),
           const SizedBox(height: AppSpacing.x2),
           AppCard(child: Text(l10n.notFinancialAdvice)),
-          const SizedBox(height: AppSpacing.x1),
-          PrimaryButton(
-            label: _loadingSuggestion ? l10n.loading : l10n.aiSuggestCategory,
-            onPressed: _loadingSuggestion ? () {} : () => _fetchSuggestion(l10n),
-          ),
+          if (supabaseReady) ...[
+            const SizedBox(height: AppSpacing.x1),
+            PrimaryButton(
+              label: _loadingSuggestion ? l10n.loading : l10n.aiSuggestCategory,
+              onPressed: _loadingSuggestion ? () {} : () => _fetchSuggestion(l10n),
+            ),
+          ],
           if (_suggestion != null) ...[
             const SizedBox(height: AppSpacing.x1),
             AppCard(

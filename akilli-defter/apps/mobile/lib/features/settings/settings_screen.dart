@@ -7,6 +7,8 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../app/app_state.dart';
+import '../../core/ai/ai_gateway.dart';
+import '../../core/config/supabase_guard.dart';
 import '../../core/monetization/entitlement_service.dart';
 import '../../core/design_system/components.dart';
 import '../../core/design_system/tokens.dart';
@@ -40,6 +42,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final supabaseReady = isSupabaseReady();
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.x2),
       children: [
@@ -72,9 +75,9 @@ class SettingsScreen extends StatelessWidget {
         AppCard(
           child: SwitchListTile(
             value: state.aiEnabled,
-            onChanged: state.setAiEnabled,
+            onChanged: supabaseReady ? state.setAiEnabled : null,
             title: Text(l10n.enableAiFeatures),
-            subtitle: Text(l10n.aiConsentDataSummary),
+            subtitle: Text(supabaseReady ? l10n.aiConsentDataSummary : AiGatewayResponse.disabledMessage),
             contentPadding: EdgeInsets.zero,
           ),
         ),
@@ -395,7 +398,7 @@ class _AccountScreenState extends State<AccountScreen> {
     if (confirmed != true) return;
     setState(() => loading = true);
     try {
-      if (Supabase.initialized) {
+      if (isSupabaseReady()) {
         await Supabase.instance.client.functions.invoke('account_data_rights', body: {'action': 'delete'});
       }
       await widget.state.signOut();
@@ -498,7 +501,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                     }
                     setState(() => loading = true);
                     try {
-                      if (Supabase.initialized) {
+                      if (isSupabaseReady()) {
                         final res = await Supabase.instance.client.functions.invoke('account_data_rights', body: {'action': 'export'});
                         final pretty = const JsonEncoder.withIndent('  ').convert(res.data);
                         if (!mounted) return;
@@ -568,7 +571,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                     if (confirmed != true) return;
                     setState(() => loading = true);
                     try {
-                      if (Supabase.initialized) {
+                      if (isSupabaseReady()) {
                         await Supabase.instance.client.functions.invoke('account_data_rights', body: {'action': 'delete'});
                       }
                       await widget.state.signOut();

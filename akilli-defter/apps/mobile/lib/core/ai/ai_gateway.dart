@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config/supabase_guard.dart';
 import 'local_ai_config.dart';
 
 class AiGatewayResponse {
@@ -31,7 +32,7 @@ class AiGateway {
     int outputTokens = maxOutputTokens,
   }) async {
     final aiEnabled = await LocalAiConfig.readAiEnabledFlag();
-    if (!aiEnabled || !Supabase.initialized) {
+    if (!aiEnabled || !isSupabaseReady()) {
       return const AiGatewayResponse(success: false, message: AiGatewayResponse.disabledMessage, errorCode: 'ai_disabled');
     }
 

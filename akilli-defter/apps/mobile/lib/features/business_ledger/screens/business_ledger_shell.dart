@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../app/app_state.dart';
+import '../../../core/config/supabase_guard.dart';
 import '../../../core/design_system/components.dart';
 import '../../../core/design_system/tokens.dart';
 import '../../../l10n/app_localizations.dart';
@@ -118,7 +119,7 @@ class _BusinessLedgerShellState extends State<BusinessLedgerShell> {
                     onPressed: () async {
                       setState(() => tab = 2);
                       final overdue = controller.collections.where((e) => e.isOverdue || e.status == CollectionStatus.overdue);
-                      if (overdue.isNotEmpty) {
+                      if (overdue.isNotEmpty && isSupabaseReady()) {
                         await _openMessageDraft(l10n, overdue.first);
                       }
                       await widget.appState.completeTourStep(2);
@@ -532,7 +533,7 @@ class _BusinessLedgerShellState extends State<BusinessLedgerShell> {
                                     controller.setCollectionStatus(item.id, value.first);
                                   },
                           ),
-                          if (status == CollectionStatus.overdue && widget.canUseCollectionsMessaging) ...[
+                          if (status == CollectionStatus.overdue && widget.canUseCollectionsMessaging && isSupabaseReady()) ...[
                             const SizedBox(height: AppSpacing.x1),
                             SecondaryButton(
                               label: l10n.suggestFollowUpMessage,

@@ -1,4 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../core/config/supabase_guard.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/ai/ai_gateway.dart';
@@ -15,7 +17,7 @@ class SupabaseBusinessRepository implements BusinessRepository {
   final _uuid = const Uuid();
   final AiGateway _aiGateway = AiGateway();
 
-  bool get _canRemote => Supabase.initialized;
+  bool get _canRemote => isSupabaseReady();
   SupabaseClient get _client => Supabase.instance.client;
 
   @override
