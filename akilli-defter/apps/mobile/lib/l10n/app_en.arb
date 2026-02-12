@@ -63,7 +63,7 @@
   "delete": "Delete",
   "aiFallbackSummary": "AI summary is unavailable; using recent transaction context.",
   "aiFallbackSuggestion": "Could not fetch AI suggestion; continue manually.",
-  "aiSuggestCategory": "Suggest category with AI",
+  "aiSuggestCategory": "Get AI suggestion",
   "aiCategorySuggestion": "AI category suggestion",
   "confidence": "Confidence",
   "loading": "Loading...",

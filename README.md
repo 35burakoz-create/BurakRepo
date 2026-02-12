@@ -184,3 +184,7 @@ supabase functions serve ai_proxy --no-verify-jwt
   - `pro`: 10 istek/dk (kullanıcı)
   - tüm planlar: 30 istek/dk (IP)
 - Rate limit aşımında backend `429` + `rate_limited` döner ve TR mesaj gösterilir.
+- Varsayılan model `MODEL_NAME` env var ile yönetilir (fallback: `gpt-4o-mini`).
+- Çıktı token üst sınırı plana göre uygulanır: `free` en fazla 250, `pro` en fazla 600.
+- Uzun giriş metinleri sunucuda 4000 karaktere kırpılır ve sonuna `[KISALTILDI]` eklenir.
+- Sistem istemi varsayılanı: `Kısa ve net cevap ver. En fazla 6 madde.`

@@ -22,7 +22,7 @@ class AiGatewayResponse {
 
 class AiGateway {
   static const int maxInputChars = 4000;
-  static const int maxOutputTokens = 350;
+  static const int maxOutputTokens = 600;
   static const Duration timeout = Duration(seconds: 12);
 
   Future<AiGatewayResponse> request({

@@ -63,7 +63,7 @@
   "delete": "Sil",
   "aiFallbackSummary": "Yapay zekâ özeti şu anda kullanılamıyor; son işlemleriniz baz alınır.",
   "aiFallbackSuggestion": "Yapay zekâ önerisi alınamadı. Kategoriyi manuel seçebilirsiniz.",
-  "aiSuggestCategory": "Yapay zekâ ile öner",
+  "aiSuggestCategory": "AI öneri al",
   "aiCategorySuggestion": "Yapay zekâ önerisi",
   "confidence": "Güven",
   "loading": "Yükleniyor...",

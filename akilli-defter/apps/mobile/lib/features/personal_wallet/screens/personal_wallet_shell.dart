@@ -225,6 +225,11 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
                     ? controller.weeklyAiSummary!.summaryTr
                     : controller.weeklyAiSummary!.summaryEn),
         ),
+        const SizedBox(height: AppSpacing.x1),
+        PrimaryButton(
+          label: controller.weeklyAiLoading ? l10n.loading : l10n.aiSuggestCategory,
+          onPressed: controller.weeklyAiLoading ? () {} : controller.requestWeeklyAiSummary,
+        ),
       ],
     );
   }

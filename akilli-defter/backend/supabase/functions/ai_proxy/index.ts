@@ -6,7 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-forwarded-for, cf-connecting-ip',
 };
 
-const MAX_OUTPUT_TOKENS = 350;
+const FREE_MAX_OUTPUT_TOKENS = 250;
+const PRO_MAX_OUTPUT_TOKENS = 600;
+const DEFAULT_MODEL_NAME = 'gpt-4o-mini';
+const SYSTEM_PROMPT_TR = 'Kısa ve net cevap ver. En fazla 6 madde.';
+const MAX_INPUT_CHARS = 4000;
 const ALLOWED_FEATURES = new Set(['categorize_transaction', 'weekly_summary', 'collection_message']);
 
 type QuotaPlan = 'free' | 'pro';
@@ -42,6 +46,8 @@ serve(async (req) => {
       feature?: string;
       payload?: Record<string, unknown>;
       max_output_tokens?: number;
+      model_name?: string;
+      system_prompt?: string;
     };
 
     const feature = payload.feature ?? '';
@@ -49,7 +55,6 @@ serve(async (req) => {
       return json({ ok: false, error: 'invalid_feature', message_tr: 'Geçersiz AI isteği.' }, 400);
     }
 
-    const requestedTokens = Math.min(Math.max(payload.max_output_tokens ?? 350, 1), MAX_OUTPUT_TOKENS);
     const today = new Date().toISOString().slice(0, 10);
 
     const { data: profile } = await adminClient
@@ -60,6 +65,8 @@ serve(async (req) => {
 
     const plan = profile?.plan === 'pro' ? 'pro' : 'free';
     const limits = PLAN_LIMITS[plan];
+    const planMaxOutputTokens = plan == 'pro' ? PRO_MAX_OUTPUT_TOKENS : FREE_MAX_OUTPUT_TOKENS;
+    const requestedTokens = Math.min(Math.max(payload.max_output_tokens ?? planMaxOutputTokens, 1), planMaxOutputTokens);
 
     const ip = extractIp(req) ?? 'unknown';
     const minuteBucket = minuteBucketIso();
@@ -101,8 +108,17 @@ serve(async (req) => {
       }, 200);
     }
 
+    const modelName = Deno.env.get('MODEL_NAME') ?? payload.model_name ?? DEFAULT_MODEL_NAME;
+    const systemPrompt = payload.system_prompt ?? SYSTEM_PROMPT_TR;
+    const optimizedPayload = optimizePayload(payload.payload ?? {});
+
     const upstream = await userClient.functions.invoke(feature, {
-      body: payload.payload ?? {},
+      body: {
+        ...optimizedPayload,
+        model_name: modelName,
+        system_prompt: systemPrompt,
+        max_output_tokens: requestedTokens,
+      },
     });
 
     const data = (upstream.data as Record<string, unknown>?) ?? null;
@@ -181,6 +197,33 @@ function extractIp(req: Request) {
     return forwarded.split(',')[0]?.trim();
   }
   return req.headers.get('cf-connecting-ip');
+}
+
+function optimizePayload(payload: Record<string, unknown>) {
+  return truncateLongStrings(payload) as Record<string, unknown>;
+}
+
+function truncateLongStrings(value: unknown): unknown {
+  if (typeof value === 'string') {
+    if (value.length <= MAX_INPUT_CHARS) {
+      return value;
+    }
+    return `${value.slice(0, MAX_INPUT_CHARS)}[KISALTILDI]`;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((entry) => truncateLongStrings(entry));
+  }
+
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+      out[key] = truncateLongStrings(entry);
+    }
+    return out;
+  }
+
+  return value;
 }
 
 function json(body: unknown, status = 200) {

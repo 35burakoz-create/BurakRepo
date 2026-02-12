@@ -18,6 +18,7 @@ class PersonalWalletController extends ChangeNotifier {
   List<TransactionModel> transactions = [];
   List<BudgetModel> budgets = [];
   WeeklySummary? weeklyAiSummary;
+  bool weeklyAiLoading = false;
 
   Future<void> initialize() async {
     isLoading = true;
@@ -26,10 +27,6 @@ class PersonalWalletController extends ChangeNotifier {
     accounts = await repository.fetchAccounts();
     transactions = await repository.fetchTransactions();
     budgets = await repository.fetchBudgets();
-    weeklyAiSummary = await repository.weeklySummary(
-      start: DateTime.now().subtract(const Duration(days: 7)),
-      end: DateTime.now(),
-    );
     isLoading = false;
     notifyListeners();
   }
@@ -59,7 +56,17 @@ class PersonalWalletController extends ChangeNotifier {
 
   int get upcomingBillsCount => 3;
 
-
+  Future<void> requestWeeklyAiSummary() async {
+    if (weeklyAiLoading) return;
+    weeklyAiLoading = true;
+    notifyListeners();
+    weeklyAiSummary = await repository.weeklySummary(
+      start: DateTime.now().subtract(const Duration(days: 7)),
+      end: DateTime.now(),
+    );
+    weeklyAiLoading = false;
+    notifyListeners();
+  }
   Future<CategorySuggestion?> suggestCategory({
     required String text,
     required String merchant,
