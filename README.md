@@ -92,6 +92,7 @@ supabase functions serve account_data_rights --no-verify-jwt
 supabase functions serve entitlements --no-verify-jwt
 supabase functions serve billing_manage --no-verify-jwt
 supabase functions serve billing_webhook --no-verify-jwt
+supabase functions serve ai_proxy --no-verify-jwt
 ```
 
 ## Guided Tour Verification (3 Steps)
@@ -169,3 +170,12 @@ supabase functions serve billing_webhook --no-verify-jwt
 - Server-side billing verification is the source of truth for entitlements.
 - Webhook processor: `akilli-defter/backend/supabase/functions/billing_webhook`
 - Guide + internal testing steps: `akilli-defter/docs/BILLING_VERIFICATION.md`
+
+
+## AI Daily Quota (Server-side)
+- AI requests are routed through `ai_proxy` (Edge Function).
+- Daily limits (from profile plan):
+  - `free`: 2 requests/day, 1500 tokens/day
+  - `pro`: 50 requests/day, 50000 tokens/day
+- Quota table: `ai_usage_daily` with service-role writes only and owner-read policy.
+- When quota is exceeded, backend returns `quota_exceeded` with a gentle Turkish upgrade message.

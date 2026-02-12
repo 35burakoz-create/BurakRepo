@@ -9,11 +9,13 @@ class AiGatewayResponse {
     required this.success,
     this.data,
     this.message,
+    this.errorCode,
   });
 
   final bool success;
   final Map<String, dynamic>? data;
   final String? message;
+  final String? errorCode;
 
   static const disabledMessage = 'AI koç şu an devre dışı. Ayarlar > AI bölümünden etkinleştirebilirsin.';
 }
@@ -30,27 +32,45 @@ class AiGateway {
   }) async {
     final aiEnabled = await LocalAiConfig.readAiEnabledFlag();
     if (!aiEnabled || !Supabase.initialized) {
-      return const AiGatewayResponse(success: false, message: AiGatewayResponse.disabledMessage);
+      return const AiGatewayResponse(success: false, message: AiGatewayResponse.disabledMessage, errorCode: 'ai_disabled');
     }
 
     final limitedPayload = _limitPayloadStrings(payload);
-    limitedPayload['max_output_tokens'] = outputTokens > maxOutputTokens ? maxOutputTokens : outputTokens;
+    final clampedTokens = outputTokens > maxOutputTokens ? maxOutputTokens : outputTokens;
 
     try {
       final result = await Supabase.instance.client.functions.invoke(
-        endpoint,
-        body: limitedPayload,
+        'ai_proxy',
+        body: {
+          'feature': endpoint,
+          'payload': limitedPayload,
+          'max_output_tokens': clampedTokens,
+        },
       ).timeout(timeout);
 
-      final data = (result.data as Map?)?.cast<String, dynamic>();
+      final root = (result.data as Map?)?.cast<String, dynamic>();
+      if (root == null) {
+        return const AiGatewayResponse(success: false, message: 'AI servisinden geçerli yanıt alınamadı.', errorCode: 'invalid_response');
+      }
+
+      final ok = root['ok'] == true;
+      if (!ok) {
+        return AiGatewayResponse(
+          success: false,
+          errorCode: root['error'] as String?,
+          message: (root['message_tr'] as String?) ?? 'AI isteği tamamlanamadı.',
+        );
+      }
+
+      final data = (root['data'] as Map?)?.cast<String, dynamic>();
       if (data == null) {
-        return const AiGatewayResponse(success: false, message: 'AI servisinden geçerli yanıt alınamadı.');
+        return const AiGatewayResponse(success: false, message: 'AI servisinden geçerli yanıt alınamadı.', errorCode: 'invalid_response');
       }
       return AiGatewayResponse(success: true, data: data);
     } on TimeoutException {
-      return const AiGatewayResponse(success: false, message: 'AI servisi zaman aşımına uğradı. Lütfen tekrar deneyin.');
+      return const AiGatewayResponse(success: false, message: 'AI servisi zaman aşımına uğradı. Lütfen tekrar deneyin.', errorCode: 'timeout');
     } catch (_) {
-      return const AiGatewayResponse(success: false, message: 'AI servisine şu an ulaşılamıyor. Lütfen daha sonra tekrar deneyin.');
+      return const AiGatewayResponse(success: false, message: 'AI servisine şu an ulaşılamıyor. Lütfen daha sonra tekrar deneyin.', errorCode: 'network_error');
     }
   }
 

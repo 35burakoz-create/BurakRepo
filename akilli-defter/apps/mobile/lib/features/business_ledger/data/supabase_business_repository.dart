@@ -267,6 +267,15 @@ class SupabaseBusinessRepository implements BusinessRepository {
       if (response.success && response.data != null) {
         return CollectionMessageDraft.fromMap(response.data!);
       }
+
+      if (response.errorCode == 'quota_exceeded') {
+        return const CollectionMessageDraft(
+          whatsappTr: 'Günlük AI kotan doldu. Planını yükselterek tekrar deneyebilirsin.',
+          emailTr: 'Günlük AI kotan doldu. Planını yükselterek tekrar deneyebilirsin.',
+          whatsappEn: 'Daily AI quota reached. Please upgrade your plan to continue.',
+          emailEn: 'Daily AI quota reached. Please upgrade your plan to continue.',
+        );
+      }
     }
 
     final trTone = tone == MessageTone.nazik

@@ -25,6 +25,13 @@ class WeeklySummary {
 }
 
 class AiService {
+  String _friendlyAiMessage(AiGatewayResponse response) {
+    if (response.errorCode == 'quota_exceeded') {
+      return 'Günlük AI kotan doldu. Planını yükselterek devam edebilirsin.';
+    }
+    return response.message ?? '';
+  }
+
   AiService({AiGateway? gateway}) : _gateway = gateway ?? AiGateway();
 
   final AiGateway _gateway;
@@ -52,7 +59,7 @@ class AiService {
         return CategorySuggestion(
           categoryId: null,
           confidence: 0,
-          explanation: response.message!,
+          explanation: _friendlyAiMessage(response),
         );
       }
       return null;
@@ -85,7 +92,7 @@ class AiService {
     if (!response.success || response.data == null) {
       if (response.message != null && response.message!.isNotEmpty) {
         return WeeklySummary(
-          summaryTr: response.message!,
+          summaryTr: _friendlyAiMessage(response),
           summaryEn: 'AI coach is currently disabled. You can enable it from Settings > AI.',
           actionItems: const [],
         );
