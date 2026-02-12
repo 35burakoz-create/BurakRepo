@@ -217,6 +217,14 @@ class AppLocalizations {
       'couponCopyInstructions': 'Yönergeleri kopyala',
       'couponInstructionsCopied': 'Yönergeler panoya kopyalandı.',
       'couponCodeEnteredLabel': 'Kodu Play Store\'da kullandım',
+      'couponApplyTitle': 'Kupon kodu',
+      'couponCodeInputLabel': 'Kodu gir',
+      'couponCodeInputHint': 'Örn: HOSGELDIN20',
+      'couponApplyButton': 'Uygula',
+      'couponApplySuccess': 'Kupon uygulandı.',
+      'couponApplyFailed': 'Kupon uygulanamadı. Lütfen tekrar dene.',
+      'couponEnterCode': 'Lütfen kupon kodu gir.',
+      'couponOfflineUnavailable': 'Çevrimdışı modda kupon kullanılamıyor.',
       'couponNoDirectValidation': 'Bu ekran kodu doğrudan doğrulamaz. Erişim hakları, mağaza geri yükleme/yenileme sonrası güncellenir.',
       'couponRefreshStatus': 'Durumu yenile',
       'couponRestoreSuccess': 'Satın alma geri yüklendi ve plan durumu güncellendi.',
@@ -430,6 +438,14 @@ class AppLocalizations {
       'couponCopyInstructions': 'Copy instructions',
       'couponInstructionsCopied': 'Instructions copied to clipboard.',
       'couponCodeEnteredLabel': 'I redeemed my code in Play Store',
+      'couponApplyTitle': 'Coupon code',
+      'couponCodeInputLabel': 'Enter code',
+      'couponCodeInputHint': 'e.g. WELCOME20',
+      'couponApplyButton': 'Apply',
+      'couponApplySuccess': 'Coupon applied.',
+      'couponApplyFailed': 'Coupon could not be applied. Please try again.',
+      'couponEnterCode': 'Please enter a coupon code.',
+      'couponOfflineUnavailable': 'Coupon redemption is unavailable in offline mode.',
       'couponNoDirectValidation': 'This screen does not validate codes directly. Entitlements update after restore/refresh.',
       'couponRefreshStatus': 'Refresh status',
       'couponRestoreSuccess': 'Purchases restored and plan status updated.',
@@ -646,6 +662,14 @@ class AppLocalizations {
   String get couponCopyInstructions => _t('couponCopyInstructions');
   String get couponInstructionsCopied => _t('couponInstructionsCopied');
   String get couponCodeEnteredLabel => _t('couponCodeEnteredLabel');
+  String get couponApplyTitle => _t('couponApplyTitle');
+  String get couponCodeInputLabel => _t('couponCodeInputLabel');
+  String get couponCodeInputHint => _t('couponCodeInputHint');
+  String get couponApplyButton => _t('couponApplyButton');
+  String get couponApplySuccess => _t('couponApplySuccess');
+  String get couponApplyFailed => _t('couponApplyFailed');
+  String get couponEnterCode => _t('couponEnterCode');
+  String get couponOfflineUnavailable => _t('couponOfflineUnavailable');
   String get couponNoDirectValidation => _t('couponNoDirectValidation');
   String get couponRefreshStatus => _t('couponRefreshStatus');
   String get couponRestoreSuccess => _t('couponRestoreSuccess');

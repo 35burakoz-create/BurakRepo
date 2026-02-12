@@ -93,7 +93,17 @@ serve(async (req) => {
     const usedCount = typeof usage?.used_count === 'number' ? usage.used_count : 0;
     const usedTokens = typeof usage?.used_tokens === 'number' ? usage.used_tokens : 0;
 
-    if (usedCount >= limits.requests || usedTokens + requestedTokens > limits.tokens) {
+    const { data: extraCreditsRow } = await adminClient
+      .from('ai_extra_credits')
+      .select('credits')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    const bonusCredits = typeof extraCreditsRow?.credits === 'number' ? extraCreditsRow.credits : 0;
+    const overDailyQuota = usedCount >= limits.requests || usedTokens + requestedTokens > limits.tokens;
+    const useBonusCredit = overDailyQuota && bonusCredits > 0;
+
+    if (overDailyQuota && !useBonusCredit) {
       return json({
         ok: false,
         error: 'quota_exceeded',
@@ -104,6 +114,7 @@ serve(async (req) => {
           tokens_limit: limits.tokens,
           used_count: usedCount,
           used_tokens: usedTokens,
+          bonus_credits: bonusCredits,
         },
       }, 200);
     }
@@ -137,6 +148,17 @@ serve(async (req) => {
       { onConflict: 'user_id,day' },
     );
 
+    if (useBonusCredit) {
+      await adminClient.from('ai_extra_credits').upsert(
+        {
+          user_id: userId,
+          credits: Math.max(0, bonusCredits - 1),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' },
+      );
+    }
+
     return json({
       ok: true,
       data,
@@ -146,6 +168,7 @@ serve(async (req) => {
         tokens_limit: limits.tokens,
         used_count: usedCount + 1,
         used_tokens: usedTokens + requestedTokens,
+        bonus_credits: useBonusCredit ? Math.max(0, bonusCredits - 1) : bonusCredits,
       },
     });
   } catch {

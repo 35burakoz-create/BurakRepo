@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../app/app_state.dart';
@@ -241,6 +242,64 @@ class PromoCodeScreen extends StatefulWidget {
 class _PromoCodeScreenState extends State<PromoCodeScreen> {
   bool isBusy = false;
   bool codeRedeemedInStore = false;
+  final _couponController = TextEditingController();
+
+
+  @override
+  void dispose() {
+    _couponController.dispose();
+    super.dispose();
+  }
+
+
+  Future<String> _deviceFingerprint() async {
+    final prefs = await SharedPreferences.getInstance();
+    final existing = prefs.getString('device_fingerprint');
+    if (existing != null && existing.isNotEmpty) return existing;
+
+    final generated = 'fp-${DateTime.now().microsecondsSinceEpoch}-${DateTime.now().timeZoneOffset.inMinutes}';
+    await prefs.setString('device_fingerprint', generated);
+    return generated;
+  }
+
+  Future<void> _applyCoupon(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final code = _couponController.text.trim();
+    if (code.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couponEnterCode)));
+      return;
+    }
+    if (!isSupabaseReady()) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couponOfflineUnavailable)));
+      return;
+    }
+
+    setState(() => isBusy = true);
+    try {
+      final fingerprint = await _deviceFingerprint();
+      final res = await Supabase.instance.client.functions.invoke(
+        'coupon_redeem',
+        body: {'code': code, 'device_fingerprint': fingerprint},
+      );
+
+      final root = (res.data as Map?)?.cast<String, dynamic>();
+      if (!mounted) return;
+      if (root == null || root['ok'] != true) {
+        final msg = (root?['message_tr'] as String?) ?? l10n.couponApplyFailed;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+        return;
+      }
+
+      _couponController.clear();
+      await widget.state.refreshEntitlements();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couponApplySuccess)));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couponApplyFailed)));
+    } finally {
+      if (mounted) setState(() => isBusy = false);
+    }
+  }
 
   Future<void> _restoreAndRefresh(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
@@ -301,6 +360,28 @@ class _PromoCodeScreenState extends State<PromoCodeScreen> {
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couponInstructionsCopied)));
                   },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.x2),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SectionHeader(title: l10n.couponApplyTitle),
+                TextField(
+                  controller: _couponController,
+                  textCapitalization: TextCapitalization.characters,
+                  decoration: InputDecoration(
+                    labelText: l10n.couponCodeInputLabel,
+                    hintText: l10n.couponCodeInputHint,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.x1),
+                PrimaryButton(
+                  label: isBusy ? l10n.loading : l10n.couponApplyButton,
+                  onPressed: isBusy ? () {} : () => _applyCoupon(context),
                 ),
               ],
             ),
