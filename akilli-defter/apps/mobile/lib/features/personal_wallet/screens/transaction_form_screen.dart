@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/app_state.dart';
 import '../../../core/design_system/components.dart';
 import '../../../core/design_system/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/personal_wallet_controller.dart';
 import '../models/wallet_models.dart';
 import '../data/ai_service.dart';
+import '../../settings/settings_screen.dart';
 
 class TransactionFormScreen extends StatefulWidget {
-  const TransactionFormScreen({required this.controller, super.key, this.current});
+  const TransactionFormScreen({required this.controller, required this.appState, super.key, this.current});
 
   final PersonalWalletController controller;
+  final AppState appState;
   final TransactionModel? current;
 
   @override
@@ -50,6 +53,47 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
   }
 
 
+  Future<void> _showAiQuotaSheet(AppLocalizations l10n) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.x2),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.aiQuotaModalTitle, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: AppSpacing.x1),
+            Text(l10n.aiQuotaModalBody),
+            const SizedBox(height: AppSpacing.x2),
+            Row(
+              children: [
+                Expanded(
+                  child: SecondaryButton(
+                    label: l10n.ok,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.x1),
+                Expanded(
+                  child: PrimaryButton(
+                    label: l10n.reviewProPlan,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(this.context).push(
+                        MaterialPageRoute(builder: (_) => PlanBillingScreen(state: widget.appState)),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _fetchSuggestion(AppLocalizations l10n) async {
     setState(() => _loadingSuggestion = true);
     final suggestion = await widget.controller.suggestCategory(
@@ -63,6 +107,10 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
       _suggestion = suggestion;
       _loadingSuggestion = false;
     });
+    if (suggestion?.errorCode == 'quota_exceeded') {
+      await _showAiQuotaSheet(l10n);
+      return;
+    }
     if (suggestion == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.aiFallbackSuggestion)));
     }

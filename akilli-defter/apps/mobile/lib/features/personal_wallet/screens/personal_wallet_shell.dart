@@ -9,6 +9,7 @@ import '../data/personal_wallet_controller.dart';
 import '../data/supabase_wallet_repository.dart';
 import '../data/local_wallet_cache.dart';
 import '../models/wallet_models.dart';
+import '../../settings/settings_screen.dart';
 import 'transaction_form_screen.dart';
 
 class PersonalWalletShell extends StatefulWidget {
@@ -139,7 +140,7 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
                       if (step == 0) {
                         setState(() => tab = 1);
                         await Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => TransactionFormScreen(controller: controller)),
+                          MaterialPageRoute(builder: (_) => TransactionFormScreen(controller: controller, appState: widget.appState)),
                         );
                         await widget.appState.completeTourStep(step);
                         return;
@@ -228,9 +229,59 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
         const SizedBox(height: AppSpacing.x1),
         PrimaryButton(
           label: controller.weeklyAiLoading ? l10n.loading : l10n.aiSuggestCategory,
-          onPressed: controller.weeklyAiLoading ? () {} : controller.requestWeeklyAiSummary,
+          onPressed: controller.weeklyAiLoading
+              ? () {}
+              : () async {
+                  final summary = await controller.requestWeeklyAiSummary();
+                  if (!context.mounted) return;
+                  if (summary?.errorCode == 'quota_exceeded') {
+                    await _showAiQuotaSheet(context, l10n);
+                  }
+                },
         ),
       ],
+    );
+  }
+
+
+  Future<void> _showAiQuotaSheet(BuildContext context, AppLocalizations l10n) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.x2),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.aiQuotaModalTitle, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: AppSpacing.x1),
+            Text(l10n.aiQuotaModalBody),
+            const SizedBox(height: AppSpacing.x2),
+            Row(
+              children: [
+                Expanded(
+                  child: SecondaryButton(
+                    label: l10n.ok,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.x1),
+                Expanded(
+                  child: PrimaryButton(
+                    label: l10n.reviewProPlan,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(this.context).push(
+                        MaterialPageRoute(builder: (_) => PlanBillingScreen(state: widget.appState)),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -296,7 +347,7 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
                         if (action == SwipeAction.edit) {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => TransactionFormScreen(controller: controller, current: tx),
+                              builder: (_) => TransactionFormScreen(controller: controller, appState: widget.appState, current: tx),
                             ),
                           );
                         } else {
@@ -320,7 +371,7 @@ class _PersonalWalletShellState extends State<PersonalWalletShell> {
           child: PrimaryButton(
             label: l10n.addTransaction,
             onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => TransactionFormScreen(controller: controller)));
+              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => TransactionFormScreen(controller: controller, appState: widget.appState)));
             },
           ),
         ),

@@ -65,6 +65,13 @@
   "aiFallbackSuggestion": "Yapay zekâ önerisi alınamadı. Kategoriyi manuel seçebilirsiniz.",
   "aiSuggestCategory": "AI öneri al",
   "aiCategorySuggestion": "Yapay zekâ önerisi",
+  "dailyAiAllowance": "Günlük AI hakkı",
+  "aiFreeLimitTooltip": "Ücretsiz sürümde AI sınırlıdır. Ama raporlar ve hesaplamalar sınırsızdır.",
+  "aiQuotaModalTitle": "AI hakkın bugün bitti",
+  "aiQuotaModalBody": "Yarın tekrar 2 hak tanımlanır. İstersen Pro ile artırabilirsin.",
+  "reviewProPlan": "Pro'yu İncele",
+  "ok": "Tamam",
+
   "confidence": "Güven",
   "loading": "Yükleniyor...",
   "owner": "Sahip",

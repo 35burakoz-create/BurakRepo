@@ -5,11 +5,13 @@ class CategorySuggestion {
     required this.categoryId,
     required this.confidence,
     required this.explanation,
+    this.errorCode,
   });
 
   final String? categoryId;
   final double confidence;
   final String explanation;
+  final String? errorCode;
 }
 
 class WeeklySummary {
@@ -17,11 +19,13 @@ class WeeklySummary {
     required this.summaryTr,
     required this.summaryEn,
     required this.actionItems,
+    this.errorCode,
   });
 
   final String summaryTr;
   final String summaryEn;
   final List<String> actionItems;
+  final String? errorCode;
 }
 
 class AiService {
@@ -60,6 +64,7 @@ class AiService {
           categoryId: null,
           confidence: 0,
           explanation: _friendlyAiMessage(response),
+          errorCode: response.errorCode,
         );
       }
       return null;
@@ -70,6 +75,7 @@ class AiService {
       categoryId: data['category_id'] as String?,
       confidence: (data['confidence'] as num?)?.toDouble() ?? 0,
       explanation: (data['explanation'] ?? '') as String,
+      errorCode: null,
     );
   }
 
@@ -95,6 +101,7 @@ class AiService {
           summaryTr: _friendlyAiMessage(response),
           summaryEn: 'AI coach is currently disabled. You can enable it from Settings > AI.',
           actionItems: const [],
+          errorCode: response.errorCode,
         );
       }
       return null;
@@ -105,6 +112,7 @@ class AiService {
       summaryTr: (data['summary_text_tr'] ?? '') as String,
       summaryEn: (data['summary_text_en'] ?? '') as String,
       actionItems: ((data['action_items'] ?? []) as List).map((e) => '$e').toList(),
+      errorCode: null,
     );
   }
 }

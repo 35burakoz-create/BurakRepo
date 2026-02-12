@@ -65,6 +65,13 @@
   "aiFallbackSuggestion": "Could not fetch AI suggestion; continue manually.",
   "aiSuggestCategory": "Get AI suggestion",
   "aiCategorySuggestion": "AI category suggestion",
+  "dailyAiAllowance": "Daily AI allowance",
+  "aiFreeLimitTooltip": "AI is limited in the free version. But reports and calculations are unlimited.",
+  "aiQuotaModalTitle": "Your AI quota is done for today",
+  "aiQuotaModalBody": "You will get 2 new attempts tomorrow. You can increase it with Pro.",
+  "reviewProPlan": "Review Pro",
+  "ok": "OK",
+
   "confidence": "Confidence",
   "loading": "Loading...",
   "owner": "Owner",

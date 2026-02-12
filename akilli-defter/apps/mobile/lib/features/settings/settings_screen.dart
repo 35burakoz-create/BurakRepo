@@ -17,6 +17,26 @@ class SettingsScreen extends StatelessWidget {
 
   final AppState state;
 
+
+  Widget _buildAiQuotaInfo(AppLocalizations l10n) {
+    final quotas = state.entitlements.aiQuotas;
+    final firstQuota = quotas.values.isNotEmpty ? quotas.values.first : null;
+    final used = firstQuota == null ? 0 : (firstQuota.limit - firstQuota.remaining).clamp(0, firstQuota.limit);
+    final limit = firstQuota?.limit ?? 2;
+
+    return AppCard(
+      child: Row(
+        children: [
+          Expanded(child: Text('${l10n.dailyAiAllowance}: $used / $limit')),
+          Tooltip(
+            message: l10n.aiFreeLimitTooltip,
+            child: const Icon(Icons.info_outline, size: 20),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -58,6 +78,8 @@ class SettingsScreen extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
           ),
         ),
+        const SizedBox(height: AppSpacing.x2),
+        _buildAiQuotaInfo(l10n),
         const SizedBox(height: AppSpacing.x2),
         _item(context, l10n.privacySecurity, () => _openDoc(context, l10n.privacySecurity, l10n.privacySecurityBody)),
         _item(context, l10n.planAndBilling, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => PlanBillingScreen(state: state)))),

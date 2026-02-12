@@ -82,6 +82,12 @@ class AppLocalizations {
       'aiFallbackSuggestion': 'Yapay zekâ önerisi alınamadı. Kategoriyi manuel seçebilirsiniz.',
       'aiSuggestCategory': 'AI öneri al',
       'aiCategorySuggestion': 'Yapay zekâ önerisi',
+      'dailyAiAllowance': 'Günlük AI hakkı',
+      'aiFreeLimitTooltip': 'Ücretsiz sürümde AI sınırlıdır. Ama raporlar ve hesaplamalar sınırsızdır.',
+      'aiQuotaModalTitle': 'AI hakkın bugün bitti',
+      'aiQuotaModalBody': 'Yarın tekrar 2 hak tanımlanır. İstersen Pro ile artırabilirsin.',
+      'reviewProPlan': "Pro'yu İncele",
+      'ok': 'Tamam',
       'confidence': 'Güven',
       'loading': 'Yükleniyor...',
       'owner': 'Sahip',
@@ -289,6 +295,12 @@ class AppLocalizations {
       'aiFallbackSuggestion': 'Could not fetch AI suggestion; continue manually.',
       'aiSuggestCategory': 'Get AI suggestion',
       'aiCategorySuggestion': 'AI category suggestion',
+      'dailyAiAllowance': 'Daily AI allowance',
+      'aiFreeLimitTooltip': 'AI is limited in the free version. But reports and calculations are unlimited.',
+      'aiQuotaModalTitle': 'Your AI quota is done for today',
+      'aiQuotaModalBody': 'You will get 2 new attempts tomorrow. You can increase it with Pro.',
+      'reviewProPlan': 'Review Pro',
+      'ok': 'OK',
       'confidence': 'Confidence',
       'loading': 'Loading...',
       'owner': 'Owner',
@@ -499,6 +511,12 @@ class AppLocalizations {
   String get aiFallbackSuggestion => _t('aiFallbackSuggestion');
   String get aiSuggestCategory => _t('aiSuggestCategory');
   String get aiCategorySuggestion => _t('aiCategorySuggestion');
+  String get dailyAiAllowance => _t('dailyAiAllowance');
+  String get aiFreeLimitTooltip => _t('aiFreeLimitTooltip');
+  String get aiQuotaModalTitle => _t('aiQuotaModalTitle');
+  String get aiQuotaModalBody => _t('aiQuotaModalBody');
+  String get reviewProPlan => _t('reviewProPlan');
+  String get ok => _t('ok');
   String get confidence => _t('confidence');
   String get loading => _t('loading');
   String get owner => _t('owner');

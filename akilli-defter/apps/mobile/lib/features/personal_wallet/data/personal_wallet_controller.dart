@@ -56,7 +56,7 @@ class PersonalWalletController extends ChangeNotifier {
 
   int get upcomingBillsCount => 3;
 
-  Future<void> requestWeeklyAiSummary() async {
+  Future<WeeklySummary?> requestWeeklyAiSummary() async {
     if (weeklyAiLoading) return;
     weeklyAiLoading = true;
     notifyListeners();
@@ -66,7 +66,9 @@ class PersonalWalletController extends ChangeNotifier {
     );
     weeklyAiLoading = false;
     notifyListeners();
+    return weeklyAiSummary;
   }
+
   Future<CategorySuggestion?> suggestCategory({
     required String text,
     required String merchant,
