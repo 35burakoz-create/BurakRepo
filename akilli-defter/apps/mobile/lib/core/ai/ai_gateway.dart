@@ -69,6 +69,17 @@ class AiGateway {
       return AiGatewayResponse(success: true, data: data);
     } on TimeoutException {
       return const AiGatewayResponse(success: false, message: 'AI servisi zaman aşımına uğradı. Lütfen tekrar deneyin.', errorCode: 'timeout');
+    } on FunctionException catch (e) {
+      final details = e.details;
+      if (details is Map) {
+        final map = details.cast<String, dynamic>();
+        return AiGatewayResponse(
+          success: false,
+          errorCode: (map['code'] ?? map['error']) as String?,
+          message: (map['message_tr'] ?? map['message']) as String? ?? 'AI isteği tamamlanamadı.',
+        );
+      }
+      return const AiGatewayResponse(success: false, message: 'AI isteği tamamlanamadı.', errorCode: 'function_error');
     } catch (_) {
       return const AiGatewayResponse(success: false, message: 'AI servisine şu an ulaşılamıyor. Lütfen daha sonra tekrar deneyin.', errorCode: 'network_error');
     }

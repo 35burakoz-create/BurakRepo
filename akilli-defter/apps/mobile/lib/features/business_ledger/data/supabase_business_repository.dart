@@ -276,6 +276,15 @@ class SupabaseBusinessRepository implements BusinessRepository {
           emailEn: 'Daily AI quota reached. Please upgrade your plan to continue.',
         );
       }
+
+      if (response.message != null && response.message!.isNotEmpty) {
+        return CollectionMessageDraft(
+          whatsappTr: response.message!,
+          emailTr: response.message!,
+          whatsappEn: 'Please try again shortly.',
+          emailEn: 'Please try again shortly.',
+        );
+      }
     }
 
     final trTone = tone == MessageTone.nazik

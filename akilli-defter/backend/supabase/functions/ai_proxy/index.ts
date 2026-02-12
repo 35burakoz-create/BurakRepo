@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-forwarded-for, cf-connecting-ip',
 };
 
 const MAX_OUTPUT_TOKENS = 350;
@@ -11,10 +11,13 @@ const ALLOWED_FEATURES = new Set(['categorize_transaction', 'weekly_summary', 'c
 
 type QuotaPlan = 'free' | 'pro';
 
-const PLAN_LIMITS: Record<QuotaPlan, { requests: number; tokens: number }> = {
-  free: { requests: 2, tokens: 1500 },
-  pro: { requests: 50, tokens: 50000 },
+const PLAN_LIMITS: Record<QuotaPlan, { requests: number; tokens: number; rpm: number }> = {
+  free: { requests: 2, tokens: 1500, rpm: 2 },
+  pro: { requests: 50, tokens: 50000, rpm: 10 },
 };
+
+const IP_RPM_LIMIT = 30;
+const RATE_LIMITED_MESSAGE_TR = 'Çok hızlı istek gönderildi. Lütfen 1 dakika sonra tekrar dene.';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -58,6 +61,21 @@ serve(async (req) => {
     const plan = profile?.plan === 'pro' ? 'pro' : 'free';
     const limits = PLAN_LIMITS[plan];
 
+    const ip = extractIp(req) ?? 'unknown';
+    const minuteBucket = minuteBucketIso();
+
+    await cleanupRateLimitRows(adminClient);
+
+    const userRateOk = await consumeRateLimit(adminClient, `user:${userId}`, minuteBucket, limits.rpm);
+    if (!userRateOk) {
+      return json({ ok: false, code: 'rate_limited', error: 'rate_limited', message_tr: RATE_LIMITED_MESSAGE_TR }, 429);
+    }
+
+    const ipRateOk = await consumeRateLimit(adminClient, `ip:${ip}`, minuteBucket, IP_RPM_LIMIT);
+    if (!ipRateOk) {
+      return json({ ok: false, code: 'rate_limited', error: 'rate_limited', message_tr: RATE_LIMITED_MESSAGE_TR }, 429);
+    }
+
     const { data: usage } = await adminClient
       .from('ai_usage_daily')
       .select('used_count,used_tokens')
@@ -65,8 +83,8 @@ serve(async (req) => {
       .eq('day', today)
       .maybeSingle();
 
-    const usedCount = (usage?.used_count as number?) ?? 0;
-    const usedTokens = (usage?.used_tokens as number?) ?? 0;
+    const usedCount = typeof usage?.used_count === 'number' ? usage.used_count : 0;
+    const usedTokens = typeof usage?.used_tokens === 'number' ? usage.used_tokens : 0;
 
     if (usedCount >= limits.requests || usedTokens + requestedTokens > limits.tokens) {
       return json({
@@ -118,6 +136,52 @@ serve(async (req) => {
     return json({ ok: false, error: 'ai_proxy_failed', message_tr: 'AI servisi şu an yanıt veremiyor. Lütfen sonra tekrar dene.' }, 500);
   }
 });
+
+async function consumeRateLimit(adminClient: ReturnType<typeof createClient>, key: string, bucket: string, limit: number) {
+  const { data } = await adminClient
+    .from('ai_rate_limits')
+    .select('count')
+    .eq('key', key)
+    .eq('bucket', bucket)
+    .maybeSingle();
+
+  const current = typeof data?.count === 'number' ? data.count : 0;
+  if (current >= limit) {
+    return false;
+  }
+
+  const expiresAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+  await adminClient.from('ai_rate_limits').upsert(
+    {
+      key,
+      bucket,
+      count: current + 1,
+      updated_at: new Date().toISOString(),
+      expires_at: expiresAt,
+    },
+    { onConflict: 'key,bucket' },
+  );
+
+  return true;
+}
+
+async function cleanupRateLimitRows(adminClient: ReturnType<typeof createClient>) {
+  await adminClient.from('ai_rate_limits').delete().lt('expires_at', new Date().toISOString());
+}
+
+function minuteBucketIso() {
+  const now = new Date();
+  now.setSeconds(0, 0);
+  return now.toISOString();
+}
+
+function extractIp(req: Request) {
+  const forwarded = req.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0]?.trim();
+  }
+  return req.headers.get('cf-connecting-ip');
+}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {

@@ -179,3 +179,8 @@ supabase functions serve ai_proxy --no-verify-jwt
   - `pro`: 50 requests/day, 50000 tokens/day
 - Quota table: `ai_usage_daily` with service-role writes only and owner-read policy.
 - When quota is exceeded, backend returns `quota_exceeded` with a gentle Turkish upgrade message.
+- Rate limit (per minute):
+  - `free`: 2 istek/dk (kullanıcı)
+  - `pro`: 10 istek/dk (kullanıcı)
+  - tüm planlar: 30 istek/dk (IP)
+- Rate limit aşımında backend `429` + `rate_limited` döner ve TR mesaj gösterilir.
