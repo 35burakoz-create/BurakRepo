@@ -8,21 +8,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../app/app_state.dart';
+import '../../core/admin/admin_config.dart';
 import '../../core/ai/ai_gateway.dart';
 import '../../core/config/supabase_guard.dart';
 import '../../core/monetization/entitlement_service.dart';
 import '../../core/design_system/components.dart';
 import '../../core/design_system/tokens.dart';
 import '../../l10n/app_localizations.dart';
+import '../admin/screens/admin_panel_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({required this.state, super.key});
 
   final AppState state;
 
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  int _versionTapCount = 0;
 
   Widget _buildAiQuotaInfo(AppLocalizations l10n) {
-    final quotas = state.entitlements.aiQuotas;
+    final quotas = widget.state.entitlements.aiQuotas;
     final firstQuota = quotas.values.isNotEmpty ? quotas.values.first : null;
     final used = firstQuota == null ? 0 : (firstQuota.limit - firstQuota.remaining).clamp(0, firstQuota.limit);
     final limit = firstQuota?.limit ?? 2;
@@ -38,6 +46,22 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+
+  Future<void> _handleVersionTap() async {
+    _versionTapCount += 1;
+    if (_versionTapCount < 7) return;
+    _versionTapCount = 0;
+
+    if (!widget.state.isAuthenticated || !isAdminEmail(widget.state.currentUserEmail)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bu menüye erişim yok.')));
+      return;
+    }
+
+    if (!mounted) return;
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminPanelScreen()));
   }
 
   @override
@@ -57,8 +81,8 @@ class SettingsScreen extends StatelessWidget {
                   ButtonSegment(value: Locale('tr'), label: Text('TR')),
                   ButtonSegment(value: Locale('en'), label: Text('EN')),
                 ],
-                selected: {state.locale},
-                onSelectionChanged: (selection) => state.setLocale(selection.first),
+                selected: {widget.state.locale},
+                onSelectionChanged: (selection) => widget.state.setLocale(selection.first),
               ),
             ],
           ),
@@ -66,8 +90,8 @@ class SettingsScreen extends StatelessWidget {
         const SizedBox(height: AppSpacing.x2),
         AppCard(
           child: SwitchListTile(
-            value: state.themeMode == ThemeMode.dark,
-            onChanged: state.setDarkMode,
+            value: widget.state.themeMode == ThemeMode.dark,
+            onChanged: widget.state.setDarkMode,
             title: Text(l10n.darkMode),
             contentPadding: EdgeInsets.zero,
           ),
@@ -75,8 +99,8 @@ class SettingsScreen extends StatelessWidget {
         const SizedBox(height: AppSpacing.x2),
         AppCard(
           child: SwitchListTile(
-            value: state.aiEnabled,
-            onChanged: supabaseReady ? state.setAiEnabled : null,
+            value: widget.state.aiEnabled,
+            onChanged: supabaseReady ? widget.state.setAiEnabled : null,
             title: Text(l10n.enableAiFeatures),
             subtitle: Text(supabaseReady ? l10n.aiConsentDataSummary : AiGatewayResponse.disabledMessage),
             contentPadding: EdgeInsets.zero,
@@ -86,13 +110,13 @@ class SettingsScreen extends StatelessWidget {
         _buildAiQuotaInfo(l10n),
         const SizedBox(height: AppSpacing.x2),
         _item(context, l10n.privacySecurity, () => _openDoc(context, l10n.privacySecurity, l10n.privacySecurityBody)),
-        _item(context, l10n.planAndBilling, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => PlanBillingScreen(state: state)))),
-        _item(context, l10n.couponPromoCode, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => PromoCodeScreen(state: state)))),
+        _item(context, l10n.planAndBilling, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => PlanBillingScreen(state: widget.state)))),
+        _item(context, l10n.couponPromoCode, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => PromoCodeScreen(state: widget.state)))),
         _item(context, l10n.termsOfUse, () => _openDoc(context, l10n.termsOfUse, l10n.termsBody)),
         _item(context, l10n.privacyPolicy, () => _openDoc(context, l10n.privacyPolicy, l10n.privacyPolicyBody)),
         _item(context, l10n.aiDisclaimerTitle, () => _openDoc(context, l10n.aiDisclaimerTitle, l10n.aiDisclaimerBody)),
-        _item(context, l10n.account, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => AccountScreen(state: state)))),
-        _item(context, l10n.dataManagement, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => DataManagementScreen(state: state)))),
+        _item(context, l10n.account, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => AccountScreen(state: widget.state)))),
+        _item(context, l10n.dataManagement, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => DataManagementScreen(state: widget.state)))),
         if (kDebugMode)
           _item(context, l10n.sendTestCrash, () async {
             await FirebaseCrashlytics.instance.recordError(
@@ -103,6 +127,15 @@ class SettingsScreen extends StatelessWidget {
             );
             throw StateError('Crashlytics debug test crash');
           }),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.x2),
+            child: GestureDetector(
+              onTap: _handleVersionTap,
+              child: const Text('v0.1.0+1'),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -141,8 +174,8 @@ class _PlanBillingScreenState extends State<PlanBillingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final plan = widget.state.entitlements.planType;
-    final quotas = widget.state.entitlements.aiQuotas;
+    final plan = widget.widget.state.entitlements.planType;
+    final quotas = widget.widget.state.entitlements.aiQuotas;
 
     Widget quotaRow(String key, String label) {
       final q = quotas[key];
@@ -199,7 +232,7 @@ class _PlanBillingScreenState extends State<PlanBillingScreen> {
             label: busy ? l10n.loading : l10n.upgradeToPersonalPremium,
             onPressed: () async {
               setState(() => busy = true);
-              await widget.state.purchasePlan(PlanType.personalPremium);
+              await widget.widget.state.purchasePlan(PlanType.personalPremium);
               if (mounted) setState(() => busy = false);
             },
           ),
@@ -208,7 +241,7 @@ class _PlanBillingScreenState extends State<PlanBillingScreen> {
             label: busy ? l10n.loading : l10n.upgradeToBusinessPlan,
             onPressed: () async {
               setState(() => busy = true);
-              await widget.state.purchasePlan(PlanType.business);
+              await widget.widget.state.purchasePlan(PlanType.business);
               if (mounted) setState(() => busy = false);
             },
           ),
@@ -217,7 +250,7 @@ class _PlanBillingScreenState extends State<PlanBillingScreen> {
             label: busy ? l10n.loading : l10n.restorePurchases,
             onPressed: () async {
               setState(() => busy = true);
-              await widget.state.restorePurchases();
+              await widget.widget.state.restorePurchases();
               if (mounted) setState(() => busy = false);
             },
           ),
@@ -291,7 +324,7 @@ class _PromoCodeScreenState extends State<PromoCodeScreen> {
       }
 
       _couponController.clear();
-      await widget.state.refreshEntitlements();
+      await widget.widget.state.refreshEntitlements();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couponApplySuccess)));
     } catch (_) {
       if (!mounted) return;
@@ -305,8 +338,8 @@ class _PromoCodeScreenState extends State<PromoCodeScreen> {
     final l10n = AppLocalizations.of(context);
     setState(() => isBusy = true);
     try {
-      await widget.state.restorePurchases();
-      await widget.state.refreshEntitlements();
+      await widget.widget.state.restorePurchases();
+      await widget.widget.state.refreshEntitlements();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couponRestoreSuccess)));
     } catch (_) {
@@ -321,7 +354,7 @@ class _PromoCodeScreenState extends State<PromoCodeScreen> {
     final l10n = AppLocalizations.of(context);
     setState(() => isBusy = true);
     try {
-      await widget.state.refreshEntitlements();
+      await widget.widget.state.refreshEntitlements();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couponRefreshSuccess)));
     } catch (_) {
@@ -482,7 +515,7 @@ class _AccountScreenState extends State<AccountScreen> {
       if (isSupabaseReady()) {
         await Supabase.instance.client.functions.invoke('account_data_rights', body: {'action': 'delete'});
       }
-      await widget.state.signOut();
+      await widget.widget.state.signOut();
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.operationFailed)));
@@ -562,8 +595,8 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                     ButtonSegment(value: AttachmentStorageMode.cloudOnly, label: Text(l10n.cloudOnlyRecommended)),
                     ButtonSegment(value: AttachmentStorageMode.deviceOnly, label: Text(l10n.deviceOnlyMode)),
                   ],
-                  selected: {widget.state.attachmentStorageMode},
-                  onSelectionChanged: (v) => widget.state.setAttachmentStorageMode(v.first),
+                  selected: {widget.widget.state.attachmentStorageMode},
+                  onSelectionChanged: (v) => widget.widget.state.setAttachmentStorageMode(v.first),
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text('${l10n.imageCompressionInfo}\n${l10n.cacheLimitInfo}'),
@@ -576,7 +609,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
             onPressed: loading
                 ? () {}
                 : () async {
-                    if (!widget.state.entitlements.canExport) {
+                    if (!widget.widget.state.entitlements.canExport) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.featureLockedUpgrade)));
                       return;
                     }
@@ -602,7 +635,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
           SecondaryButton(
             label: l10n.clearLocalCache,
             onPressed: () async {
-              await widget.state.clearLocalCache();
+              await widget.widget.state.clearLocalCache();
               if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cacheCleared)));
             },
@@ -613,7 +646,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SectionHeader(title: l10n.deviceLock),
-                Text(widget.state.entitlements.canUseDeviceLock ? l10n.enabled : l10n.featureLockedUpgrade),
+                Text(widget.widget.state.entitlements.canUseDeviceLock ? l10n.enabled : l10n.featureLockedUpgrade),
               ],
             ),
           ),
@@ -655,7 +688,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                       if (isSupabaseReady()) {
                         await Supabase.instance.client.functions.invoke('account_data_rights', body: {'action': 'delete'});
                       }
-                      await widget.state.signOut();
+                      await widget.widget.state.signOut();
                     } catch (_) {
                       if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.operationFailed)));

@@ -121,6 +121,15 @@ serve(async (req) => {
         expires_at: nextExpiry,
         last_verified_at: now.toISOString(),
       }, { onConflict: 'user_id' });
+
+
+      await adminClient.from('profiles').upsert({
+        id: userId,
+        user_id: userId,
+        email: authData.user?.email ?? null,
+        plan: 'PRO',
+        updated_at: now.toISOString(),
+      }, { onConflict: 'id' });
     } else if (couponType === 'ai_credits') {
       const { data: currentCredits } = await adminClient
         .from('ai_extra_credits')

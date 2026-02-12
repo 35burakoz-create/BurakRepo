@@ -188,3 +188,14 @@ supabase functions serve ai_proxy --no-verify-jwt
 - Çıktı token üst sınırı plana göre uygulanır: `free` en fazla 250, `pro` en fazla 600.
 - Uzun giriş metinleri sunucuda 4000 karaktere kırpılır ve sonuna `[KISALTILDI]` eklenir.
 - Sistem istemi varsayılanı: `Kısa ve net cevap ver. En fazla 6 madde.`
+
+## Mini Admin Panel (MVP)
+- Gizli giriş: **Ayarlar** ekranındaki sürüm etiketine (`v0.1.0+1`) 7 kez dokun.
+- Panel yalnızca admin e-postalarına açıktır.
+- Admin e-posta listesi: `akilli-defter/apps/mobile/lib/core/admin/admin_config.dart`
+- Çevrimdışı durumda panel `Bağlantı yok` gösterir ve yerel metriklerle çalışır.
+
+## VIP Plan Notu
+- Planlar: `FREE`, `TRIAL`, `PRO`, `VIP`.
+- VIP, Pro'dan yüksek ama sınırlı AI kotası kullanır: `200 requests/day`, `200000 tokens/day`.
+- VIP/plan atama işlemleri `admin_plan` edge function üzerinden server-side yapılır.

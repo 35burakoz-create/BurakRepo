@@ -18,6 +18,7 @@ class AppState extends ChangeNotifier {
   static const _aiEnabledKey = 'ai_enabled';
   static const _consentAcceptedKey = 'consent_accepted';
   static const _attachmentModeKey = 'attachment_mode';
+  static const _emailKey = 'user_email';
 
   final EntitlementService entitlementService = EntitlementService(billingProvider: SupabaseBillingProvider());
 
@@ -33,6 +34,7 @@ class AppState extends ChangeNotifier {
   bool consentAccepted = false;
   AttachmentStorageMode attachmentStorageMode = AttachmentStorageMode.cloudOnly;
   Entitlements entitlements = Entitlements.free();
+  String? currentUserEmail;
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -46,6 +48,7 @@ class AppState extends ChangeNotifier {
     aiEnabled = prefs.getBool(_aiEnabledKey) ?? false;
     consentAccepted = prefs.getBool(_consentAcceptedKey) ?? false;
     final mode = prefs.getString(_attachmentModeKey) ?? AttachmentStorageMode.cloudOnly.name;
+    currentUserEmail = prefs.getString(_emailKey);
     attachmentStorageMode = mode == AttachmentStorageMode.deviceOnly.name
         ? AttachmentStorageMode.deviceOnly
         : AttachmentStorageMode.cloudOnly;
@@ -99,10 +102,14 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signIn() async {
+  Future<void> signIn({String? email}) async {
     isAuthenticated = true;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_authedKey, true);
+    currentUserEmail = (email ?? '').trim().isEmpty ? currentUserEmail : email!.trim();
+    if (currentUserEmail != null) {
+      await prefs.setString(_emailKey, currentUserEmail!);
+    }
     await refreshEntitlements();
     notifyListeners();
   }

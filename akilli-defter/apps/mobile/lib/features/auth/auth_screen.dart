@@ -98,7 +98,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 if (!widget.state.consentAccepted) {
                   await widget.state.acceptConsent(aiEnabledValue: _aiEnabledConsent);
                 }
-                await widget.state.signIn();
+                await widget.state.signIn(email: _emailController.text);
               },
             ),
             const SizedBox(height: AppSpacing.x1),

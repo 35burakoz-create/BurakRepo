@@ -13,11 +13,13 @@ const SYSTEM_PROMPT_TR = 'Kısa ve net cevap ver. En fazla 6 madde.';
 const MAX_INPUT_CHARS = 4000;
 const ALLOWED_FEATURES = new Set(['categorize_transaction', 'weekly_summary', 'collection_message']);
 
-type QuotaPlan = 'free' | 'pro';
+type QuotaPlan = 'free' | 'trial' | 'pro' | 'vip';
 
 const PLAN_LIMITS: Record<QuotaPlan, { requests: number; tokens: number; rpm: number }> = {
   free: { requests: 2, tokens: 1500, rpm: 2 },
+  trial: { requests: 2, tokens: 1500, rpm: 2 },
   pro: { requests: 50, tokens: 50000, rpm: 10 },
+  vip: { requests: 200, tokens: 200000, rpm: 20 },
 };
 
 const IP_RPM_LIMIT = 30;
@@ -59,13 +61,23 @@ serve(async (req) => {
 
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('plan')
+      .select('plan,trial_ends_at')
       .eq('id', userId)
       .maybeSingle();
 
-    const plan = profile?.plan === 'pro' ? 'pro' : 'free';
+    const rawPlan = `${profile?.plan ?? 'FREE'}`.toUpperCase();
+    const trialEndsAt = profile?.trial_ends_at ? Date.parse(`${profile.trial_ends_at}`) : Number.NaN;
+
+    let plan: QuotaPlan = 'free';
+    if (rawPlan === 'VIP') {
+      plan = 'vip';
+    } else if (rawPlan === 'PRO') {
+      plan = 'pro';
+    } else if (rawPlan === 'TRIAL' && !Number.isNaN(trialEndsAt) && trialEndsAt >= Date.now()) {
+      plan = 'trial';
+    }
     const limits = PLAN_LIMITS[plan];
-    const planMaxOutputTokens = plan == 'pro' ? PRO_MAX_OUTPUT_TOKENS : FREE_MAX_OUTPUT_TOKENS;
+    const planMaxOutputTokens = (plan == 'pro' || plan == 'vip') ? PRO_MAX_OUTPUT_TOKENS : FREE_MAX_OUTPUT_TOKENS;
     const requestedTokens = Math.min(Math.max(payload.max_output_tokens ?? planMaxOutputTokens, 1), planMaxOutputTokens);
 
     const ip = extractIp(req) ?? 'unknown';
