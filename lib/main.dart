@@ -6,11 +6,11 @@ import 'package:tire_toplu_alim/app_config.dart';
 import 'package:tire_toplu_alim/screens/create_campaign_screen.dart';
 import 'package:tire_toplu_alim/screens/home_screen.dart';
 import 'package:tire_toplu_alim/screens/profile_screen.dart';
+import 'package:tire_toplu_alim/ui/app_theme.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await MobileAds.instance.initialize();
 
   final initError = await _initializeSupabase();
@@ -55,10 +55,7 @@ class TopluAlimApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-      ),
+      theme: AppTheme.build(),
       home: initError != null
           ? FriendlyErrorScreen(message: initError!)
           : StreamBuilder<AuthState>(
@@ -68,37 +65,59 @@ class TopluAlimApp extends StatelessWidget {
                 if (session == null) {
                   return const ProfileScreen();
                 }
-                return const HomeScaffold();
+                return const HomeRootScaffold();
               },
             ),
     );
   }
 }
 
-class HomeScaffold extends StatelessWidget {
-  const HomeScaffold({super.key});
+class HomeRootScaffold extends StatefulWidget {
+  const HomeRootScaffold({super.key});
+
+  @override
+  State<HomeRootScaffold> createState() => _HomeRootScaffoldState();
+}
+
+class _HomeRootScaffoldState extends State<HomeRootScaffold> {
+  int _index = 0;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final pages = const [HomeScreen(), ProfileScreen()];
+    final titles = [l10n.appName, l10n.profile];
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.appName),
-        actions: [
-          IconButton(
-            tooltip: l10n.createCampaign,
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const CreateCampaignScreen(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.add_circle_outline),
+      appBar: AppBar(title: Text(titles[_index])),
+      body: IndexedStack(index: _index, children: pages),
+      floatingActionButton: _index == 0
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const CreateCampaignScreen()),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: Text(l10n.createCampaign),
+            )
+          : null,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (value) => setState(() => _index = value),
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: l10n.appName,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person),
+            label: l10n.profile,
           ),
         ],
       ),
-      body: const HomeScreen(),
     );
   }
 }

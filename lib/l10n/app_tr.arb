@@ -88,4 +88,12 @@
   "requiredBusinessName": "İşletme adı zorunludur."
 ,
   "requiredPhone": "Telefon zorunludur."
+,
+  "filters": "Filtreler"
+,
+  "allNeighborhoods": "Tüm Mahalleler"
+,
+  "sortSponsoredFirst": "Sponsorlu Önce"
+,
+  "sortEndingSoon": "Önce Biten"
 }
