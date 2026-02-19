@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tire_toplu_alim/l10n/app_localizations.dart';
 import 'package:tire_toplu_alim/repositories/campaign_repository.dart';
 
 class CreateCampaignScreen extends StatefulWidget {
@@ -92,7 +92,9 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         durationHours: _durationHours,
         deliveryMode: _deliveryMode,
         pickupPointId: _deliveryMode == 'pickup_point' ? _selectedPickupPointId : null,
-        pickupPointName: _deliveryMode == 'pickup_point' ? selectedPickupPoint?['name'] as String? : null,
+        pickupPointName: _deliveryMode == 'pickup_point'
+            ? selectedPickupPoint?['name']?.toString()
+            : null,
         requestCampaignSponsorship: _requestCampaignSponsorship,
         requestPickupPointSponsorship: _requestPickupPointSponsorship,
         sponsorBusinessName: _sponsorBusinessController.text,
@@ -165,7 +167,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
               DropdownButtonFormField<int>(
                 value: _durationHours,
                 decoration: InputDecoration(labelText: AppLocalizations.of(context).duration),
-                items: const [
+                items: [
                   DropdownMenuItem(value: 24, child: Text(AppLocalizations.of(context).duration24)),
                   DropdownMenuItem(value: 48, child: Text(AppLocalizations.of(context).duration48)),
                   DropdownMenuItem(value: 168, child: Text(AppLocalizations.of(context).duration168)),
@@ -183,7 +185,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
               DropdownButtonFormField<String>(
                 value: _deliveryMode,
                 decoration: InputDecoration(labelText: AppLocalizations.of(context).deliveryMode),
-                items: const [
+                items: [
                   DropdownMenuItem(value: 'seller', child: Text(AppLocalizations.of(context).deliverySeller)),
                   DropdownMenuItem(value: 'pickup_point', child: Text(AppLocalizations.of(context).deliveryPickupPoint)),
                 ],

@@ -7,7 +7,7 @@ import 'package:tire_toplu_alim/screens/create_campaign_screen.dart';
 import 'package:tire_toplu_alim/screens/home_screen.dart';
 import 'package:tire_toplu_alim/screens/profile_screen.dart';
 import 'package:tire_toplu_alim/ui/app_theme.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tire_toplu_alim/l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

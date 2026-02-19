@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tire_toplu_alim/l10n/app_localizations.dart';
 import 'package:tire_toplu_alim/app_config.dart';
 import 'package:tire_toplu_alim/repositories/campaign_repository.dart';
 import 'package:tire_toplu_alim/services/supabase_service.dart';
@@ -363,7 +363,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                             ),
                           ),
                           const SizedBox(height: AppSpacing.md),
-                          const AdaptiveBanner(adUnitId: AppConfig.detailBannerAdUnitId),
+                          AdaptiveBanner(adUnitId: AppConfig.detailBannerAdUnitId),
                         ],
                       ),
                     ),

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tire_toplu_alim/l10n/app_localizations.dart';
 import 'package:tire_toplu_alim/app_config.dart';
 import 'package:tire_toplu_alim/screens/home_screen.dart';
 import 'package:tire_toplu_alim/screens/legal_doc_screen.dart';

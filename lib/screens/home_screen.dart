@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tire_toplu_alim/l10n/app_localizations.dart';
 import 'package:tire_toplu_alim/app_config.dart';
 import 'package:tire_toplu_alim/screens/campaign_detail_screen.dart';
 import 'package:tire_toplu_alim/services/supabase_service.dart';
@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        const SafeArea(
+        SafeArea(
           top: false,
           child: AdaptiveBanner(adUnitId: AppConfig.homeBannerAdUnitId),
         ),

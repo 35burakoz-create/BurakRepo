@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tire_toplu_alim/l10n/app_localizations.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:tire_toplu_alim/repositories/campaign_repository.dart';
 import 'package:tire_toplu_alim/services/billing_service.dart';
