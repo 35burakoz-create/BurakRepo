@@ -108,7 +108,7 @@ class _PickupPointSponsorPackagesScreenState
     if (!_enabled) {
       return Scaffold(
         appBar: AppBar(title: Text(AppLocalizations.of(context).pickupPointSponsorPackages)),
-        body: const Center(
+        body: Center(
           child: Text(AppLocalizations.of(context).debugOnlyScreen),
         ),
       );

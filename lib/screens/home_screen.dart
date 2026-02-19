@@ -220,7 +220,7 @@ class _FilterSection extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             SegmentedButton<_SortMode>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: _SortMode.sponsoredFirst,
                   label: Text(AppLocalizations.of(context).sortSponsoredFirst),

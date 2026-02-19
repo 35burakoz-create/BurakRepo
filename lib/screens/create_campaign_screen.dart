@@ -92,8 +92,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         durationHours: _durationHours,
         deliveryMode: _deliveryMode,
         pickupPointId: _deliveryMode == 'pickup_point' ? _selectedPickupPointId : null,
-        pickupPointName: _deliveryMode == 'pickup_point'
-            ? selectedPickupPoint?['name']?.toString()
+        pickupPointName: (_deliveryMode == 'pickup_point')
+            ? (selectedPickupPoint?['name']?.toString())
             : null,
         requestCampaignSponsorship: _requestCampaignSponsorship,
         requestPickupPointSponsorship: _requestPickupPointSponsorship,
