@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tire_toplu_alim/l10n/app_localizations.dart';
@@ -45,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _prepareProfile() async {
     try {
-      final user = await _ensureSignedInDemoUser();
+      final user = await _ensureSignedInUser();
       final profile = await SupabaseService.client
           .from('profiles')
           .select('nickname, neighborhood, accepted_legal_at, city_id')
@@ -78,31 +76,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<dynamic> _ensureSignedInDemoUser() async {
+  Future<dynamic> _ensureSignedInUser() async {
     final auth = SupabaseService.client.auth;
 
     if (auth.currentSession != null && auth.currentUser != null) {
       return auth.currentUser!;
     }
 
-    // TODO: Replace demo email/password bootstrap with Phone OTP authentication.
-    final email =
-        'demo_${DateTime.now().millisecondsSinceEpoch}_${_randomString(6)}@tiretoplualim.app';
-    final password = _randomString(18);
-
-    final signUpResponse = await auth.signUp(email: email, password: password);
-    var user = signUpResponse.user ?? auth.currentUser;
-
-    if (auth.currentSession == null) {
-      final signInResponse = await auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-      user = signInResponse.user ?? user;
-    }
+    final signInResponse = await auth.signInAnonymously();
+    final user = signInResponse.user ?? auth.currentUser;
 
     if (user == null || auth.currentSession == null) {
-      throw Exception('Demo kullanıcı oturumu açılamadı.');
+      throw Exception('Anonim kullanıcı oturumu açılamadı.');
     }
 
     return user;
@@ -167,14 +152,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _saving = false;
       });
     }
-  }
-
-  String _randomString(int length) {
-    const chars =
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = Random.secure();
-    return List.generate(length, (_) => chars[random.nextInt(chars.length)])
-        .join();
   }
 
   void _openLegal(LegalDocType type) {
