@@ -89,6 +89,34 @@ http://127.0.0.1:8000/admin/
 
 Program penceresini kapatmak için komut penceresinde `CTRL+C` yapın. Daha sonra tekrar açmak için yeniden `start_windows.bat` dosyasına çift tıklayın.
 
+
+## İlk Giriş İçin Admin Kullanıcı Oluşturma
+
+Programda kullanıcı girişi zorunludur. İlk kurulumdan sonra henüz hiçbir kullanıcı yoksa giriş ekranında şu uyarıyı görürsünüz:
+
+```text
+Henüz admin kullanıcı oluşturulmamış. Lütfen terminalden python manage.py createsuperuser komutunu çalıştırın.
+```
+
+Admin kullanıcı oluşturmak için proje klasöründe terminal/komut penceresi açın ve sanal ortam aktifken şu komutu çalıştırın:
+
+```bash
+python manage.py createsuperuser
+```
+
+Windows kurulumu yapıyorsanız `setup_windows.bat` migration işlemlerinden sonra bu komutu başlatmak isteyip istemediğinizi sorar. `E` yazarsanız admin kullanıcı oluşturma ekranı hemen açılır. `H` yazarsanız daha sonra aynı komutu elle çalıştırabilirsiniz.
+
+Örnek giriş:
+
+```text
+Username: admin
+Email address: admin@example.local
+Password: güçlü-bir-şifre-yazın
+Password (again): aynı-şifreyi-yazın
+```
+
+Şifre yazarken ekranda karakter görünmemesi normaldir. Gerçek kullanımda her çalışan için ayrı kullanıcı açın; ortak kullanıcı hesabı kullanmayın.
+
 ## Sıfırdan Kurulum Adımları
 
 Aşağıdaki adımlar hiç Django bilmeyen bir kullanıcı için sırayla yazılmıştır.

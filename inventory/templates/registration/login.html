@@ -1,5 +1,5 @@
 {% extends 'inventory/base.html' %}{% block content %}
 <div class="row justify-content-center"><div class="col-md-4"><div class="card shadow-sm"><div class="card-body">
-<h1 class="h4 mb-3">Giriş</h1><form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary w-100">Giriş yap</button></form>
+<h1 class="h4 mb-3">Giriş</h1>{% if no_users_exist %}<div class="alert alert-warning">Henüz admin kullanıcı oluşturulmamış. Lütfen terminalden <code>python manage.py createsuperuser</code> komutunu çalıştırın.</div>{% endif %}<form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary w-100">Giriş yap</button></form>
 </div></div></div></div>
 {% endblock %}

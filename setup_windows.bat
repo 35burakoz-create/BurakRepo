@@ -59,14 +59,21 @@ echo Kurulum tamamlandi.
 echo ========================================
 echo.
 echo SIRADAKI ADIM: Admin kullanici olusturun.
-echo Asagidaki komutu bu pencerede calistirin:
-echo.
-echo     python manage.py createsuperuser
+echo Admin hesabi olmadan programa giris yapamazsiniz.
+echo Komut: python manage.py createsuperuser
 echo.
 echo Ornek:
 echo     Username: admin
 echo     Email address: admin@example.local
 echo     Password: guclu-bir-sifre-yazin
+echo.
+set /p CREATE_ADMIN=Simdi admin kullanici olusturma komutunu baslatmak ister misiniz? (E/H):
+if /I "%CREATE_ADMIN%"=="E" (
+    python manage.py createsuperuser
+) else (
+    echo Admin kullaniciyi daha sonra olusturmak icin su komutu calistirin:
+    echo     python manage.py createsuperuser
+)
 echo.
 echo Admin kullaniciyi olusturduktan sonra programi acmak icin:
 echo     start_windows.bat
