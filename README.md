@@ -27,6 +27,68 @@ Nelamar Stock ile şunları yapabilirsiniz:
 - İlk aşamada SQLite kullanılır; ayrı veritabanı sunucusu gerekmez.
 - Komutları proje klasörünün içinde çalıştırın.
 
+
+## Windows’ta İlk Kurulum
+
+Bu bölüm Windows kullanan ve komut satırına alışık olmayan kullanıcılar içindir. Gerçek şirket verisi, gerçek Excel dosyası, gerçek müşteri bilgisi veya gerçek Google Photos linki eklemeyin; ilk denemede sadece sahte/demo veri kullanın.
+
+### 1. ZIP olarak indirme
+
+1. Proje sayfasında **Download ZIP** veya benzer indirme seçeneğini kullanın.
+2. ZIP dosyasını bilgisayarınıza indirin.
+3. Dosyayı masaüstüne veya kolay bulacağınız bir klasöre taşıyın.
+
+### 2. Klasörü çıkarma
+
+1. ZIP dosyasına sağ tıklayın.
+2. **Tümünü Ayıkla / Extract All** seçeneğine basın.
+3. Oluşan klasörü açın.
+4. Klasörün içinde `manage.py`, `requirements.txt`, `setup_windows.bat` ve `start_windows.bat` dosyalarını görmelisiniz.
+
+### 3. İlk kurulumu başlatma
+
+1. `setup_windows.bat` dosyasına çift tıklayın.
+2. Windows güvenlik uyarısı gösterirse dosyanın bu proje klasöründen geldiğini kontrol edin ve çalıştırın.
+3. Bu dosya otomatik olarak sanal ortam oluşturur, paketleri yükler, `.env` dosyasını hazırlar ve veritabanı migration işlemlerini çalıştırır.
+4. İşlem bitince ekranda admin kullanıcı oluşturma talimatı gösterilir.
+
+### 4. Admin kullanıcı oluşturma
+
+`setup_windows.bat` tamamlandıktan sonra aynı siyah komut penceresinde şu komutu yazın:
+
+```bat
+python manage.py createsuperuser
+```
+
+Örnek olarak şunları girebilirsiniz:
+
+```text
+Username: admin
+Email address: admin@example.local
+Password: güçlü-bir-şifre-yazın
+Password (again): aynı-şifreyi-yazın
+```
+
+Şifre yazarken ekranda karakter görünmemesi normaldir. Ortak kullanıcı hesabı kullanmayın; gerçek kullanımda her kişi için ayrı kullanıcı oluşturun.
+
+### 5. Programı açma
+
+1. Kurulumdan sonra `start_windows.bat` dosyasına çift tıklayın.
+2. Bu dosya sanal ortamı aktif eder ve Django geliştirme sunucusunu sadece lokal kullanım için `127.0.0.1:8000` adresinde başlatır.
+3. Tarayıcınızı açın ve şu adrese girin:
+
+```text
+http://127.0.0.1:8000/
+```
+
+Admin paneli için:
+
+```text
+http://127.0.0.1:8000/admin/
+```
+
+Program penceresini kapatmak için komut penceresinde `CTRL+C` yapın. Daha sonra tekrar açmak için yeniden `start_windows.bat` dosyasına çift tıklayın.
+
 ## Sıfırdan Kurulum Adımları
 
 Aşağıdaki adımlar hiç Django bilmeyen bir kullanıcı için sırayla yazılmıştır.
