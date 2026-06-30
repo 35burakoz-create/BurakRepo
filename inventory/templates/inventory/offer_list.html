@@ -1,0 +1,5 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3"><h1>İhracat Teklifleri</h1>{% if perms.inventory.add_offer %}<div class="d-flex gap-2"><a class="btn btn-outline-primary" href="{% url 'customer_list' %}">Müşteriler</a><a class="btn btn-primary" href="{% url 'offer_create' %}">Yeni teklif</a></div>{% endif %}</div>
+<div class="card"><div class="table-responsive"><table class="table mb-0"><tr><th>Teklif No</th><th>Müşteri</th><th>Durum</th><th>Para Birimi</th><th>Incoterm</th><th>Geçerlilik</th><th>Stok</th><th>İşlem</th></tr>{% for offer in offers %}<tr><td><a href="{{ offer.get_absolute_url }}">{{ offer.offer_number }}</a></td><td>{{ offer.customer.company_name }}</td><td>{{ offer.get_status_display }}</td><td>{{ offer.currency }}</td><td>{{ offer.incoterm|default:'-' }}</td><td>{{ offer.validity_date|date:'d.m.Y' }}</td><td>{{ offer.selected_stock_items.count }}</td><td><a class="btn btn-sm btn-outline-primary" href="{% url 'offer_pdf' offer.pk %}">PDF</a></td></tr>{% empty %}<tr><td colspan="8">Teklif yok.</td></tr>{% endfor %}</table></div></div>
+{% endblock %}

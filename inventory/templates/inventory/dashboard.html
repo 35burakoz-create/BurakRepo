@@ -1,0 +1,12 @@
+{% extends 'inventory/base.html' %}{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><h1>Dashboard</h1><a class="btn btn-primary" href="{% url 'product_create' %}">Yeni stok</a></div>
+<div class="row g-3 mb-4">
+{% for label,value in cards %}{% endfor %}
+<div class="col-md-3"><div class="card metric"><div class="card-body"><span>Ürün</span><strong>{{ product_count }}</strong></div></div></div>
+<div class="col-md-3"><div class="card metric"><div class="card-body"><span>Konum</span><strong>{{ location_count }}</strong></div></div></div>
+<div class="col-md-3"><div class="card metric"><div class="card-body"><span>Toplam m²</span><strong>{{ total_m2 }}</strong></div></div></div>
+<div class="col-md-3"><div class="card metric"><div class="card-body"><span>Rezerve m²</span><strong>{{ reserved_m2 }}</strong></div></div></div>
+</div>
+<div class="row g-4"><div class="col-lg-5"><div class="card"><div class="card-header">Konum Özeti</div><ul class="list-group list-group-flush">{% for location in by_location %}<li class="list-group-item d-flex justify-content-between"><span>{{ location.name }}</span><span class="badge bg-secondary">{{ location.product_total }}</span></li>{% empty %}<li class="list-group-item">Henüz konum yok.</li>{% endfor %}</ul></div></div>
+<div class="col-lg-7"><div class="card mb-4"><div class="card-header">Süresi Dolan Rezervasyonlar</div><div class="table-responsive"><table class="table mb-0"><tr><th>Stok</th><th>Müşteri</th><th>Miktar</th><th>Geçerlilik</th></tr>{% for reservation in expired_reservations %}<tr><td><a href="{{ reservation.stock_item.get_absolute_url }}">{{ reservation.stock_item.sku }}</a></td><td>{{ reservation.customer_name }}</td><td>{{ reservation.reserved_m2 }}</td><td>{{ reservation.valid_until|date:'d.m.Y' }}</td></tr>{% empty %}<tr><td colspan="4">Süresi dolan aktif rezervasyon yok.</td></tr>{% endfor %}</table></div></div><div class="card"><div class="card-header">Son Hareketler</div><div class="table-responsive"><table class="table mb-0"><tr><th>Stok</th><th>Tip</th><th>Miktar</th><th>Not</th></tr>{% for m in recent_movements %}<tr><td>{% if m.stock_item %}{{ m.stock_item.sku }}{% else %}Silinmiş stok{% endif %}</td><td>{{ m.get_movement_type_display }}</td><td>{{ m.quantity_m2 }}</td><td>{{ m.note|default:'-' }}</td></tr>{% empty %}<tr><td colspan="4">Henüz hareket yok.</td></tr>{% endfor %}</table></div></div></div></div>
+{% endblock %}

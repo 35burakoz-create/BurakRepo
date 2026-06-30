@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Django/local runtime
+.env
+.env.*
+!.env.example
+db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+database/
+uploads/
+reports/
+media/
+*.xlsx
+*.xls
+*.csv
+*.pdf
+staticfiles/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
