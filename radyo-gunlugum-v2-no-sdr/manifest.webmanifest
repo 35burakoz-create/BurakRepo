@@ -1,0 +1,21 @@
+{
+  "name": "Radyo Günlüğüm V2.2",
+  "short_name": "Radyo Günlüğüm",
+  "description": "Tecsun R-9012 için kişisel akıllı radyo dinleme günlüğü.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f2f4ef",
+  "theme_color": "#1f4d35",
+  "lang": "tr",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
