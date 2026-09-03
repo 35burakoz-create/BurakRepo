@@ -1,5 +1,5 @@
-const CACHE='radyo-v22-20260903-2';
-const LOCAL=['./','./index.html','./styles.css','./core.js','./audio-smart.js','./insights.js','./v21-guide.js','./v22-mobile.js','./manifest.webmanifest','./icon.svg'];
+const CACHE='radyo-v23-20260903-1';
+const LOCAL=['./','./index.html','./styles.css','./core.js','./audio-smart.js','./insights.js','./v21-guide.js','./v22-mobile.js','./v23-dashboard.js','./manifest.webmanifest','./icon.svg'];
 const EXTERNAL=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const c=await caches.open(CACHE);await c.addAll(LOCAL);await Promise.allSettled(EXTERNAL.map(u=>c.add(u)));self.skipWaiting()})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{for(const k of await caches.keys())if(k!==CACHE)await caches.delete(k);await self.clients.claim()})())});
