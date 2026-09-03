@@ -1,7 +1,7 @@
 {
-  "name": "Radyo Günlüğüm V2.6",
+  "name": "Radyo Günlüğüm V3.0",
   "short_name": "Radyo Günlüğüm",
-  "description": "Tecsun R-9012 için kişisel akıllı radyo günlüğü, Radyo Atlası, kadran kalibrasyonu ve saha asistanı.",
+  "description": "Tecsun R-9012 için cihazda çalışan AI Radio Assistant, akıllı radyo günlüğü, Radyo Atlası ve saha asistanı.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
