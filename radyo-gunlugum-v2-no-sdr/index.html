@@ -3,23 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#1f4d35">
-  <meta name="description" content="Tecsun R-9012 için kişisel akıllı radyo dinleme günlüğü">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="Tecsun R-9012 için Türkiye saatine göre çalışan kişisel AI radyo günlüğü ve saha asistanı">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Radyo Günlüğüm V2.3</title>
+  <title>Radyo Günlüğüm V3.2.3</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <link rel="stylesheet" href="styles.css">
+  <!-- data-v321-boot-guard transition markers: v24-achievements.js v25-smart-listening.js v26-radio-atlas.js v30-ai-radio-assistant.js v30-mobile-ai-hook.js v30-guide-accuracy-fix.js v31-simple-ui.js v32-modern-focus.js v33-stability-hotfix.js v34-current-programs.js -->
 </head>
 <body>
 <main class="shell">
   <header class="topbar">
     <div>
       <div class="eyebrow">TECSUN R-9012 • BOZKÖY / TORBALI • KİŞİSEL SAHA ASİSTANI</div>
-      <h1>Radyo Günlüğüm <span>V2.3</span></h1>
-      <p class="sub">Kişisel Dashboard — bugünün hedefleri, en iyi yayınlar, ülke avı, seri ve hızlı kayıt.</p>
+      <h1>Radyo Günlüğüm <span>V3.2.3</span></h1>
+      <p class="sub">Türkiye saatine göre akıllı yayın rehberi, kayıt, analiz ve AI ses asistanı.</p>
     </div>
     <div id="userBox" class="userbox hidden"><span id="userEmail"></span><button id="logoutBtn" class="btn ghost">Çıkış</button></div>
   </header>
@@ -97,7 +98,7 @@
         <section class="card"><h2>Ses kaydı</h2><p class="hint">Radyoyu telefona duyurup kısa örnek kaydet veya dosya yükle.</p><div class="audio-controls"><button id="recordStartBtn" class="btn primary">● Kaydı başlat</button><button id="recordStopBtn" class="btn ghost" disabled>■ Durdur</button><span id="recordTimer" class="timer">00:00</span></div><audio id="audioPreview" class="audio-preview hidden" controls></audio><label class="upload-label">Ses dosyası seç<input id="audioFile" type="file" accept="audio/*"></label><button id="uploadAudioBtn" class="btn primary" disabled>Yükle</button><p id="audioMsg" class="msg"></p></section>
         <section class="card"><h2>Canlı transkript</h2><p class="hint">Tarayıcı konuşma tanımasını kullanır.</p><label>Tanıma dili<select id="speechLang"><option value="tr-TR">Türkçe</option><option value="en-US">İngilizce</option><option value="ar-SA">Arapça</option><option value="fr-FR">Fransızca</option><option value="es-ES">İspanyolca</option><option value="de-DE">Almanca</option><option value="it-IT">İtalyanca</option><option value="ru-RU">Rusça</option></select></label><div class="row-actions"><button id="speechStartBtn" class="btn primary">🎙️ Başlat</button><button id="speechStopBtn" class="btn ghost" disabled>Durdur</button></div><textarea id="speechText" rows="8"></textarea><button id="copyTranscriptBtn" class="btn ghost">Forma aktar</button><p id="speechMsg" class="msg"></p></section>
       </div>
-      <section class="card smart-card"><div class="section-head"><div><h2>Akıllı istasyon / program önerisi</h2><p class="hint">Frekans + saat + dil/transkript + rehber.</p></div><button id="analyzeBtn" class="btn primary">Analiz et</button></div><div id="smartResult" class="smart-result empty">Henüz analiz yapılmadı.</div></section>
+      <section class="card smart-card"><div class="section-head"><div><h2>Akıllı istasyon / program önerisi</h2><p class="hint">Frekans + saat + dil/transkript + ana yayın rehberi.</p></div><button id="analyzeBtn" class="btn primary">Analiz et</button></div><div id="smartResult" class="smart-result empty">Henüz analiz yapılmadı.</div></section>
     </section>
 
     <section id="tab-analysis" class="tab-view hidden"><div id="analysisCards" class="stats"></div><div class="two-col"><section class="card"><h2>Bant dağılımı</h2><div id="bandBars" class="bars"></div></section><section class="card"><h2>Dil dağılımı</h2><div id="langBars" class="bars"></div></section><section class="card"><h2>En iyi dinleme zamanların</h2><div id="predictions"></div></section><section class="card"><h2>En sık istasyonlar</h2><div id="stationBars" class="bars"></div></section></div></section>
@@ -113,7 +114,6 @@
 <script src="audio-smart.js"></script>
 <script src="v21-guide.js"></script>
 <script src="v22-mobile.js"></script>
-<script src="v23-dashboard.js"></script>
 <script src="insights.js"></script>
 </body>
 </html>
