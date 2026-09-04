@@ -1,13 +1,13 @@
 {
-  "name": "Radyo Günlüğüm V3.1",
+  "name": "Radyo Günlüğüm V3.2",
   "short_name": "Radyo Günlüğüm",
-  "description": "Tecsun R-9012 için sade arayüzlü kişisel AI radyo günlüğü ve saha asistanı.",
+  "description": "Tecsun R-9012 için modern arayüzlü kişisel AI radyo günlüğü ve saha asistanı.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#f5f6f2",
-  "theme_color": "#204b35",
+  "background_color": "#f6f7fb",
+  "theme_color": "#111827",
   "lang": "tr",
   "categories": ["utilities", "productivity"],
   "icons": [
