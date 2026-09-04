@@ -1,7 +1,7 @@
 {
-  "name": "Radyo Günlüğüm V3.2.2",
+  "name": "Radyo Günlüğüm V3.2.3",
   "short_name": "Radyo Günlüğüm",
-  "description": "Tecsun R-9012 için Türkiye saatine göre güncel yayınları gösteren kişisel AI radyo günlüğü ve saha asistanı.",
+  "description": "Tecsun R-9012 için Türkiye saatine göre güncel yayınları, kayıtları ve kişisel radyo araçlarını birleştiren AI destekli saha asistanı.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
