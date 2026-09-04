@@ -1,5 +1,5 @@
-const CACHE='radyo-v323-audit-20260904-2';
-const LOCAL=['./','./index.html','./styles.css','./core.js','./audio-smart.js','./v21-guide.js','./v22-mobile.js','./v23-dashboard.js','./insights.js','./v24-achievements.js','./v25-smart-listening.js','./v26-radio-atlas.js','./v30-ai-radio-assistant.js','./v33-stability-hotfix.js','./v34-current-programs.js','./v35-audit-fixes.js','./v35-runtime-bridge.js','./manifest.webmanifest','./icon.svg'];
+const CACHE='radyo-v323-audit2-20260904-1';
+const LOCAL=['./','./index.html','./styles.css','./core.js','./audio-smart.js','./v21-guide.js','./v22-mobile.js','./insights.js','./v24-achievements.js','./v25-smart-listening.js','./v26-radio-atlas.js','./v30-ai-radio-assistant.js','./v33-stability-hotfix.js','./v34-current-programs.js','./v35-audit-fixes.js','./v35-runtime-bridge.js','./v36-integrity-audit.js','./manifest.webmanifest','./icon.svg'];
 const EXTERNAL=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const c=await caches.open(CACHE);await c.addAll(LOCAL);await Promise.allSettled(EXTERNAL.map(u=>c.add(u)))})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{for(const k of await caches.keys())if(k!==CACHE)await caches.delete(k);await self.clients.claim()})())});
