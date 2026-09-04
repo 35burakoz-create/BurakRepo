@@ -1,4 +1,4 @@
-const CACHE='radyo-v322-20260904-1';
+const CACHE='radyo-v322-20260904-2';
 const LOCAL=['./','./index.html','./styles.css','./core.js','./audio-smart.js','./insights.js','./v21-guide.js','./v22-mobile.js','./v23-dashboard.js','./v24-achievements.js','./v25-smart-listening.js','./v26-radio-atlas.js','./v30-ai-radio-assistant.js','./v30-mobile-ai-hook.js','./v30-guide-accuracy-fix.js','./v31-simple-ui.js','./v32-modern-focus.js','./v33-stability-hotfix.js','./v34-current-programs.js','./manifest.webmanifest','./icon.svg'];
 const EXTERNAL=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'];
 function injectModules(html){
