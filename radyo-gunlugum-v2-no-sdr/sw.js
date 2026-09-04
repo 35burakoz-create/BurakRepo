@@ -1,10 +1,8 @@
-const CACHE='radyo-v321-20260904-1';
-const LOCAL=['./','./index.html','./styles.css','./core.js','./audio-smart.js','./insights.js','./v21-guide.js','./v22-mobile.js','./v23-dashboard.js','./v24-achievements.js','./v25-smart-listening.js','./v26-radio-atlas.js','./v30-ai-radio-assistant.js','./v30-mobile-ai-hook.js','./v30-guide-accuracy-fix.js','./v31-simple-ui.js','./v32-modern-focus.js','./v33-stability-hotfix.js','./manifest.webmanifest','./icon.svg'];
+const CACHE='radyo-v322-20260904-1';
+const LOCAL=['./','./index.html','./styles.css','./core.js','./audio-smart.js','./insights.js','./v21-guide.js','./v22-mobile.js','./v23-dashboard.js','./v24-achievements.js','./v25-smart-listening.js','./v26-radio-atlas.js','./v30-ai-radio-assistant.js','./v30-mobile-ai-hook.js','./v30-guide-accuracy-fix.js','./v31-simple-ui.js','./v32-modern-focus.js','./v33-stability-hotfix.js','./v34-current-programs.js','./manifest.webmanifest','./icon.svg'];
 const EXTERNAL=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'];
 function injectModules(html){
  let out=html;
- // insights.js historically tries to load v21-guide.js a second time even though index.html already loads it.
- // Intercept only that duplicate and postpone its onload callback until the DOM (and all version modules) is ready.
  if(!out.includes('data-v321-boot-guard')){
   const guard=`<script data-v321-boot-guard>(()=>{const original=document.head.appendChild.bind(document.head);document.head.appendChild=function(n){try{if(n&&n.tagName==='SCRIPT'&&String(n.src||'').includes('v21-guide.js')&&document.querySelector('script[src="v21-guide.js"],script[src="./v21-guide.js"]')){const fire=()=>{try{n.onload&&n.onload()}catch(e){console.error(e)}};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fire,{once:true});else setTimeout(fire,0);return n}}catch(e){}return original(n)}})();</script>`;
   out=out.replace('<script src="insights.js"></script>',guard+'<script src="insights.js"></script>');
@@ -18,6 +16,7 @@ function injectModules(html){
  if(!out.includes('v31-simple-ui.js'))out=out.replace('</body>','<script src="./v31-simple-ui.js"></script></body>');
  if(!out.includes('v32-modern-focus.js'))out=out.replace('</body>','<script src="./v32-modern-focus.js"></script></body>');
  if(!out.includes('v33-stability-hotfix.js'))out=out.replace('</body>','<script src="./v33-stability-hotfix.js"></script></body>');
+ if(!out.includes('v34-current-programs.js'))out=out.replace('</body>','<script src="./v34-current-programs.js"></script></body>');
  return out
 }
 async function htmlResponse(r){const text=injectModules(await r.text()),headers=new Headers(r.headers);headers.delete('content-length');return new Response(text,{status:r.status,statusText:r.statusText,headers})}
