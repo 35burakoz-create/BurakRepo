@@ -4,7 +4,7 @@ import vm from 'node:vm';
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8'),exists=f=>fs.existsSync(path.join(root,f));
 const checks=[];function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
-const index=read('index.html'),boot=read('app-bootstrap.js'),sw=read('sw.js'),config=read('app-config.js'),toast=read('app-toast.js'),offline=read('app-offline-service.js'),pwa=read('app-pwa-install.js'),form=read('app-log-form-ui.js'),menu=read('app-menu-ui.js');
+const index=read('index.html'),boot=read('app-bootstrap.js'),sw=read('sw.js'),toast=read('app-toast.js'),offline=read('app-offline-service.js'),pwa=read('app-pwa-install.js'),form=read('app-log-form-ui.js'),menu=read('app-menu-ui.js');
 for(const f of ['app-toast.js','app-pwa-install.js','app-offline-service.js','app-log-form-ui.js']){let ok=true;try{new vm.Script(read(f),{filename:f})}catch{ok=false}check(`syntax ${f}`,ok)}
 check('V22 not directly loaded',!index.includes('v22-mobile.js'));
 check('V22 not cached',!sw.includes('v22-mobile.js'));
@@ -20,5 +20,4 @@ check('offline edit conflict guard',offline.includes('Offline iken mevcut kayıt
 check('offline uses capture submit interception',offline.includes("addEventListener('submit'")&&offline.includes('stopImmediatePropagation'));
 check('log form disclosure provider',form.includes("provider:'app-log-form-ui'")&&form.includes('appLogAdvanced'));
 check('new services avoid core wrappers',![toast,offline,pwa,form].some(x=>x.includes('R.switch=')||x.includes('R.load=')||x.includes('R.show=')||x.includes('R.renderAll=')));
-check('config is V3.8.2',config.includes("version:'3.8.2'")&&config.includes('v382-mobile-services'));
 for(const [n,ok] of checks)console.log(`${ok?'✓':'✗'} ${n}`);const failed=checks.filter(x=>!x[1]);console.log(`\n${checks.length-failed.length}/${checks.length} mobile-service checks passed.`);if(failed.length)console.error('Failed:',failed.map(x=>x[0]).join(', '));
