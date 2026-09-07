@@ -1,7 +1,7 @@
 {
-  "name": "Radyo Günlüğüm V3.4",
+  "name": "Radyo Günlüğüm V3.5",
   "short_name": "Radyo Günlüğüm",
-  "description": "Tecsun R-9012 için Radio Memory, kalıcı sekme durumu, canlı yayın adayları, Dinleme Modu, kayıt, analiz ve AI araçlarını birleştiren kişisel saha asistanı.",
+  "description": "Tecsun R-9012 için Propagation Assistant, Radio Memory, canlı yayın adayları, Dinleme Modu, kayıt, analiz ve AI araçlarını birleştiren kişisel saha asistanı.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
