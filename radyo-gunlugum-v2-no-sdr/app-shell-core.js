@@ -1,0 +1,18 @@
+(()=>{
+const R=window.R;if(!R||R.__shellCore381)return;R.__shellCore381=true;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function css(href,key){if(document.querySelector(`link[data-${key}]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset[key]='1';document.head.appendChild(l)}
+css('v38-ux-cleanup.css','appShellCss');css('v42-design-system.css','appShellDesignCss');
+function dockActive(route){$$('#v38Dock [data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===route))}
+function ensureDock(){document.querySelector('#v33Dock')?.remove();document.querySelector('.v22-bottom')?.remove();document.querySelector('.v31-dock')?.remove();if(!R.me||$('#appView')?.classList.contains('hidden')){$('#v38Dock')?.remove();return null}let d=$('#v38Dock');if(!d){d=document.createElement('nav');d.id='v38Dock';d.className='v38-dock';d.innerHTML='<button data-route="home"><i>⌂</i>Ana Sayfa</button><button data-route="now"><i>◉</i>Şu An</button><button class="plus" data-quick><i>＋</i>Kayıt</button><button data-route="log"><i>▤</i>Günlük</button><button data-menu><i>≡</i>Menü</button>';document.body.appendChild(d)}dockActive(R.router?.current?.()||'home');return d}
+function ensureTopSearch(){const top=$('.topbar');if(!top||top.querySelector('[data-v44search]'))return;const b=document.createElement('button');b.type='button';b.className='v42-top-search';b.dataset.v44search='1';b.innerHTML='<span>⌕</span><b>Ara</b>';top.insertBefore(b,$('#userBox')||null)}
+function netChip(){let c=$('#v42Net');if(!c){c=document.createElement('div');c.id='v42Net';c.className='v42-net';document.body.appendChild(c)}c.classList.toggle('offline',!navigator.onLine);c.innerHTML=navigator.onLine?'<span></span> Çevrimiçi':'<span></span> Çevrimdışı';c.hidden=navigator.onLine}
+function candidateById(id){return (R.guideEntries||[]).find(x=>String(x.id)===String(id))||(R.radioNowCandidates?.('ALL')||[]).find(x=>String(x.id)===String(id))||null}
+document.addEventListener('click',e=>{const route=e.target.closest('[data-route]');if(route){R.__nextNavigationHistory='push';return R.router?.go?.(route.dataset.route,{source:'ui',historyMode:'push'})}const l=e.target.closest('[data-listen]');if(l)return R.listeningUI?.open?.(candidateById(l.dataset.listen));const p=e.target.closest('[data-prefill]');if(p){const x=candidateById(p.dataset.prefill);if(x&&R.prefillGuide)R.prefillGuide(x);return}const log=e.target.closest('[data-log]');if(log){R.edit?.(log.dataset.log);return R.router?.go?.('log',{source:'shell-log'})}},true);
+function refresh(route=R.router?.current?.()){ensureDock();ensureTopSearch();netChip();dockActive(route)}
+R.events?.on?.('route:changed',x=>refresh(x?.to));R.events?.on?.('data:loaded',()=>refresh());R.events?.on?.('auth:changed',x=>{if(x?.authenticated)setTimeout(()=>refresh(),0);else{$('#v38Dock')?.remove();$('#v42Net')?.remove()}});
+window.addEventListener('online',()=>{netChip();R.toast?.('Bağlantı geri geldi. Senkronizasyon devam edebilir.')});window.addEventListener('offline',netChip);
+R.shellCore={refresh,ensureDock,ensureTopSearch,netChip,dockActive};
+R.shell={refresh,renderHome:()=>R.homeUI?.render?.(),renderNow:()=>R.nowUI?.render?.(),openMenu:()=>R.menuUI?.open?.(),quick:()=>R.quickLog?.open?.()};
+R.features?.register?.('shell-core',{ready:true,provider:'app-shell-core'});setTimeout(()=>refresh(),80);
+})();
