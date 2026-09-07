@@ -3,6 +3,7 @@ const R=window.R;if(!R)return;
 const VERSION='V3.6.2';
 const $=s=>document.querySelector(s);
 let root=null,input=null,status=null,results=null,liveTimer=null;
+function loadCss(){if(document.querySelector('link[data-v44-css]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='v44-search-rebuild.css';l.dataset.v44Css='1';document.head.appendChild(l)}
 const norm=v=>{const s=String(v??'');try{return R.norm?R.norm(s):s.toLocaleLowerCase('tr-TR').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')}catch{return s.toLowerCase()}};
 const stationOf=x=>String(x?.station||x?.smart_station||'').trim();
 const split=v=>String(v||'').split(/[/,;]/).map(x=>x.trim()).filter(Boolean);
@@ -73,7 +74,7 @@ function render(query,{submitted=false}={}){
   if(submitted)results.scrollTo?.({top:0,behavior:'smooth'});
 }
 function open(){
-  close();
+  loadCss();close();
   const overlay=document.createElement('div');overlay.id='v44SearchOverlay';overlay.className='v44-overlay';overlay.addEventListener('click',close);
   root=document.createElement('section');root.id='v44Search';root.className='v44-sheet';root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-labelledby','v44SearchTitle');
   const head=document.createElement('div');head.className='v44-head';const headText=document.createElement('div');const kicker=document.createElement('span');kicker.textContent='GLOBAL ARAMA';const title=document.createElement('h2');title.id='v44SearchTitle';title.textContent='Ne arıyorsun?';headText.append(kicker,title);const closeBtn=document.createElement('button');closeBtn.type='button';closeBtn.className='v44-close';closeBtn.setAttribute('aria-label','Aramayı kapat');closeBtn.textContent='×';closeBtn.addEventListener('click',close);head.append(headText,closeBtn);
@@ -96,5 +97,5 @@ window.addEventListener('click',e=>{
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open();
 },true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root)close()});
-document.title=`Radyo Günlüğüm ${VERSION}`;const ver=document.querySelector('.topbar h1 span');if(ver)ver.textContent=VERSION;
+loadCss();document.title=`Radyo Günlüğüm ${VERSION}`;const ver=document.querySelector('.topbar h1 span');if(ver)ver.textContent=VERSION;
 })();
