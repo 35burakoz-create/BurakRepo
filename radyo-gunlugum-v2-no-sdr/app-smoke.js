@@ -2,10 +2,13 @@
 const R=window.R;if(!R)return;
 function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,ok:!!ok,detail:String(detail||'')});const cfg=globalThis.RADIO_APP_CONFIG||{};
  add('App config',!!cfg.version&&document.documentElement.dataset.appVersion===cfg.version,cfg.version||'');
+ add('Minimal core base',R.__coreBase===true&&typeof R.S?.from==='function','namespace + Supabase + utilities');
  add('Foundation',R.features?.get?.('foundation')?.provider==='app-foundation','foundation');
- add('Core bridge',typeof R.coreSwitch==='function'&&typeof R.coreBody==='function'&&R.__coreBridge===true,'pristine core');
- add('Runtime Core',R.features?.get?.('runtime-core')?.provider==='app-runtime-core','load/show/render');
- add('Router',!!R.router&&['home','now','log','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai','memory','propagation'].every(x=>R.router.has?.(x)),'all primary routes');
+ add('Runtime Core',R.features?.get?.('runtime-core')?.provider==='app-runtime-core'&&typeof R.load==='function'&&typeof R.renderAll==='function','canonical load/render');
+ add('Auth service',R.features?.get?.('auth-service')?.provider==='app-auth-service'&&typeof R.auth?.signIn==='function'&&typeof R.auth?.signOut==='function'&&typeof R.boot==='function','session/auth/boot');
+ add('Auth UI',R.features?.get?.('auth-ui')?.provider==='app-auth-ui'&&typeof R.authUI?.show==='function'&&typeof R.show==='function','auth views');
+ add('Router',R.features?.get?.('router')?.provider==='app-router-core'&&!!R.router&&['home','now','log','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai','memory','propagation'].every(x=>R.router.has?.(x)),'canonical route switching');
+ add('Record service',R.features?.get?.('record-service')?.provider==='app-record-service'&&typeof R.records?.save==='function'&&typeof R.records?.remove==='function'&&typeof R.records?.signedAudioUrl==='function','canonical record CRUD');
  add('Toast',R.features?.get?.('toast')?.provider==='app-toast'&&typeof R.toast==='function','toast');
  add('PWA install',R.features?.get?.('pwa-install')?.provider==='app-pwa-install'&&typeof R.installPWA==='function','install');
  add('Offline service',R.features?.get?.('offline-service')?.provider==='app-offline-service'&&typeof R.queueLog==='function'&&typeof R.syncOutbox==='function','outbox');
@@ -19,7 +22,9 @@ function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,
  add('Calendar UI',R.features?.get?.('calendar-ui')?.provider==='app-calendar-ui'&&typeof R.renderCalendar==='function','calendar');
  add('QSL service',R.features?.get?.('qsl-service')?.provider==='app-qsl-service'&&typeof R.qslService?.report==='function'&&typeof R.qslService?.setStatus==='function','QSL service');
  add('QSL UI',R.features?.get?.('qsl-ui')?.provider==='app-qsl-ui'&&typeof R.renderQsl==='function','QSL UI');
- add('Record integrity',R.features?.get?.('record-integrity')?.provider==='app-record-integrity'&&typeof R.validateFrequency==='function','record integrity');
+ add('Record integrity',R.features?.get?.('record-integrity')?.provider==='app-record-integrity'&&typeof R.validateFrequency==='function','frequency integrity');
+ add('Log form UI',R.features?.get?.('log-form-ui')?.provider==='app-log-form-ui'&&typeof R.body==='function'&&typeof R.reset==='function'&&typeof R.edit==='function'&&!!document.querySelector('#appLogAdvanced'),'canonical form lifecycle');
+ add('Log UI',R.features?.get?.('log-ui')?.provider==='app-log-ui'&&typeof R.renderRecords==='function'&&typeof R.renderStats==='function','canonical journal');
  add('Smart analyzer',R.features?.get?.('smart-analyzer')?.provider==='app-smart-analyzer','smart analyzer');
  add('AI service',R.features?.get?.('ai-service')?.provider==='app-ai-service'&&typeof R.ai?.analyze==='function','AI service');
  add('AI UI',R.features?.get?.('ai-ui')?.provider==='app-ai-ui'&&typeof R.aiUI?.render==='function','AI UI');
@@ -35,8 +40,6 @@ function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,
  add('Now UI',R.features?.get?.('now-ui')?.provider==='app-now-ui'&&typeof R.nowUI?.render==='function','now');
  add('Menu UI',R.features?.get?.('menu-ui')?.provider==='app-menu-ui'&&typeof R.menuUI?.open==='function','menu');
  add('Quick Log',R.features?.get?.('quick-log')?.provider==='app-quick-log'&&typeof R.quickLog?.open==='function','quick log');
- add('Log UI',R.features?.get?.('log-ui')?.provider==='app-log-ui'&&typeof R.logUI?.decorate==='function','log UI');
- add('Log form UI',R.features?.get?.('log-form-ui')?.provider==='app-log-form-ui'&&!!document.querySelector('#appLogAdvanced'),'advanced form');
  add('Memory',R.features?.get?.('memory')?.provider==='app-memory'&&typeof R.openRadioMemory==='function','memory');
  add('Propagation',R.features?.get?.('propagation')?.provider==='app-propagation','propagation');
  add('Audio safety',R.features?.get?.('audio-safety')?.provider==='app-audio-safety'&&typeof R.openAudioRecovery==='function','audio safety');
@@ -45,11 +48,9 @@ function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,
  add('UI state',R.features?.get?.('ui-state')?.provider==='app-ui-state','state');
  add('Store',!!R.store&&typeof R.store.search==='function',JSON.stringify(R.store?.counts?.()||{}));
  add('Global search',typeof R.openGlobalSearch==='function'&&typeof R.v44SearchEngine==='function','search');
- for(const f of ['audio-smart.js','app-insights.js','v21-guide.js','v22-mobile.js','app-shell.js','v24-achievements.js','v25-smart-listening.js','v26-radio-atlas.js','v30-ai-radio-assistant.js','v33-stability-hotfix.js','v34-current-programs.js','v35-audit-fixes.js','v35-runtime-bridge.js','v36-integrity-audit.js','v37-integrity-followup.js','v38-ux-shell.js','v38-listening-mode.js','v39-navigation-state.js','v40-radio-memory.js','v41-propagation-assistant.js','v42-ui-polish.js','v43-search-hotfix.js'])add(`Legacy yok: ${f}`,!document.querySelector(`script[src="${f}"],script[src="./${f}"]`),'retired');
- add('Direct feature loaders removed',!document.querySelector('script[src="audio-smart.js"],script[src="./audio-smart.js"],script[src="app-insights.js"],script[src="./app-insights.js"]'),'core → bridge → bootstrap');
+ for(const f of ['app-core-bridge.js','audio-smart.js','app-insights.js','v21-guide.js','v22-mobile.js','app-shell.js','v24-achievements.js','v25-smart-listening.js','v26-radio-atlas.js','v30-ai-radio-assistant.js','v33-stability-hotfix.js','v34-current-programs.js','v35-audit-fixes.js','v35-runtime-bridge.js','v36-integrity-audit.js','v37-integrity-followup.js','v38-ux-shell.js','v38-listening-mode.js','v39-navigation-state.js','v40-radio-memory.js','v41-propagation-assistant.js','v42-ui-polish.js','v43-search-hotfix.js'])add(`Legacy yok: ${f}`,!document.querySelector(`script[src="${f}"],script[src="./${f}"]`),'retired');
+ add('Direct app chain minimal',!!document.querySelector('script[src="core.js"],script[src="./core.js"]')&&!!document.querySelector('script[src="app-bootstrap.js"],script[src="./app-bootstrap.js"]')&&!document.querySelector('script[src="app-core-bridge.js"],script[src="./app-core-bridge.js"]'),'core → bootstrap');
  for(const name of ['home','now','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai','propagation'])add(`${name} view`,!!document.querySelector(`#tab-${name}`),`#tab-${name}`);
- add('Single bootstrap',!!document.querySelector('script[src="app-bootstrap.js"],script[src="./app-bootstrap.js"]'),'bootstrap');
- add('Core bridge direct',!!document.querySelector('script[src="app-core-bridge.js"],script[src="./app-core-bridge.js"]'),'bridge');
  const failed=checks.filter(x=>!x.ok),result={at:new Date().toISOString(),ok:failed.length===0,checks,failed:failed.map(x=>x.name)};R.lastSmoke=result;R.events?.emit?.('smoke:complete',result);if(failed.length)R.reportError?.(new Error(`Smoke check failed: ${failed.map(x=>x.name).join(', ')}`),'smoke',{silent:true});return result}
-R.smoke={run,last:()=>R.lastSmoke||null};R.features?.register?.('smoke',{ready:true});setTimeout(run,700);setTimeout(()=>{if(!R.lastSmoke?.ok)run()},2200);
+R.smoke={run,last:()=>R.lastSmoke||null};R.features?.register?.('smoke',{ready:true,provider:'app-smoke'});setTimeout(run,700);setTimeout(()=>{if(!R.lastSmoke?.ok)run()},2200);
 })();
