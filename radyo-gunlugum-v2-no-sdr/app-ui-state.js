@@ -13,15 +13,14 @@ let draftDirty=false,bootGuardUntil=Date.now()+3800,browserRouting=false;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}}
 function writeHash(tab,mode='replace'){if(mode==='none')return;const u=new URL(location.href);u.hash=`tab=${tab}`;try{history[mode==='push'?'pushState':'replaceState']({radioTab:tab},'',u)}catch{}}
 function restoreScroll(tab){const y=Number(state.scroll?.[tab]||0);setTimeout(()=>window.scrollTo({top:y,left:0,behavior:'auto'}),70)}
-function applyNowMode(){R.nowMode=state.nowMode;setTimeout(()=>{const b=document.querySelector(`[data-v38mode="${state.nowMode}"]`)||document.querySelector(`[data-v34mode="${state.nowMode}"]`)||document.querySelector(`[data-v33mode="${state.nowMode}"]`);if(b&&!b.classList.contains('active'))b.click()},40)}
+function applyNowMode(){R.nowMode=state.nowMode;setTimeout(()=>{const b=document.querySelector(`[data-now-mode="${state.nowMode}"]`)||document.querySelector(`[data-v38mode="${state.nowMode}"]`)||document.querySelector(`[data-v34mode="${state.nowMode}"]`)||document.querySelector(`[data-v33mode="${state.nowMode}"]`);if(b&&!b.classList.contains('active'))b.click()},40)}
 R.uiState=state;
 R.navigation={
  state,
  guardTarget(target,meta={}){const explicit=R.__nextNavigationHistory==='push'||meta.historyMode==='push';if(target==='home'&&Date.now()<bootGuardUntil&&state.tab!=='home'&&!explicit&&meta.source==='R.switch')return state.tab;return VALID.has(target)?target:'home'},
  restore(){if(!R.me||$('#appView')?.classList.contains('hidden'))return;const target=VALID.has(readHash())?readHash():VALID.has(state.tab)?state.tab:'home';R.router?.go?.(target,{source:'restore',historyMode:'replace',restorePosition:true})}
 };
-// User clicks get a browser-history entry; programmatic navigation normally replaces the current route.
-document.addEventListener('click',e=>{const go=e.target.closest('[data-v38go],[data-v42go],[data-tab]');const act=e.target.closest('[data-v38action]');const route=go?.dataset.v38go||go?.dataset.v42go||go?.dataset.tab||(String(act?.dataset.v38action||'').startsWith('go:')?act.dataset.v38action.slice(3):'');if(VALID.has(route))R.__nextNavigationHistory='push';const m=e.target.closest('[data-v38mode],[data-v34mode],[data-v33mode]');if(m){const v=m.dataset.v38mode||m.dataset.v34mode||m.dataset.v33mode;if(['ALL','SW','MW','FM'].includes(v)){state.nowMode=v;R.nowMode=v;save()}}},true);
+document.addEventListener('click',e=>{const go=e.target.closest('[data-route],[data-v38go],[data-v42go],[data-tab]');const act=e.target.closest('[data-v38action]');const route=go?.dataset.route||go?.dataset.v38go||go?.dataset.v42go||go?.dataset.tab||(String(act?.dataset.v38action||'').startsWith('go:')?act.dataset.v38action.slice(3):'');if(VALID.has(route))R.__nextNavigationHistory='push';const m=e.target.closest('[data-now-mode],[data-v38mode],[data-v34mode],[data-v33mode]');if(m){const v=m.dataset.nowMode||m.dataset.v38mode||m.dataset.v34mode||m.dataset.v33mode;if(['ALL','SW','MW','FM'].includes(v)){state.nowMode=v;R.nowMode=v;save()}}},true);
 R.events?.on?.('route:before',ctx=>{if(ctx?.from&&ctx.from!==ctx.to)state.scroll[ctx.from]=window.scrollY||0});
 R.events?.on?.('route:changed',ctx=>{if(!ctx?.to||!VALID.has(ctx.to))return;state.tab=ctx.to;save();if(!browserRouting)writeHash(ctx.to,ctx.historyMode||'replace');if(ctx.to==='now')applyNowMode();if(ctx.restorePosition)restoreScroll(ctx.to)});
 function browserRoute(){const target=readHash();if(!target||!R.me)return;browserRouting=true;try{R.router?.go?.(target,{source:'browser',historyMode:'none',restorePosition:true})}finally{browserRouting=false}}
@@ -38,7 +37,6 @@ window.addEventListener('pagehide',()=>{saveDraft();state.scroll[state.tab]=wind
 const priorReset=R.reset;if(typeof priorReset==='function')R.reset=()=>{clearDraft();return priorReset()};
 R.events?.on?.('data:loaded',()=>{restoreFilters();if(R.router?.current?.()==='now')applyNowMode()});
 R.events?.on?.('auth:changed',x=>{if(x?.authenticated)setTimeout(()=>{restoreFilters();restoreDraft();R.navigation.restore()},90)});
-// Preserve the desired route even before authentication/boot finishes.
 save();writeHash(state.tab,'replace');setTimeout(()=>{bootGuardUntil=0;if(R.me)R.navigation.restore()},3900);
 R.features?.register?.('ui-state',{ready:true,provider:'app-ui-state'});
 })();
