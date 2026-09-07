@@ -1,11 +1,11 @@
 (()=>{
 const config=Object.freeze({
-  version:'3.7.2',
-  displayVersion:'V3.7.2',
-  codename:'Foundation Memory',
+  version:'3.7.3',
+  displayVersion:'V3.7.3',
+  codename:'Visual Foundation',
   timezone:'Europe/Istanbul',
   locale:'tr-TR',
-  cacheVersion:'v372-foundation-memory-20260907-1',
+  cacheVersion:'v373-visual-foundation-20260907-1',
   origin:Object.freeze({name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36})
 });
 globalThis.RADIO_APP_CONFIG=config;
