@@ -30,7 +30,7 @@ jobs:
             app-config.js app-core-bridge.js app-insights.js app-bootstrap.js \
             v44-search-rebuild.js \
             app-foundation.js app-toast.js app-pwa-install.js app-runtime-core.js app-router-core.js \
-            app-current-programs.js app-record-integrity.js app-offline-service.js app-smart-analyzer.js \
+            app-current-programs.js app-guide-service.js app-guide-ui.js app-record-integrity.js app-offline-service.js app-smart-analyzer.js \
             app-ai-service.js app-ai-ui.js app-achievements-service.js app-collection-ui.js \
             app-user-services.js app-listening-service.js app-atlas-service.js \
             app-shell-core.js app-menu-ui.js app-quick-log.js app-home-ui.js app-now-ui.js app-log-ui.js app-log-form-ui.js \
@@ -43,3 +43,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/foundation-static-check.mjs
       - name: Mobile services regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/mobile-services-static-check.mjs
+      - name: Guide modernization regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/guide-modernization-static-check.mjs
