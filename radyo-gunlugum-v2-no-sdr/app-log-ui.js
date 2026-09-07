@@ -1,0 +1,8 @@
+(()=>{
+const R=window.R;if(!R||R.__logUI381)return;R.__logUI381=true;const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function ensureBar(){const tab=$('#tab-log'),records=tab?.querySelector('.records-card');if(!tab||!records||$('#v38Logbar'))return;const b=document.createElement('div');b.id='v38Logbar';b.className='v38-logbar';b.innerHTML='<div><h2>Günlük</h2><p>Kayıt kartına dokunarak ayrıntıları aç.</p></div><div class="v38-logactions"><button class="btn primary" data-detail-new>Yeni kayıt</button><button class="btn ghost" data-log-filters>Filtre</button></div>';records.parentElement?.insertBefore(b,records)}
+function decorate(){ensureBar();$$('#records .record-card').forEach(c=>c.classList.remove('v38-expanded'))}
+document.addEventListener('click',e=>{if(e.target.closest('[data-detail-new]')){R.reset?.();$('#tab-log')?.classList.add('v38-form-open');return}if(e.target.closest('[data-log-filters]'))return $('#tab-log .records-card')?.classList.toggle('v38-filters-open');const top=e.target.closest('#records .record-card .record-top');if(top&&!e.target.closest('button,a,input,select'))top.closest('.record-card')?.classList.toggle('v38-expanded')},true);
+R.events?.on?.('route:changed',x=>{if(x?.to==='log')decorate()});R.events?.on?.('render:all',()=>{if(R.router?.current?.()==='log')decorate()});R.events?.on?.('data:loaded',()=>{if(R.router?.current?.()==='log')decorate()});
+R.logUI={decorate,ensureBar};R.features?.register?.('log-ui',{ready:true,provider:'app-log-ui'});setTimeout(()=>{if(R.router?.current?.()==='log')decorate()},100);
+})();
