@@ -1,8 +1,7 @@
 (()=>{
-const R=window.R;if(!R||R.__runtimeCore376)return;R.__runtimeCore376=true;
-const events=R.events;const coreRender=R.coreRenderAll,coreLoad=R.coreLoad,coreShow=R.coreShow;let loadFlight=null;
-if(typeof coreRender==='function')R.renderAll=(...args)=>{const out=coreRender(...args);events?.emit?.('render:all',{route:R.router?.current?.()||null});return out};
-if(typeof coreLoad==='function')R.load=(...args)=>{if(loadFlight)return loadFlight;loadFlight=(async()=>{events?.emit?.('data:loading');try{const out=await coreLoad(...args);R.store?.sync?.('runtime-load');events?.emit?.('data:loaded',R.store?.counts?.()||{});return out}catch(error){R.reportError?.(error,'runtime-load');events?.emit?.('data:error',error);throw error}finally{loadFlight=null}})();return loadFlight};
-if(typeof coreShow==='function')R.show=u=>{const out=coreShow(u);events?.emit?.('auth:changed',{user:R.me,authenticated:!!R.me});return out};
-R.runtime={loadInFlight:()=>!!loadFlight};R.features?.register?.('runtime-core',{ready:true,provider:'app-runtime-core'});events?.emit?.('runtime:ready',{provider:'app-runtime-core'});
+const R=window.R;if(!R||R.__runtimeCore385)return;R.__runtimeCore385=true;const events=R.events;let loadFlight=null;
+function renderAll(reason='runtime'){const payload={route:R.router?.current?.()||null,reason};events?.emit?.('render:all',payload);return payload}
+async function fetchData(){if(!R.me?.id)return{logs:[],schedules:[]};const [logs,schedules]=await Promise.all([R.S.from('radio_logs').select('*').eq('user_id',R.me.id).order('date',{ascending:false}).order('time',{ascending:false}),R.S.from('station_schedules').select('*').order('band').order('frequency')]);if(logs.error)throw logs.error;if(schedules.error)throw schedules.error;return{logs:logs.data||[],schedules:schedules.data||[]}}
+function load(){if(loadFlight)return loadFlight;if(!R.me?.id)return Promise.resolve({logs:R.logs||[],schedules:R.schedules||[]});loadFlight=(async()=>{events?.emit?.('data:loading');try{const data=await fetchData();R.logs=data.logs;R.schedules=data.schedules;R.store?.sync?.('runtime-load');renderAll('data-loaded');events?.emit?.('data:loaded',R.store?.counts?.()||{logs:R.logs.length,schedules:R.schedules.length});return data}catch(error){R.reportError?.(error,'runtime-load');events?.emit?.('data:error',error);throw error}finally{loadFlight=null}})();return loadFlight}
+R.load=load;R.renderAll=renderAll;R.runtime={load,renderAll,loadInFlight:()=>!!loadFlight};R.features?.register?.('runtime-core',{ready:true,provider:'app-runtime-core'});events?.emit?.('runtime:ready',{provider:'app-runtime-core'});
 })();
