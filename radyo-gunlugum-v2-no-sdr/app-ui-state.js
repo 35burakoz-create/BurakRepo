@@ -1,5 +1,5 @@
 (()=>{
-const R=window.R;if(!R||R.__uiState374)return;R.__uiState374=true;
+const R=window.R;if(!R||R.__uiState385)return;R.__uiState385=true;
 const $=s=>document.querySelector(s);
 const KEY='radio-ui-state-v39',DRAFT_KEY='radio-log-draft-v39';
 const VALID=new Set(['home','now','log','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai','memory','propagation']);
@@ -15,12 +15,8 @@ function writeHash(tab,mode='replace'){if(mode==='none')return;const u=new URL(l
 function restoreScroll(tab){const y=Number(state.scroll?.[tab]||0);setTimeout(()=>window.scrollTo({top:y,left:0,behavior:'auto'}),70)}
 function applyNowMode(){R.nowMode=state.nowMode;setTimeout(()=>{const b=document.querySelector(`[data-now-mode="${state.nowMode}"]`)||document.querySelector(`[data-v38mode="${state.nowMode}"]`)||document.querySelector(`[data-v34mode="${state.nowMode}"]`)||document.querySelector(`[data-v33mode="${state.nowMode}"]`);if(b&&!b.classList.contains('active'))b.click()},40)}
 R.uiState=state;
-R.navigation={
- state,
- guardTarget(target,meta={}){const explicit=R.__nextNavigationHistory==='push'||meta.historyMode==='push';if(target==='home'&&Date.now()<bootGuardUntil&&state.tab!=='home'&&!explicit&&meta.source==='R.switch')return state.tab;return VALID.has(target)?target:'home'},
- restore(){if(!R.me||$('#appView')?.classList.contains('hidden'))return;const target=VALID.has(readHash())?readHash():VALID.has(state.tab)?state.tab:'home';R.router?.go?.(target,{source:'restore',historyMode:'replace',restorePosition:true})}
-};
-document.addEventListener('click',e=>{const go=e.target.closest('[data-route],[data-v38go],[data-v42go],[data-tab]');const act=e.target.closest('[data-v38action]');const route=go?.dataset.route||go?.dataset.v38go||go?.dataset.v42go||go?.dataset.tab||(String(act?.dataset.v38action||'').startsWith('go:')?act.dataset.v38action.slice(3):'');if(VALID.has(route))R.__nextNavigationHistory='push';const m=e.target.closest('[data-now-mode],[data-v38mode],[data-v34mode],[data-v33mode]');if(m){const v=m.dataset.nowMode||m.dataset.v38mode||m.dataset.v34mode||m.dataset.v33mode;if(['ALL','SW','MW','FM'].includes(v)){state.nowMode=v;R.nowMode=v;save()}}},true);
+R.navigation={state,guardTarget(target,meta={}){const explicit=R.__nextNavigationHistory==='push'||meta.historyMode==='push';if(target==='home'&&Date.now()<bootGuardUntil&&state.tab!=='home'&&!explicit&&meta.source==='R.switch')return state.tab;return VALID.has(target)?target:'home'},restore(){if(!R.me||$('#appView')?.classList.contains('hidden'))return;const target=VALID.has(readHash())?readHash():VALID.has(state.tab)?state.tab:'home';R.router?.go?.(target,{source:'restore',historyMode:'replace',restorePosition:true})}};
+document.addEventListener('click',e=>{const go=e.target.closest('[data-route],[data-v38go],[data-v42go],[data-tab]'),act=e.target.closest('[data-v38action]'),route=go?.dataset.route||go?.dataset.v38go||go?.dataset.v42go||go?.dataset.tab||(String(act?.dataset.v38action||'').startsWith('go:')?act.dataset.v38action.slice(3):'');if(VALID.has(route))R.__nextNavigationHistory='push';const m=e.target.closest('[data-now-mode],[data-v38mode],[data-v34mode],[data-v33mode]');if(m){const v=m.dataset.nowMode||m.dataset.v38mode||m.dataset.v34mode||m.dataset.v33mode;if(['ALL','SW','MW','FM'].includes(v)){state.nowMode=v;R.nowMode=v;save()}}},true);
 R.events?.on?.('route:before',ctx=>{if(ctx?.from&&ctx.from!==ctx.to)state.scroll[ctx.from]=window.scrollY||0});
 R.events?.on?.('route:changed',ctx=>{if(!ctx?.to||!VALID.has(ctx.to))return;state.tab=ctx.to;save();if(!browserRouting)writeHash(ctx.to,ctx.historyMode||'replace');if(ctx.to==='now')applyNowMode();if(ctx.restorePosition)restoreScroll(ctx.to)});
 function browserRoute(){const target=readHash();if(!target||!R.me)return;browserRouting=true;try{R.router?.go?.(target,{source:'browser',historyMode:'none',restorePosition:true})}finally{browserRouting=false}}
@@ -34,7 +30,7 @@ function saveDraft(){const values=draftValues();if(!draftDirty&&!meaningful(valu
 function restoreDraft(){const d=json(localStorage.getItem(DRAFT_KEY),null);if(!d?.values||Date.now()-Number(d.at||0)>7*86400000)return clearDraft();if(!meaningful(d.values))return clearDraft();for(const [id,v] of Object.entries(d.values)){const el=document.getElementById(id);if(el&&el.type!=='file')el.value=v??''}draftDirty=true;R.unit?.();if(state.tab==='log')$('#tab-log')?.classList.add('v38-form-open');const card=$('#tab-log .form-card');if(card&&!$('#v39DraftBanner')){const b=document.createElement('div');b.id='v39DraftBanner';b.style.cssText='margin:0 0 12px;padding:10px 12px;border-radius:12px;background:#eef2ff;color:#3730a3;font-size:12px;display:flex;justify-content:space-between;gap:8px;align-items:center';b.innerHTML='<span>Kaydedilmemiş taslak geri yüklendi.</span><button type="button" class="btn ghost" style="padding:6px 9px">Taslağı sil</button>';b.querySelector('button').onclick=()=>{clearDraft();R.reset?.()};card.prepend(b)}}
 const form=$('#logForm');if(form){form.addEventListener('input',()=>{draftDirty=true});form.addEventListener('change',()=>{draftDirty=true})}
 window.addEventListener('pagehide',()=>{saveDraft();state.scroll[state.tab]=window.scrollY||0;save()});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveDraft()});
-const priorReset=R.reset;if(typeof priorReset==='function')R.reset=()=>{clearDraft();return priorReset()};
+R.events?.on?.('form:reset',clearDraft);
 R.events?.on?.('data:loaded',()=>{restoreFilters();if(R.router?.current?.()==='now')applyNowMode()});
 R.events?.on?.('auth:changed',x=>{if(x?.authenticated)setTimeout(()=>{restoreFilters();restoreDraft();R.navigation.restore()},90)});
 save();writeHash(state.tab,'replace');setTimeout(()=>{bootGuardUntil=0;if(R.me)R.navigation.restore()},3900);
