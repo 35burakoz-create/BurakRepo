@@ -1,0 +1,27 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
+const read=f=>fs.readFileSync(path.join(root,f),'utf8');
+const checks=[];
+function check(name,ok,detail=''){checks.push({name,ok:!!ok,detail});if(!ok)process.exitCode=1}
+const index=read('index.html'),boot=read('app-bootstrap.js'),sw=read('sw.js'),config=read('app-config.js'),follow=read('v37-integrity-followup.js'),search=read('v44-search-rebuild.js');
+check('index uses app-config',index.includes('src="app-config.js"'));
+check('index uses loader-free insights',index.includes('src="app-insights.js"'));
+check('index uses single bootstrap',index.includes('src="app-bootstrap.js"'));
+check('legacy insights not directly loaded',!index.includes('src="insights.js"'));
+check('v37 not directly loaded',!index.includes('src="v37-integrity-followup.js"'));
+check('bootstrap owns integrity follow-up',boot.includes("'v37-integrity-followup.js'"));
+check('bootstrap owns V44 search',boot.includes("'v44-search-rebuild.js'"));
+check('bootstrap loads Foundation',boot.includes("'app-foundation.js'"));
+check('bootstrap loads smoke checks',boot.includes("'app-smoke.js'"));
+check('obsolete V43 not booted',!boot.includes('v43-search-hotfix'));
+check('V37 is loader-free',!follow.includes('loadOnce(')&&!follow.includes('v38-listening-mode.js'));
+check('search can use Foundation store',search.includes('R.store'));
+check('service worker caches bootstrap',sw.includes("'./app-bootstrap.js'"));
+check('service worker caches smoke',sw.includes("'./app-smoke.js'"));
+check('service worker excludes old insights',!sw.includes("'./insights.js'"));
+check('service worker excludes V43',!sw.includes('v43-search-hotfix'));
+check('config is V3.7.1',config.includes("version:'3.7.1'")&&config.includes("displayVersion:'V3.7.1'"));
+for(const c of checks)console.log(`${c.ok?'✓':'✗'} ${c.name}${c.detail?` — ${c.detail}`:''}`);
+const failed=checks.filter(c=>!c.ok);console.log(`\n${checks.length-failed.length}/${checks.length} foundation checks passed.`);
+if(failed.length)console.error('Failed:',failed.map(x=>x.name).join(', '));
