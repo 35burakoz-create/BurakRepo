@@ -1,11 +1,11 @@
 (()=>{
 const config=Object.freeze({
-  version:'3.7.9',
-  displayVersion:'V3.7.9',
-  codename:'Collection & Atlas Services Cleanup',
+  version:'3.8.0',
+  displayVersion:'V3.8.0',
+  codename:'AI Service & UI Separation',
   timezone:'Europe/Istanbul',
   locale:'tr-TR',
-  cacheVersion:'v379-collection-atlas-20260907-1',
+  cacheVersion:'v380-ai-services-20260907-1',
   origin:Object.freeze({name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36})
 });
 globalThis.RADIO_APP_CONFIG=config;
