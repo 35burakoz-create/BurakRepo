@@ -1,5 +1,5 @@
 importScripts('./app-config.js');
-const CFG=globalThis.RADIO_APP_CONFIG||{cacheVersion:'v376-legacy-core-cleanup-20260907-1'};
+const CFG=globalThis.RADIO_APP_CONFIG||{cacheVersion:'v377-foundation-core-20260907-1'};
 const CACHE=`radyo-${CFG.cacheVersion}`;
 const LOCAL=['./','./index.html','./app-config.js','./styles.css','./app-base.css','./core.js','./app-core-bridge.js','./audio-smart.js','./v21-guide.js','./v22-mobile.js','./app-insights.js','./app-bootstrap.js','./v24-achievements.js','./v25-smart-listening.js','./v26-radio-atlas.js','./v30-ai-radio-assistant.js','./v38-ux-cleanup.css','./v38-listening-mode.js','./v41-propagation-assistant.css','./v42-design-system.css','./v44-search-rebuild.css','./v44-search-rebuild.js','./app-foundation.css','./app-foundation.js','./app-runtime-core.js','./app-router-core.js','./app-current-programs.js','./app-record-integrity.js','./app-smart-analyzer.js','./app-user-services.js','./app-shell.js','./app-propagation.js','./app-memory.css','./app-memory.js','./app-audio-safety.js','./app-backup.js','./app-ui-state.js','./app-smoke.js','./manifest.webmanifest','./icon.svg'];
 const EXTERNAL=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'];
