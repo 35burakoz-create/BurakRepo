@@ -99,7 +99,7 @@
         <section class="card"><h2>Ses kaydı</h2><p class="hint">Radyoyu telefona duyurup kısa örnek kaydet veya dosya yükle.</p><div class="audio-controls"><button id="recordStartBtn" class="btn primary">● Kaydı başlat</button><button id="recordStopBtn" class="btn ghost" disabled>■ Durdur</button><span id="recordTimer" class="timer">00:00</span></div><audio id="audioPreview" class="audio-preview hidden" controls></audio><label class="upload-label">Ses dosyası seç<input id="audioFile" type="file" accept="audio/*"></label><button id="uploadAudioBtn" class="btn primary" disabled>Yükle</button><p id="audioMsg" class="msg"></p></section>
         <section class="card"><h2>Canlı transkript</h2><p class="hint">Tarayıcı konuşma tanımasını kullanır.</p><label>Tanıma dili<select id="speechLang"><option value="tr-TR">Türkçe</option><option value="en-US">İngilizce</option><option value="ar-SA">Arapça</option><option value="fr-FR">Fransızca</option><option value="es-ES">İspanyolca</option><option value="de-DE">Almanca</option><option value="it-IT">İtalyanca</option><option value="ru-RU">Rusça</option></select></label><div class="row-actions"><button id="speechStartBtn" class="btn primary">🎙️ Başlat</button><button id="speechStopBtn" class="btn ghost" disabled>Durdur</button></div><textarea id="speechText" rows="8"></textarea><button id="copyTranscriptBtn" class="btn ghost">Forma aktar</button><p id="speechMsg" class="msg"></p></section>
       </div>
-      <section class="card smart-card"><div class="section-head"><div><h2>Akıllı istasyon / program önerisi</h2><p class="hint">Frekans + saat + dil/transkript + ana yayın rehberi.</p></div><button id="analyzeBtn" class="btn primary">Analiz et</button></div><div id="smartResult" class="smart-result empty">Henüz analiz yapılmadı.</div></section>
+      <section class="card smart-card"><div class="section-head"><div><h2>Akıllı istasyon / program önerisi</h2><p class="hint">Frekans + saat + dil + A26/MW referans çizelgesi.</p></div><button id="analyzeBtn" class="btn primary">Analiz et</button></div><div id="smartResult" class="smart-result empty">Henüz analiz yapılmadı.</div></section>
     </section>
 
     <section id="tab-analysis" class="tab-view hidden"><div id="analysisCards" class="stats"></div><div class="two-col"><section class="card"><h2>Bant dağılımı</h2><div id="bandBars" class="bars"></div></section><section class="card"><h2>Dil dağılımı</h2><div id="langBars" class="bars"></div></section><section class="card"><h2>En iyi dinleme zamanların</h2><div id="predictions"></div></section><section class="card"><h2>En sık istasyonlar</h2><div id="stationBars" class="bars"></div></section></div></section>
@@ -112,6 +112,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="core.js"></script>
+<script src="app-core-bridge.js"></script>
 <script src="audio-smart.js"></script>
 <script src="v21-guide.js"></script>
 <script src="v22-mobile.js"></script>
