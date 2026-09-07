@@ -1,9 +1,9 @@
 (()=>{
 const R=window.R;if(!R)return;const $=R.$;
-const VERSION='V3.3.1';
+const VERSION='V3.4';
 const KEY='radio-ui-state-v39';
 const DRAFT_KEY='radio-log-draft-v39';
-const VALID=new Set(['home','now','log','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai']);
+const VALID=new Set(['home','now','log','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai','memory']);
 const FILTER_IDS=['search','filterBand','filterDate','filterStatus','guideBand','guideFreq','guideSearch','calendarMonth'];
 const FORM_IDS=['logId','audioPath','date','time','band','frequency','station','language','country','contentType','program','location','latitude','longitude','signal','status','antennaDirection','antennaAngle','dialPosition','transcript','notes','qslStatus','qslContact','qslSentAt','qslReceivedAt','qslNotes'];
 function safeJSON(raw,fallback){try{return raw?JSON.parse(raw):fallback}catch{return fallback}}
@@ -20,7 +20,7 @@ const baseSwitch=R.switch;
 function applyNowMode(){if(current!=='now')return;R.nowMode=state.nowMode;setTimeout(()=>{const b=document.querySelector(`[data-v38mode="${state.nowMode}"]`)||document.querySelector(`[data-v34mode="${state.nowMode}"]`)||document.querySelector(`[data-v33mode="${state.nowMode}"]`);if(b&&!b.classList.contains('active'))b.click()},25)}
 function restoreScroll(tab){const y=Number(state.scroll?.[tab]||0);setTimeout(()=>window.scrollTo({top:y,left:0,behavior:'auto'}),60)}
 function switchCore(tab,{historyMode='replace',restorePosition=false}={}){
- tab=validTarget(tab);if(!exists(tab)&&!['home','now'].includes(tab))tab='home';
+ tab=validTarget(tab);if(!exists(tab)&&!['home','now','memory'].includes(tab))tab='home';
  if(current&&current!==tab)state.scroll[current]=window.scrollY||0;
  let out;try{out=baseSwitch?.(tab)}catch(e){console.error('Sekme geçişi hata verdi',e);if(tab!=='home'&&exists('home')){tab='home';try{out=baseSwitch?.('home')}catch{}}}
  current=tab;state.tab=tab;save();if(!fromHistory)writeHash(tab,historyMode);if(tab==='now')applyNowMode();if(restorePosition)restoreScroll(tab);return out
@@ -57,11 +57,11 @@ const form=$('#logForm');if(form){form.addEventListener('input',()=>{draftDirty=
 window.addEventListener('pagehide',saveDraft);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveDraft()});
 const baseReset=R.reset;R.reset=()=>{clearDraft();return baseReset?.()};
 
-function enforceRoute(){if(!R.me||$('#appView')?.classList.contains('hidden'))return;const desired=validTarget(state.tab);if(!exists(desired)&&!['home','now'].includes(desired)){state.tab='home';save();return switchCore('home',{historyMode:'replace'})}const v=visibleTab();if(v!==desired)switchCore(desired,{historyMode:'replace',restorePosition:false});else{current=desired;writeHash(desired,'replace');if(desired==='now')applyNowMode()}}
+function enforceRoute(){if(!R.me||$('#appView')?.classList.contains('hidden'))return;const desired=validTarget(state.tab);if(!exists(desired)&&!['home','now','memory'].includes(desired)){state.tab='home';save();return switchCore('home',{historyMode:'replace'})}if(desired==='memory'&&!exists('memory'))return;const v=visibleTab();if(v!==desired)switchCore(desired,{historyMode:'replace',restorePosition:false});else{current=desired;writeHash(desired,'replace');if(desired==='now')applyNowMode()}}
 const baseLoad=R.load;R.load=async()=>{const out=await baseLoad();restoreFilters();setTimeout(enforceRoute,0);return out};
 const baseShow=R.show;R.show=u=>{const out=baseShow?.(u);if(u)setTimeout(()=>{restoreFilters();restoreDraft();enforceRoute()},80);else{current='home'}return out};
 
-function bootRestore(){const desired=readHash()||state.tab||'home';state.tab=validTarget(desired);save();restoreFilters();restoreDraft();if(R.me&&!$('#appView')?.classList.contains('hidden'))switchCore(state.tab,{historyMode:'replace',restorePosition:true});else writeHash(state.tab,'replace')}
+function bootRestore(){const desired=readHash()||state.tab||'home';state.tab=validTarget(desired);save();restoreFilters();restoreDraft();if(R.me&&!$('#appView')?.classList.contains('hidden')){if(state.tab==='memory'&&!exists('memory'))writeHash('memory','replace');else switchCore(state.tab,{historyMode:'replace',restorePosition:true})}else writeHash(state.tab,'replace')}
 setTimeout(bootRestore,120);setTimeout(enforceRoute,900);setTimeout(()=>{bootGuardUntil=0;enforceRoute()},3800);
 setInterval(()=>{if(R.me)enforceRoute()},15000);
 
