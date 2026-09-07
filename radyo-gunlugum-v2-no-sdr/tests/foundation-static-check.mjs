@@ -17,7 +17,7 @@ check('index loads pristine core bridge immediately after core',index.indexOf('s
 check('index loads Visual Foundation after legacy CSS',index.indexOf('href="styles.css"')>=0&&index.indexOf('href="app-base.css"')>index.indexOf('href="styles.css"'));
 check('legacy insights not directly loaded',!index.includes('src="insights.js"'));
 for(const f of RETIRED)check(`legacy not booted: ${f}`,!boot.includes(f));
-for(const f of RETIRED_CORE)check(`legacy core file removed: ${f}`,!exists(f));
+for(const f of [...RETIRED_CORE,...RETIRED_LISTENING])check(`retired file removed: ${f}`,!exists(f));
 check('bootstrap owns V44 search',boot.includes("'v44-search-rebuild.js'"));
 for(const f of ['app-foundation.js','app-runtime-core.js','app-router-core.js','app-current-programs.js','app-record-integrity.js','app-smart-analyzer.js','app-user-services.js','app-listening-service.js','app-shell.js','app-listening-ui.js','app-propagation.js','app-memory.js','app-audio-safety.js','app-backup.js','app-ui-state.js','app-smoke.js'])check(`bootstrap loads ${f}`,boot.includes(`'${f}'`));
 check('listening service loads before shell',boot.indexOf("'app-listening-service.js'")<boot.indexOf("'app-shell.js'"));
@@ -44,6 +44,7 @@ check('Listening UI does not wrap core primitives',!listeningUI.includes('R.swit
 check('Listening UI avoids MutationObserver',!listeningUI.includes('MutationObserver'));
 check('Listening CSS avoids Georgia',!listeningCss.includes('Georgia'));
 check('Shell is event-driven',shell.includes("R.events?.on?.('route:changed'")&&shell.includes("R.events?.on?.('store:updated'"));
+check('Shell delegates listening to Listening UI',shell.includes('R.listeningUI?.open?.')&&!shell.includes('v38OpenListen')&&!shell.includes('activeListen'));
 check('Shell does not wrap core primitives',!shell.includes('R.switch=')&&!shell.includes('R.load=')&&!shell.includes('R.show=')&&!shell.includes('R.renderAll='));
 check('Shell avoids MutationObserver',!shell.includes('MutationObserver'));
 check('Propagation is event-driven',prop.includes("R.events?.on?.('store:updated'")&&prop.includes("provider:'app-propagation'"));
@@ -51,6 +52,7 @@ check('Propagation does not wrap core primitives',!prop.includes('R.switch=')&&!
 check('Propagation avoids MutationObserver',!prop.includes('MutationObserver'));
 check('Audio safety owns orphan recovery',audio.includes('listOrphans')&&audio.includes('R.openAudioRecovery=')&&audio.includes("provider:'app-audio-safety'"));
 check('Backup owns CSV and JSON',backup.includes("radyo-kayitlari-")&&backup.includes("radyo-gunlugu-tam-yedek-")&&backup.includes("provider:'app-backup'"));
+check('Backup reads unified listening state',backup.includes('R.listening?.state')&&backup.includes('await R.listening?.load?.()'));
 check('UI state is event-driven',uiState.includes("R.events?.on?.('route:changed'")&&uiState.includes("R.events?.on?.('auth:changed'"));
 check('UI state does not overwrite public switch',!uiState.includes('R.switch='));
 check('search can use Foundation store',search.includes('R.store'));
