@@ -1,9 +1,9 @@
 (()=>{
 const R=window.R;if(!R||R.__bootstrap37)return;R.__bootstrap37=true;
 const MODULES=[
- 'v24-achievements.js','v26-radio-atlas.js','v30-ai-radio-assistant.js',
- 'app-foundation.js','app-runtime-core.js','app-router-core.js','app-current-programs.js','app-record-integrity.js','app-smart-analyzer.js','app-user-services.js','app-listening-service.js',
- 'app-shell.js','app-listening-ui.js','app-propagation.js','app-memory.js','v44-search-rebuild.js','app-audio-safety.js','app-backup.js','app-ui-state.js','app-smoke.js'
+ 'v30-ai-radio-assistant.js',
+ 'app-foundation.js','app-runtime-core.js','app-router-core.js','app-current-programs.js','app-record-integrity.js','app-smart-analyzer.js','app-achievements-service.js','app-user-services.js','app-listening-service.js','app-atlas-service.js',
+ 'app-shell.js','app-collection-ui.js','app-listening-ui.js','app-atlas-ui.js','app-propagation.js','app-memory.js','v44-search-rebuild.js','app-audio-safety.js','app-backup.js','app-pwa-updates.js','app-ui-state.js','app-smoke.js'
 ];
 function load(src){if(document.querySelector(`script[src="${src}"],script[src="./${src}"]`))return Promise.resolve({src,cached:true});return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.async=false;s.dataset.appModule='1';s.onload=()=>resolve({src,cached:false});s.onerror=()=>reject(new Error(`${src} yüklenemedi`));document.head.appendChild(s)})}
 async function boot(){const failed=[];for(const src of MODULES){try{await load(src)}catch(error){console.error(error);failed.push({src,error})}}try{if(!R.__booted){R.__booted=true;await R.boot()}}catch(error){console.error('Uygulama boot hatası',error);R.reportError?.(error,'bootstrap');const msg=document.querySelector('#authMsg');if(msg)msg.textContent='Uygulama başlatılamadı: '+(error?.message||error);return}R.store?.sync?.('bootstrap-complete');R.router?.sync?.();setTimeout(()=>R.smoke?.run?.(),150);R.events?.emit?.('bootstrap:ready',{failed:failed.map(x=>x.src),modules:MODULES.length});if(failed.length){const names=failed.map(x=>x.src).join(', ');console.warn('Bazı modüller yüklenemedi:',names);R.reportError?.(new Error(`Modül yükleme hataları: ${names}`),'bootstrap',{silent:true});if(R.me&&R.toast)R.toast('Bazı gelişmiş araçlar yüklenemedi; Sistem Durumu bölümünden kontrol edebilirsin.')}}
