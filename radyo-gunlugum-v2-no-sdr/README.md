@@ -1,10 +1,10 @@
-# Radyo Günlüğüm — V3.8.1 Shell Decomposition
+# Radyo Günlüğüm — V3.8.2 Legacy Mobile Services Cleanup
 
 Tecsun R-9012 ile, RTL-SDR olmadan kullanılmak üzere geliştirilen kişisel radyo dinleme günlüğü ve saha asistanı.
 
 ## Ana kullanım akışı
 
-- **Ana Sayfa / Şu An:** o an dinlenebilecek yayın adayları
+- **Ana Sayfa / Şu An:** o an denenebilecek yayın adayları
 - **Dinleme Modu:** sinyal 1–5 ve Yakaladım / Zayıf / Yok
 - **Akıllı Dinleme:** oturumlar, kalibrasyon, gizemli yayınlar ve yaklaşan hedefler
 - **Günlük / Radyo Hafızası:** kişisel dinleme arşivi ve istasyon/frekans/ülke profilleri
@@ -15,27 +15,33 @@ Tecsun R-9012 ile, RTL-SDR olmadan kullanılmak üzere geliştirilen kişisel ra
 
 ## Başlangıç mimarisi
 
-`index.html` temel bağımlılıkları yükler, `app-bootstrap.js` feature modüllerini deterministik sırada başlatır ve `R.boot()` yalnız bir kez çalışır. `app-core-bridge.js` feature katmanları gelmeden önce çekirdek fonksiyonların temiz referanslarını saklar.
+`index.html` temel bağımlılıkları yükler. `app-core-bridge.js`, feature katmanları gelmeden önce çekirdek fonksiyonların temiz referanslarını saklar. `app-bootstrap.js` modern modülleri deterministik sırada başlatır ve `R.boot()` yalnız bir kez çalışır.
+
+Feature modülleri `R.switch`, `R.load`, `R.show` veya `R.renderAll` fonksiyonlarını zincirleme sarmalamamalıdır.
 
 ## Aktif production sahipleri
 
 - `app-foundation.js` — Event Bus, Clock, Store/index, Feature Registry, Diagnostics
+- `app-toast.js` — ortak toast bildirimleri
+- `app-pwa-install.js` — service worker kaydı ve PWA kurulum istemi
 - `app-runtime-core.js` — `R.load`, `R.show`, `R.renderAll`
 - `app-router-core.js` — route sahipliği ve public `R.switch`
-- `app-current-programs.js` — aktif yayın penceresi hesap motoru
+- `app-current-programs.js` — rehber verisini yükleme ve aktif yayın hesap motoru
 - `app-record-integrity.js` — frekans / edit / delete bütünlüğü
+- `app-offline-service.js` — offline IndexedDB outbox, `R.queueLog`, `R.syncOutbox`
 - `app-smart-analyzer.js` — rehber tabanlı eşleştirme
 - `app-ai-service.js` / `app-ai-ui.js` — Whisper analiz motoru ve AI ekranı
 - `app-achievements-service.js` / `app-collection-ui.js` — başarılar ve koleksiyon
+- `app-user-services.js` — ayarlar, favoriler ve hatırlatıcılar
 - `app-listening-service.js` / `app-listening-ui.js` — dinleme oturumları ve Dinleme Modu
 - `app-atlas-service.js` / `app-atlas-ui.js` — Atlas hesapları ve Leaflet görünümü
-- `app-user-services.js` — ayarlar, favoriler, hatırlatıcılar
-- `app-shell-core.js` — alt dock, topbar arama kısayolu, ağ durumu ve ortak route/dinleme tıklamaları
-- `app-home-ui.js` — Ana Sayfa route ve görünümü
-- `app-now-ui.js` — Şu An route, bant filtresi ve yayın listesi
-- `app-menu-ui.js` — Menü sheet'i, ayarlar/favoriler/hatırlatıcılar ve route eylemleri
-- `app-quick-log.js` — Hızlı Kayıt akışı
-- `app-log-ui.js` — Günlük üst barı, kart açma ve filtre görünümü
+- `app-shell-core.js` — alt dock, topbar arama, ağ durumu ve ortak tıklamalar
+- `app-home-ui.js` — Ana Sayfa
+- `app-now-ui.js` — Şu An
+- `app-menu-ui.js` — Menü
+- `app-quick-log.js` — Hızlı Kayıt
+- `app-log-ui.js` — Günlük davranışları
+- `app-log-form-ui.js` — ayrıntılı kayıt alanlarının disclosure düzeni
 - `app-propagation.js` — Yayılım Asistanı
 - `app-memory.js` — Radyo Hafızası
 - `v44-search-rebuild.js` — Global Arama
@@ -45,47 +51,41 @@ Tecsun R-9012 ile, RTL-SDR olmadan kullanılmak üzere geliştirilen kişisel ra
 - `app-ui-state.js` — URL, geri/ileri, scroll, filtre ve taslak durumu
 - `app-smoke.js` — runtime bütünlük kontrolleri
 
-Feature modülleri çekirdek `R.switch`, `R.load`, `R.show` veya `R.renderAll` fonksiyonlarını zincirleme sarmalamamalıdır.
+## V3.8.2 — Legacy Mobile Services Cleanup
 
-## V3.8.1 Shell Decomposition
+Eski `v22-mobile.js`, yararlı altyapı işlerini eski V2.2 arayüzü ve core wrapper'larla aynı dosyada tutuyordu. V3.8.2'de dosya production'dan ve repodan kaldırıldı; gerekli işlevler açık sahipliklere ayrıldı.
 
-Eski `app-shell.js` tek dosyada Ana Sayfa, Şu An, Menü, Quick Log, Günlük dekorasyonu, dock, ağ durumu ve ortak click delegation görevlerini birlikte taşıyordu. V3.8.1'de bu dosya production bootstrap/cache zincirinden çıkarıldı ve fiziksel olarak kaldırıldı.
+### Korunan davranışlar
 
-Yeni sahiplik:
+- **Offline outbox korunur.** Yeni `app-offline-service.js`, eski IndexedDB kimliğini aynen kullanır: `radio-gunlugum-v22 / outbox`. Böylece cihazda bekleyen eski offline kayıtların formatı değiştirilmez.
+- **PWA kurulumu korunur.** `app-pwa-install.js`, service worker kaydını ve `beforeinstallprompt` akışını yönetir. Menü yalnız `R.installPWA()` çağırır.
+- **Toast korunur.** Ortak bildirimler `app-toast.js` sahibidir.
+- **Kayıt formu sadeleştirmesi korunur.** Gelişmiş alanlar `app-log-form-ui.js` tarafından tek disclosure altında tutulur.
+- Offline iken mevcut kayıt düzenleme hâlâ engellenir; yeni kayıtlar kuyruğa alınır ve bağlantı geri geldiğinde senkronize edilir.
 
-- **Shell Core:** yalnız ortak chrome ve ortak tıklamalar
-- **Home UI:** yalnız Ana Sayfa
-- **Now UI:** yalnız Şu An
-- **Menu UI:** yalnız Menü / favorites / reminders / settings actions
-- **Quick Log:** yalnız hızlı kayıt
-- **Log UI:** yalnız Günlük görünüm davranışları
+### Kaldırılan V22 sorumlulukları
 
-Bu ayrım bir Home düzenlemesinin Menü veya Quick Log davranışını istemeden bozma riskini azaltır. `R.shell` yalnız eski dış çağrılar için ince bir compatibility facade olarak `app-shell-core.js` içinde kalır; gerçek sahiplik alt modüllerdedir.
+- eski V2.2 tema/CSS enjeksiyonu
+- eski bottom navigation
+- eski quick-log sheet
+- eski Home aksiyon kartı
+- tekrar eden favorites/reminders UI
+- `R.switch` ve `R.load` wrapper'ları
+- runtime'da V2.2 başlık/sürüm manipülasyonu
 
-### V24 compatibility köprüsü kaldırıldı
+`index.html` manifest ve iOS PWA meta etiketlerini zaten statik olarak taşıdığı için V22'nin bunları DOM'a tekrar eklemesine ihtiyaç yoktur.
 
-Collection UI artık gizli `#v24All` butonu üretmez. Menü → Başarılar doğrudan `R.openAchievements()` çağırır. Runtime'da V24 adına bağlı koleksiyon giriş noktası kalmamıştır.
+## Rehber veri sahipliği
 
-### Quick Log bütünlüğü
+`app-current-programs.js`, gerektiğinde doğrudan:
 
-`app-quick-log.js` frekansı doğrudan `app-record-integrity.js` içindeki `R.validateFrequency(...)` ile doğrular. Bu nedenle örneğin kısa dalgada MHz biçiminde girilen uygun değerler kanonik kHz değerine normalize edilebilir. Konum varsayılanı `app-config.js` içindeki Bozköy/Torbalı referansından gelir.
+- `guide_entries`
+- `guide_time_rules`
+- `guide_band_profiles`
 
-## AI mimarisi
+verilerini yükler. Bu nedenle modern aktif yayın motoru eski V21/V22 `R.load` wrapper'larına bağımlı değildir.
 
-`app-ai-service.js` UI üretmeden şu işlerin sahibidir:
-
-- `radio_ai_analyses` yükleme / oluşturma / güncelleme
-- private `radio-audio` signed URL
-- `@huggingface/transformers@4.2.0`
-- `Xenova/whisper-tiny`
-- WebGPU denemesi ve WASM/CPU fallback
-- Whisper transkripsiyonu
-- otomatik dil tahmini
-- rehber + frekans + saat + dil + transkript + geçmiş tabanlı aday skorlama
-- program tahmini, evidence ve confidence
-- aday seçme ve günlük kaydına uygulama
-
-`app-ai-ui.js` yalnız AI ekranını yönetir. AI sonucu doğrulanmış istasyon kimliği değildir. Gerçek radyo sesiyle uçtan uca runtime kalite testi ayrıca yapılmalıdır.
+Bu ayrım V3.8.3'te `v21-guide.js` dosyasını da emekliye ayırmak için zemin hazırlar.
 
 ## Dinleme veri modeli
 
@@ -95,45 +95,37 @@ Collection UI artık gizli `#v24All` butonu üretmez. Menü → Başarılar doğ
 - **Zayıf / weak:** yalnız attempt
 - **Yok / none:** yalnız attempt
 
-Bu sayede başarısız denemeler Atlas, Radio Memory ve kişisel frekans geçmişinde kullanılabilirken normal Günlük gerçek çekimlerle sınırlı kalır.
+Normal Günlük gerçek çekimlerle sınırlı kalırken başarısız denemeler Atlas, Radio Memory ve kişisel frekans geçmişinde kullanılabilir.
 
-## Atlas ve Collection
+## AI sınırları
 
-`app-atlas-service.js` ülke, saat, frekans, bant, yaklaşık mesafe ve azimut hesaplarını UI'dan ayırır. Atlas noktaları **verici konumu değil ülke merkezidir**. Referans sırası: manuel konum → GPS'li günlük kaydı → Bozköy/Torbalı config konumu.
+AI sonucu doğrulanmış istasyon kimliği değildir. `app-ai-service.js` `Xenova/whisper-tiny` ile transkripsiyon ve heuristik aday skorlama yapar. Gerçek radyo sesiyle uçtan uca kalite testi mimari/CI kontrolünden ayrıdır.
 
-`app-achievements-service.js` 24 başarı tanımını ve rozet senkronizasyonunu yönetir. Collection UI rozet / ülke / dil / istasyon / seri ilerlemesini gösterir.
+## Atlas sınırı
 
-## PWA güncellemeleri
+Atlas noktaları gerçek verici konumu değil, saklanan ülke bilgisinin yaklaşık **ülke merkezi** koordinatıdır. Mesafe ve yön de buna göre yaklaşık değerdir.
 
-Yeni service worker kontrolü aldığında uygulama zorla reload olmaz. `app-pwa-updates.js` kullanıcıya **Sonra** veya **Şimdi yenile** seçeneği sunar.
+## PWA
 
-V3.8.1 cache kimliği:
+V3.8.2 cache kimliği:
 
-`v381-shell-decomposition-20260907-1`
+`v382-mobile-services-20260907-1`
 
-Yeni shell modüllerinin tamamı PWA cache'e dahildir; `app-shell.js` dahil değildir. Supabase, NOAA SWPC ve Hugging Face model/canlı istekleri service worker tarafından zorla cache'lenmez.
+Supabase, NOAA SWPC ve Hugging Face canlı/model istekleri service worker tarafından zorla cache'lenmez. Yeni worker bulunduğunda uygulama zorla reload olmak yerine `app-pwa-updates.js` üzerinden kullanıcıya yenileme seçeneği sunar.
 
-## Emekliye ayrılan legacy feature dosyaları
+## Emekliye ayrılan ana legacy dosyalar
 
-V3.8.1 ile `app-shell.js` da kaldırıldı. Daha önce kaldırılan ana katmanlar arasında `v24-achievements.js`, `v25-smart-listening.js`, `v26-radio-atlas.js`, `v30-ai-radio-assistant.js`, V33–V37 stability/audit dosyaları, `v38-listening-mode.js`, `v38-ux-shell.js`, `v39-navigation-state.js`, `v40-radio-memory.js`, `v41-propagation-assistant.js`, `v42-ui-polish.js` ve `v43-search-hotfix.js` bulunur.
+`v22-mobile.js`, `app-shell.js`, `v24-achievements.js`, `v25-smart-listening.js`, `v26-radio-atlas.js`, `v30-ai-radio-assistant.js`, V33–V37 stability/audit katmanları, `v38-listening-mode.js`, `v38-ux-shell.js`, `v39-navigation-state.js`, `v40-radio-memory.js`, `v41-propagation-assistant.js`, `v42-ui-polish.js` ve `v43-search-hotfix.js` artık production zincirinde değildir ve repodan kaldırılmıştır.
 
-Eski kod Git geçmişinden geri alınabilir; production bootstrap ve PWA cache bu dosyaları kullanmaz.
+## Regresyon kontrolleri
 
-## Tanı ve regresyon kontrolleri
+GitHub Actions **Radio Foundation Check** üç katman uygular:
 
-`app-smoke.js` aktif provider'ları ve Home / Now / Menu / Quick Log / Log / Smart / Atlas / AI / Propagation route ve servislerini kontrol eder. Ayrıca gizli `#v24All` compatibility öğesinin artık bulunmadığını doğrular.
+1. Modern JavaScript modüllerine doğrudan `node --check`.
+2. `tests/foundation-static-check.mjs` ile bootstrap, cache, retired dosyalar, core-wrapper yasağı ve kritik sahiplik kuralları.
+3. `tests/mobile-services-static-check.mjs` ile V22 kaldırma, aynı IndexedDB outbox kimliğinin korunması, PWA install delegasyonu ve yeni servis sahiplikleri.
 
-GitHub Actions **Radio Foundation Check** artık yeni shell dosyalarını doğrudan `node --check` ile kontrol eder. `tests/foundation-static-check.mjs` ayrıca:
-
-- bootstrap sırası
-- service worker cache listesi
-- retired dosyaların fiziksel olarak kaldırılması
-- core wrapper yasağı
-- Home/Now/Menu/Quick Log/Log sahiplik ayrımı
-- Collection tarafında V24 bridge bulunmaması
-- AI / Listening / Atlas service-UI ayrımı
-
-üzerinde regresyon kontrolü yapar.
+Foundation testi bootstrap'ın gerçek `MODULES` listesini okuyarak boot edilen modülleri dinamik olarak syntax/cache kontrolünden geçirir; her sürümde elle dev bir dosya listesi güncellemek gerekmez.
 
 ## Geliştirme kuralı
 
