@@ -1,179 +1,154 @@
-# Radyo Günlüğüm — V3.7.9 Collection & Atlas Services Cleanup
+# Radyo Günlüğüm — V3.8.0 AI Service & UI Separation
 
 Tecsun R-9012 ile, RTL-SDR olmadan kullanılmak üzere geliştirilen kişisel radyo dinleme günlüğü ve saha asistanı.
 
 ## Ana kullanım akışı
 
-- **Ana Sayfa:** o an için öne çıkan yayın adayları ve kişisel özet
-- **Şu An:** Türkiye saatine göre aktif SW / MW / FM adayları
-- **Dinleme Modu:** büyük frekans görünümü, sinyal 1–5 ve Yakaladım / Zayıf / Yok
-- **Akıllı Dinleme:** oturumlar, başarısız denemeler, yaklaşan yayınlar, kadran kalibrasyonu, gizemli yayınlar ve konuşarak kayıt
-- **Günlük / Hızlı Kayıt:** gerçek dinleme arşivi
-- **Radyo Hafızası:** istasyon, frekans ve ülke profilleri
-- **Koleksiyon & Başarılar:** 24 rozet, ülke, dil, istasyon ve seri ilerlemesi
-- **Radyo Atlası:** ülke merkezleri, yaklaşık yön/mesafe, bant, saat ve frekans analizi
-- **Yayılım Asistanı:** güneş geometrisi, gray-line, NOAA SWPC ve kişisel geçmiş
-- **Global Arama:** istasyon, ülke, frekans, kayıt, rehber ve araçlar
-- **AI Ses Analizi:** Whisper tabanlı transkripsiyon ve istasyon/program adayları
-- **QSL / Takvim / Analiz / Harita** araçları
+- **Ana Sayfa / Şu An:** o an dinlenebilecek yayın adayları
+- **Dinleme Modu:** sinyal 1–5 ve Yakaladım / Zayıf / Yok
+- **Akıllı Dinleme:** oturumlar, kalibrasyon, gizemli yayınlar ve yaklaşan hedefler
+- **Günlük / Radyo Hafızası:** kişisel dinleme arşivi ve istasyon/frekans/ülke profilleri
+- **Koleksiyon / Atlas:** rozetler, ülke koleksiyonu, yaklaşık yön ve mesafe analizi
+- **Yayılım Asistanı:** gray-line, NOAA SWPC ve kişisel geçmiş
+- **AI Ses Analizi:** cihazda Whisper transkripsiyonu ve açıklanabilir istasyon/program adayları
+- **Global Arama / QSL / Takvim / Analiz / Harita** araçları
 
 ## Başlangıç mimarisi
 
-`index.html` yalnız temel bağımlılıkları başlatır:
-
-1. `app-config.js`
-2. Supabase ve Leaflet
-3. `core.js`
-4. `app-core-bridge.js`
-5. `audio-smart.js`
-6. `v21-guide.js`
-7. `v22-mobile.js`
-8. `app-insights.js`
-9. `app-bootstrap.js`
-
-`app-core-bridge.js`, feature katmanları yüklenmeden önce çekirdeğin temiz fonksiyonlarını saklar. `app-bootstrap.js` gelişmiş modülleri belirlenmiş sırada yükler ve `R.boot()` çağrısını yalnız bir kez çalıştırır.
+`index.html` temel bağımlılıkları yükler, `app-bootstrap.js` feature modüllerini deterministik sırada başlatır ve `R.boot()` yalnız bir kez çalışır. `app-core-bridge.js` feature katmanları gelmeden önce çekirdek fonksiyonların temiz referanslarını saklar.
 
 ## Aktif production sahipleri
 
-- **`app-foundation.js`** — Event Bus, Clock, Store/index, Feature Registry, Diagnostics
-- **`app-runtime-core.js`** — single-flight `R.load`, `R.show`, `R.renderAll`
-- **`app-router-core.js`** — route sahipliği ve public `R.switch` compatibility giriş noktası
-- **`app-current-programs.js`** — aktif yayın penceresi hesap motoru
-- **`app-record-integrity.js`** — frekans doğrulama, normalize etme, edit/delete bütünlüğü
-- **`app-smart-analyzer.js`** — rehber tabanlı akıllı eşleştirme
-- **`app-achievements-service.js`** — 24 başarı tanımı, rozet senkronizasyonu ve koleksiyon istatistikleri
-- **`app-collection-ui.js`** — Başarılar / Koleksiyon görünümü
-- **`app-user-services.js`** — ayarlar, favoriler, hatırlatıcılar, stale AI bakımı
-- **`app-listening-service.js`** — oturumlar, denemeler, kalibrasyon, gizemli yayınlar
-- **`app-listening-ui.js`** — Dinleme Modu ve Akıllı Dinleme UI
-- **`app-atlas-service.js`** — ülke, yön, mesafe, saat, frekans ve bant analizi
-- **`app-atlas-ui.js`** — Radyo Atlası / Leaflet görünümü
-- **`app-shell.js`** — Ana Sayfa, Şu An, dock, Menü, Hızlı Kayıt
-- **`app-propagation.js`** — Yayılım Asistanı
-- **`app-memory.js`** — Radyo Hafızası
-- **`v44-search-rebuild.js`** — Global Arama
-- **`app-audio-safety.js`** — bağsız ses tespiti / kurtarma
-- **`app-backup.js`** — CSV ve JSON metadata yedekleri
-- **`app-pwa-updates.js`** — güvenli sürüm bildirimi
-- **`app-ui-state.js`** — URL, geri/ileri, scroll, filtre ve taslak durumu
-- **`app-smoke.js`** — runtime bütünlük kontrolleri
+- `app-foundation.js` — Event Bus, Clock, Store/index, Feature Registry, Diagnostics
+- `app-runtime-core.js` — `R.load`, `R.show`, `R.renderAll`
+- `app-router-core.js` — route sahipliği ve public `R.switch`
+- `app-current-programs.js` — aktif yayın penceresi hesap motoru
+- `app-record-integrity.js` — frekans / edit / delete bütünlüğü
+- `app-smart-analyzer.js` — rehber tabanlı eşleştirme
+- `app-ai-service.js` — Whisper, dil tahmini, istasyon/program skorlama ve `radio_ai_analyses`
+- `app-ai-ui.js` — AI route ve analiz ekranı
+- `app-achievements-service.js` / `app-collection-ui.js` — başarılar ve koleksiyon
+- `app-listening-service.js` / `app-listening-ui.js` — dinleme oturumları ve Dinleme Modu
+- `app-atlas-service.js` / `app-atlas-ui.js` — Atlas hesapları ve Leaflet görünümü
+- `app-user-services.js` — ayarlar, favoriler, hatırlatıcılar
+- `app-shell.js` — Ana Sayfa, Şu An, dock, Menü, Hızlı Kayıt
+- `app-propagation.js` — Yayılım Asistanı
+- `app-memory.js` — Radyo Hafızası
+- `v44-search-rebuild.js` — Global Arama
+- `app-audio-safety.js` — bağsız ses kurtarma
+- `app-backup.js` — CSV / JSON metadata yedekleri
+- `app-pwa-updates.js` — kullanıcı kontrollü sürüm yenilemesi
+- `app-ui-state.js` — URL, geri/ileri, scroll, filtre ve taslak durumu
+- `app-smoke.js` — runtime bütünlük kontrolleri
 
-Feature modülleri `R.switch`, `R.load`, `R.show` veya `R.renderAll` üzerine zincirleme wrapper kurmamalıdır.
+Feature modülleri çekirdek `R.switch`, `R.load`, `R.show` veya `R.renderAll` fonksiyonlarını zincirleme sarmalamamalıdır.
+
+## AI mimarisi
+
+V3.8.0'da eski tek-parça V30 modülü iki katmana ayrıldı.
+
+### `app-ai-service.js`
+
+Servis UI üretmez. Şunların sahibidir:
+
+- `radio_ai_analyses` yükleme / oluşturma / güncelleme
+- private `radio-audio` için geçici signed URL
+- `@huggingface/transformers@4.2.0`
+- `Xenova/whisper-tiny`
+- WebGPU denemesi ve WASM/CPU fallback
+- Whisper transkripsiyonu
+- otomatik **dil tahmini**
+- rehber + frekans + saat + dil + transkript + geçmiş kayıt tabanlı istasyon adayları
+- program tahmini
+- açıklanabilir evidence ve güven puanı
+- aday seçme
+- transkript / smart alanlarını günlük kaydına uygulama
+
+Model ve analiz durumu DOM'a yazılmaz; `ai:model`, `ai:data`, `ai:analysis-start`, `ai:analysis-complete`, `ai:analysis-error`, `ai:applied` ve `ai:candidate-selected` olayları üzerinden yayınlanır.
+
+Dil sonucu heuristik bir otomatik tahmindir; kesin bir Whisper dil etiketi olarak değerlendirilmemelidir. AI sonucu da doğrulanmış istasyon kimliği değildir.
+
+### `app-ai-ui.js`
+
+AI ekranının tek sahibidir:
+
+- gerçek `audio_path` bulunan kayıtları listeler
+- analiz / yeniden analiz başlatır
+- model indirme / hazırlama durumunu gösterir
+- transkript, dil, confidence ve evidence gösterir
+- ilk beş istasyon adayını gösterir
+- kullanıcı aday seçebilir
+- yalnız transkripti veya transkript + smart öneriyi kayda uygulayabilir
+- ses içeren Günlük kartlarına `AI Analiz` eylemi ekler
+
+AI artık Ana Sayfa'ya ayrı bir kart enjekte etmez; Menü, Global Arama veya ilgili Günlük kaydı üzerinden açılır.
+
+## AI güvenlik / kalite sınırları
+
+- Ses süresi metadata'da **180 saniyeden uzunsa** analiz başlamaz.
+- Boş transkriptte confidence 10'a düşürülür.
+- Çok kısa transkriptte confidence üst sınırı düşürülür.
+- AI önerisini kayda uygulamak kaydı otomatik `confirmed` yapmaz.
+- İlk model kullanımında internet gerekir; model tarayıcı cache'inden sonraki kullanımlarda yeniden kullanılabilir.
+- Signed audio URL ve Supabase analiz kaydı için ağ bağlantısı gerekir.
+- Gerçek radyo sesiyle uçtan uca kalite testi ayrıca yapılmalıdır; mimari/CI başarısı gerçek ses doğruluğu anlamına gelmez.
 
 ## Dinleme veri modeli
 
-`radio_session_attempts` bütün sonuçları saklar: `heard`, `weak`, `none`.
+`radio_session_attempts` tüm `heard / weak / none` sonuçlarını saklar.
 
-- **Yakaladım / heard:** attempt + normal `radio_logs` kaydı
+- **Yakaladım / heard:** attempt + normal `radio_logs`
 - **Zayıf / weak:** yalnız attempt
 - **Yok / none:** yalnız attempt
 
-Bu sayede başarısız denemeler de frekans geçmişi, Atlas ve Radio Memory için veri üretir; normal Günlük ise gerçek çekimlerle dolu kalır.
+Bu sayede başarısız denemeler Atlas, Radio Memory ve kişisel frekans geçmişinde kullanılabilirken normal Günlük gerçek çekimlerle sınırlı kalır.
 
-## Collection & Achievements
+## Atlas ve Collection
 
-`app-achievements-service.js` eski V24'teki iş mantığını UI'dan ayırır. 24 başarı tanımı korunur.
+`app-atlas-service.js` ülke, saat, frekans, bant, yaklaşık mesafe ve azimut hesaplarını UI'dan ayırır. Atlas noktaları **verici konumu değil ülke merkezidir**. Referans sırası: manuel konum → GPS'li günlük kaydı → Bozköy/Torbalı config konumu.
 
-Önemli semantik kurallar doğrudan kanonik tanımlarda yer alır:
+`app-achievements-service.js` 24 başarı tanımını ve rozet senkronizasyonunu yönetir. Collection UI rozet / ülke / dil / istasyon / seri ilerlemesini gösterir.
 
-- **Kısa Dalga 5/5:** yalnız SW kaydı
-- **Gece MW:** 00:00–04:59 arası MW kaydı
-- **Japonca Yayın:** Japonca/Japanese karşılıkları
+## PWA güncellemeleri
 
-`app-collection-ui.js` rozet ilerlemesini, ülke/dil/istasyon sayılarını ve koleksiyon listesini gösterir. Ülke etiketleri Radio Memory ülke profiline bağlanabilir.
+Yeni service worker kontrolü aldığında uygulama artık zorla reload olmaz. `app-pwa-updates.js` kullanıcıya **Sonra** veya **Şimdi yenile** seçeneği sunar.
 
-Mevcut shell'deki eski `#v24All` menü referansı için Collection UI geçici, gizli bir compatibility giriş noktası sağlar. Shell parçalama turunda bu son referans da kaldırılacaktır.
+V3.8.0 cache kimliği:
 
-## Radyo Atlası
+`v380-ai-services-20260907-1`
 
-`app-atlas-service.js` eski V26'nın hesap mantığını UI'dan ayırır:
+Supabase, NOAA SWPC ve Hugging Face model/canlı istekleri service worker tarafından zorla cache'lenmez.
 
-- ülke koleksiyonu
-- yaklaşık mesafe
-- azimut / yön
-- saat performansı
-- sık kullanılan frekanslar
-- FM / MW / SW dağılımı
-- Listening Service `heard / weak / none` alım oranı
+## Emekliye ayrılan legacy feature dosyaları
 
-Yön ve mesafe referansı şu sırayla seçilir:
+V3.8.0 ile `v30-ai-radio-assistant.js` da kaldırıldı. Daha önce kaldırılan ana katmanlar arasında `v24-achievements.js`, `v25-smart-listening.js`, `v26-radio-atlas.js`, V33–V37 stability/audit dosyaları, `v38-listening-mode.js`, `v38-ux-shell.js`, `v39-navigation-state.js`, `v40-radio-memory.js`, `v41-propagation-assistant.js`, `v42-ui-polish.js` ve `v43-search-hotfix.js` bulunur.
 
-1. kullanıcı tarafından seçilmiş geçici konum
-2. GPS içeren son günlük kaydı
-3. `app-config.js` içindeki Bozköy/Torbalı referansı
-
-Atlas'taki ülke işaretleri **verici konumu değildir**. Bunlar yaklaşık ülke merkezleridir; mesafe ve yön değerleri de dinleme referansı → ülke merkezi arasındaki yaklaşık değerlerdir.
-
-## PWA güncelleme davranışı
-
-Eski V24, yeni service worker kontrolü ele aldığında sayfayı otomatik `location.reload()` ile yeniliyordu. Bu davranış kaldırıldı.
-
-`app-pwa-updates.js` yeni sürüm hazır olduğunda kullanıcıya:
-
-- **Sonra**
-- **Şimdi yenile**
-
-seçeneklerini gösterir. Yenileme yalnız kullanıcı isterse yapılır. Böylece form doldururken veya dinleme kaydı hazırlarken sürpriz sayfa yenileme riski azalır.
-
-## Emekliye ayrılan eski katmanlar
-
-V3.7.9 ile çalışma ağacından kaldırılan son feature sahipleri:
-
-- `v24-achievements.js`
-- `v26-radio-atlas.js`
-
-Daha önce kaldırılanlar arasında `v25-smart-listening.js`, `v33–v37` stability/audit katmanları, `v38-listening-mode.js`, `v38-ux-shell.js`, `v39-navigation-state.js`, `v40-radio-memory.js`, `v41-propagation-assistant.js`, `v42-ui-polish.js` ve `v43-search-hotfix.js` bulunur.
-
-Gerekirse eski kod Git geçmişinden geri alınabilir; production bootstrap ve PWA cache bu dosyaları kullanmaz.
-
-## Foundation servisleri
-
-`app-foundation.js` yalnız şu ortak altyapıları sağlar:
-
-- `R.events`
-- `R.clock`
-- `R.store`
-- `R.features`
-- `R.diagnostics`
-
-Router ve runtime çekirdek fonksiyonlarının sahibi Foundation değildir.
-
-## PWA ve offline
-
-Sürüm ve cache kimliği `app-config.js` içinden gelir.
-
-V3.7.9 cache kimliği:
-
-`v379-collection-atlas-20260907-1`
-
-Yeni Collection, Atlas ve PWA update dosyaları cache'e dahildir; emekliye ayrılan V24/V26 dosyaları dahil değildir. Supabase, NOAA SWPC ve Hugging Face canlı/model istekleri zorla cache'lenmez.
+Eski kod Git geçmişinden geri alınabilir; production bootstrap ve PWA cache bu dosyaları kullanmaz.
 
 ## Tanı ve regresyon kontrolleri
 
-**Menü → Sistem Durumu** ile aktif provider'lar, router, store, arama, Memory, Propagation, Listening, Atlas ve PWA durumu kontrol edilebilir.
+`app-smoke.js` aktif provider'ları ve Home / Now / Smart / Atlas / AI / Propagation route'larını kontrol eder.
 
-`app-smoke.js` V3.7.9'da ayrıca:
+`tests/foundation-static-check.mjs` modern production JavaScript dosyalarını `vm.Script` ile parse eder ve ayrıca:
 
-- Achievements Service
-- Collection UI
-- Atlas Service
-- Atlas UI
-- PWA Update notifier
-- eski V24/V26'nın yüklenmemesi
+- bootstrap sırası
+- service worker cache listesi
+- retired dosyaların fiziksel olarak kaldırılması
+- core wrapper yasağı
+- service / UI ayrımı
+- AI service'in DOM'dan bağımsız olması
+- model sürümünün açıkça pinlenmesi
+- AI duration ve low-transcript confidence guard'ları
 
-kontrollerini yapar.
-
-GitHub Actions içindeki `foundation-static-check.mjs` artık modern production JavaScript dosyalarını `vm.Script` ile parse ederek yeni modüllerin syntax'ını da doğrular. Ayrıca bootstrap sahipliği, service worker cache listesi, retired dosyaların fiziksel olarak silinmiş olması, core wrapper yasağı ve yeni service/UI ayrımını kontrol eder.
+üzerinde regresyon kontrolü yapar.
 
 ## Geliştirme kuralı
 
-1. iş mantığını UI'dan ayır
-2. mevcut Foundation/feature servisini kullan
-3. route için `router.register(...)` kullan
-4. modüller arası iletişimde `R.events` / `R.store` kullan
-5. çekirdek fonksiyonlara feature wrapper ekleme
-6. body-wide `MutationObserver` yerine açık event kullan
-7. sürümü yalnız `app-config.js` üzerinden değiştir
-8. CI ve runtime smoke check'i yeşil tut
-
-Amaç, özellik sayısı büyürken navigasyon, dinleme, koleksiyon, Atlas, arama, PWA ve veri akışının yeniden kırılmasını önlemektir.
+1. İş mantığını UI'dan ayır.
+2. Mevcut Foundation / feature servisini kullan.
+3. Route için `router.register(...)` kullan.
+4. Modüller arası iletişimde `R.events` / `R.store` kullan.
+5. Çekirdek fonksiyonlara feature wrapper ekleme.
+6. Body-wide `MutationObserver` yerine açık event kullan.
+7. Sürümü yalnız `app-config.js` üzerinden değiştir.
+8. CI ve runtime smoke check'i yeşil tut.
