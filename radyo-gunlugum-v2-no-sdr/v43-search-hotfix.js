@@ -1,12 +1,14 @@
 (()=>{
 const R=window.R;if(!R)return;
 const VERSION='V3.6.1';
+function loadCss(){if(document.querySelector('link[data-v43-css]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='v43-search-hotfix.css';l.dataset.v43Css='1';document.head.appendChild(l)}
 function trigger(input){
   if(!input)return;
   input.dispatchEvent(new Event('input',{bubbles:true}));
   setTimeout(()=>document.querySelector('#v42SearchResults')?.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 }
 function enhance(){
+  loadCss();
   const sheet=document.querySelector('#v42Search');
   const input=document.querySelector('#v42SearchInput');
   const command=sheet?.querySelector('.v42-command');
@@ -44,6 +46,7 @@ function enhance(){
     command.after(p);
   }
 }
+loadCss();
 new MutationObserver(enhance).observe(document.body,{childList:true,subtree:true});
 document.addEventListener('click',e=>{if(e.target.closest('[data-v42search]'))setTimeout(enhance,0)},true);
 setTimeout(enhance,300);
