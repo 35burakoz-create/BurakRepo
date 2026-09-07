@@ -29,9 +29,9 @@ jobs:
           for f in \
             app-config.js app-insights.js app-bootstrap.js \
             v37-integrity-followup.js v39-navigation-state.js \
-            v40-radio-memory.js v41-propagation-assistant.js \
-            v42-ui-polish.js v44-search-rebuild.js \
-            app-foundation.js app-smoke.js; do
+            v41-propagation-assistant.js v42-ui-polish.js \
+            v44-search-rebuild.js app-foundation.js \
+            app-memory.js app-smoke.js; do
             echo "Checking $f"
             node --check "$APP/$f"
           done
