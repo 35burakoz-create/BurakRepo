@@ -1,0 +1,7 @@
+(()=>{
+const R=window.R;if(!R||R.__logFormUI382)return;R.__logFormUI382=true;const $=s=>document.querySelector(s);
+function ensureAdvanced(){const form=$('#logForm');if(!form||$('#appLogAdvanced'))return;const ids=['country','contentType','program','location','latitude','longitude','geoBtn','antennaDirection','antennaAngle','dialPosition','transcript','notes'];const nodes=[];for(const id of ids){const el=$('#'+id);if(!el)continue;const node=el.closest('label,fieldset,.row-actions');if(node&&!nodes.includes(node))nodes.push(node)}const qsl=$('.qsl-fieldset');if(qsl&&!nodes.includes(qsl))nodes.push(qsl);const details=document.createElement('details');details.id='appLogAdvanced';details.className='span2 app-log-advanced';details.innerHTML='<summary>＋ Ayrıntı ekle</summary><div class="app-log-advanced-grid"></div>';const grid=details.querySelector('.app-log-advanced-grid');for(const node of nodes)grid.appendChild(node);form.insertBefore(details,$('#formSuggestionStrip')||$('#saveBtn')?.parentElement||null)}
+function syncEditState(){const d=$('#appLogAdvanced');if(!d)return;const id=$('#logId')?.value;if(id)d.open=true}
+R.events?.on?.('route:changed',x=>{if(x?.to==='log'){ensureAdvanced();syncEditState()}});R.events?.on?.('render:all',()=>{ensureAdvanced();syncEditState()});setTimeout(()=>{ensureAdvanced();syncEditState()},80);
+R.logFormUI={ensureAdvanced,syncEditState};R.features?.register?.('log-form-ui',{ready:true,provider:'app-log-form-ui'});
+})();
