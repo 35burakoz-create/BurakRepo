@@ -5,7 +5,7 @@ const config=Object.freeze({
   codename:'Foundation',
   timezone:'Europe/Istanbul',
   locale:'tr-TR',
-  cacheVersion:'v371-foundation-20260907-2',
+  cacheVersion:'v371-foundation-20260907-3',
   origin:Object.freeze({name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36})
 });
 globalThis.RADIO_APP_CONFIG=config;
