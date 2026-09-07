@@ -1,0 +1,8 @@
+(()=>{
+const R=window.R;if(!R||R.__recordService385)return;R.__recordService385=true;const events=R.events;
+function requireUser(){if(!R.me?.id)throw new Error('Oturum açık değil.');return R.me.id}
+async function save(body,{id=null,oldAudioPath=null}={}){const userId=requireUser(),payload={...(body||{}),user_id:userId};const q=id?await R.S.from('radio_logs').update(payload).eq('id',id).eq('user_id',userId):await R.S.from('radio_logs').insert(payload);if(q.error)throw q.error;if(id&&oldAudioPath&&oldAudioPath!==payload.audio_path){const s=await R.S.storage.from('radio-audio').remove([oldAudioPath]);if(s.error)R.reportError?.(s.error,'record-save-old-audio',{silent:true})}events?.emit?.('record:saved',{id:id||null,created:!id,audioPath:payload.audio_path||null});return payload}
+async function remove(id){const userId=requireUser(),log=(R.logs||[]).find(x=>String(x.id)===String(id));if(!log)throw new Error('Kayıt bulunamadı.');const q=await R.S.from('radio_logs').delete().eq('id',log.id).eq('user_id',userId);if(q.error)throw q.error;if(log.audio_path){const s=await R.S.storage.from('radio-audio').remove([log.audio_path]);if(s.error)R.reportError?.(s.error,'record-delete-audio',{silent:true})}events?.emit?.('record:deleted',{id:log.id,audioPath:log.audio_path||null});return log}
+async function signedAudioUrl(path,expires=600){requireUser();if(!path)throw new Error('Bu kayda bağlı ses dosyası yok.');const q=await R.S.storage.from('radio-audio').createSignedUrl(path,expires);if(q.error)throw q.error;return q.data?.signedUrl||null}
+R.records={save,remove,signedAudioUrl};R.features?.register?.('record-service',{ready:true,provider:'app-record-service'});
+})();
