@@ -1,0 +1,8 @@
+(()=>{
+const R=window.R;if(!R||R.__pwaInstall382)return;R.__pwaInstall382=true;R.installPrompt=R.installPrompt||null;
+async function register(){if(!('serviceWorker'in navigator))return null;try{const reg=await navigator.serviceWorker.register('./sw.js');R.events?.emit?.('pwa:registered',{scope:reg.scope});return reg}catch(error){R.reportError?.(error,'pwa-register',{silent:true});return null}}
+function installHint(){const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);return ios?'Safari: Paylaş → Ana Ekrana Ekle':'Tarayıcı menüsünden “Uygulamayı yükle / Ana ekrana ekle” seçeneğini kullan.'}
+async function install(){if(R.installPrompt){const prompt=R.installPrompt;R.installPrompt=null;try{await prompt.prompt();const choice=await prompt.userChoice;R.events?.emit?.('pwa:install-choice',{outcome:choice?.outcome||null});return choice}catch(error){R.reportError?.(error,'pwa-install',{silent:true});R.toast?.('Kurulum başlatılamadı.',{type:'error'});return null}}R.toast?.(installHint());return null}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();R.installPrompt=e;R.events?.emit?.('pwa:install-ready')});window.addEventListener('appinstalled',()=>{R.installPrompt=null;R.events?.emit?.('pwa:installed')});
+R.installPWA=install;R.pwaInstall={register,install,hint:installHint};R.features?.register?.('pwa-install',{ready:'serviceWorker'in navigator,provider:'app-pwa-install'});register();
+})();
