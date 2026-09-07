@@ -1,22 +1,23 @@
 (()=>{
 const R=window.R;if(!R)return;
 function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,ok:!!ok,detail:String(detail||'')});
- add('App config',globalThis.RADIO_APP_CONFIG?.version==='3.7.6',globalThis.RADIO_APP_CONFIG?.version||'');
+ add('App config',globalThis.RADIO_APP_CONFIG?.version==='3.7.7',globalThis.RADIO_APP_CONFIG?.version||'');
+ add('Foundation provider',R.features?.get?.('foundation')?.provider==='app-foundation',R.features?.get?.('foundation')?.provider||'');
  add('Pristine core bridge',typeof R.coreSwitch==='function'&&typeof R.coreBody==='function'&&R.__coreBridge===true,'core primitives captured');
  add('Runtime Core',R.features?.get?.('runtime-core')?.provider==='app-runtime-core',R.features?.get?.('runtime-core')?.provider||'');
  add('Router',!!R.router&&R.router.has?.('home')&&R.router.has?.('now')&&R.router.has?.('memory')&&R.router.has?.('propagation'),'home/now/memory/propagation routes');
- add('Router Foundation provider',R.features?.get?.('router')?.provider==='app-router-core',R.features?.get?.('router')?.provider||'');
+ add('Router provider',R.features?.get?.('router')?.provider==='app-router-core',R.features?.get?.('router')?.provider||'');
  add('Current programs',R.features?.get?.('current-programs')?.provider==='app-current-programs'&&typeof R.radioNowCandidates==='function','exact active-window engine');
  add('Record integrity',R.features?.get?.('record-integrity')?.provider==='app-record-integrity'&&typeof R.validateFrequency==='function','frequency/body/delete integrity');
  add('Smart analyzer',R.features?.get?.('smart-analyzer')?.provider==='app-smart-analyzer','guide-based analyzer');
  add('User services',R.features?.get?.('user-services')?.provider==='app-user-services','settings/reminders/favorites');
  add('Shell provider',R.features?.get?.('shell')?.provider==='app-shell',R.features?.get?.('shell')?.provider||'');
- add('UI state Foundation provider',R.features?.get?.('ui-state')?.provider==='app-ui-state',R.features?.get?.('ui-state')?.provider||'');
+ add('UI state provider',R.features?.get?.('ui-state')?.provider==='app-ui-state',R.features?.get?.('ui-state')?.provider||'');
  add('Store',!!R.store&&typeof R.store.search==='function',JSON.stringify(R.store?.counts?.()||{}));
  add('Global arama',typeof R.openGlobalSearch==='function'&&typeof R.v44SearchEngine==='function','V44 engine');
  let toolSearch=false;try{const x=R.v44SearchEngine?.('Yayılım');toolSearch=!!x?.groups?.some(g=>g.items?.some(i=>String(i.title).includes('Yayılım')))}catch{}add('Arama motoru sorgusu',toolSearch,'Yayılım araması');
  add('Radio Memory',typeof R.openRadioMemory==='function'&&!!R.memory,'app-memory API');
- add('Memory Foundation provider',R.features?.get?.('memory')?.provider==='app-memory',R.features?.get?.('memory')?.provider||'');
+ add('Memory provider',R.features?.get?.('memory')?.provider==='app-memory',R.features?.get?.('memory')?.provider||'');
  add('Propagation provider',R.features?.get?.('propagation')?.provider==='app-propagation',R.features?.get?.('propagation')?.provider||'');
  add('Audio safety',R.features?.get?.('audio-safety')?.provider==='app-audio-safety'&&typeof R.openAudioRecovery==='function','orphan audio recovery');
  add('Backup',R.features?.get?.('backup')?.provider==='app-backup','CSV/JSON backup');
