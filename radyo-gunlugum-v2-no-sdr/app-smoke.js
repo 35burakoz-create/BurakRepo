@@ -1,18 +1,22 @@
 (()=>{
 const R=window.R;if(!R)return;
 function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,ok:!!ok,detail:String(detail||'')});
- add('App config',globalThis.RADIO_APP_CONFIG?.version==='3.7.8',globalThis.RADIO_APP_CONFIG?.version||'');
+ add('App config',globalThis.RADIO_APP_CONFIG?.version==='3.7.9',globalThis.RADIO_APP_CONFIG?.version||'');
  add('Foundation provider',R.features?.get?.('foundation')?.provider==='app-foundation',R.features?.get?.('foundation')?.provider||'');
  add('Pristine core bridge',typeof R.coreSwitch==='function'&&typeof R.coreBody==='function'&&R.__coreBridge===true,'core primitives captured');
  add('Runtime Core',R.features?.get?.('runtime-core')?.provider==='app-runtime-core',R.features?.get?.('runtime-core')?.provider||'');
- add('Router',!!R.router&&R.router.has?.('home')&&R.router.has?.('now')&&R.router.has?.('memory')&&R.router.has?.('propagation')&&R.router.has?.('smart'),'home/now/memory/propagation/smart routes');
+ add('Router',!!R.router&&['home','now','memory','propagation','smart','atlas'].every(x=>R.router.has?.(x)),'home/now/memory/propagation/smart/atlas routes');
  add('Router provider',R.features?.get?.('router')?.provider==='app-router-core',R.features?.get?.('router')?.provider||'');
  add('Current programs',R.features?.get?.('current-programs')?.provider==='app-current-programs'&&typeof R.radioNowCandidates==='function','exact active-window engine');
  add('Record integrity',R.features?.get?.('record-integrity')?.provider==='app-record-integrity'&&typeof R.validateFrequency==='function','frequency/body/delete integrity');
  add('Smart analyzer',R.features?.get?.('smart-analyzer')?.provider==='app-smart-analyzer','guide-based analyzer');
+ add('Achievements service',R.features?.get?.('achievements-service')?.provider==='app-achievements-service'&&typeof R.achievementsService?.progress==='function'&&typeof R.achievementsService?.sync==='function','24 badge definitions + collection stats');
+ add('Collection UI',R.features?.get?.('collection-ui')?.provider==='app-collection-ui'&&typeof R.openAchievements==='function','achievements/collection modal');
  add('User services',R.features?.get?.('user-services')?.provider==='app-user-services','settings/reminders/favorites');
  add('Listening service',R.features?.get?.('listening-service')?.provider==='app-listening-service'&&typeof R.listening?.recordAttempt==='function'&&typeof R.listening?.estimateDial==='function','sessions/attempts/calibration/mystery');
  add('Listening UI',R.features?.get?.('listening-ui')?.provider==='app-listening-ui'&&typeof R.listeningUI?.open==='function'&&!!document.querySelector('#tab-smart'),'smart route + listening overlay');
+ add('Atlas service',R.features?.get?.('atlas-service')?.provider==='app-atlas-service'&&typeof R.atlas?.summary==='function'&&typeof R.atlas?.setOrigin==='function','country/distance/bearing analytics');
+ add('Atlas UI',R.features?.get?.('atlas-ui')?.provider==='app-atlas-ui'&&typeof R.atlasUI?.render==='function'&&!!document.querySelector('#tab-atlas'),'atlas route + Leaflet UI');
  add('Shell provider',R.features?.get?.('shell')?.provider==='app-shell',R.features?.get?.('shell')?.provider||'');
  add('UI state provider',R.features?.get?.('ui-state')?.provider==='app-ui-state',R.features?.get?.('ui-state')?.provider||'');
  add('Store',!!R.store&&typeof R.store.search==='function',JSON.stringify(R.store?.counts?.()||{}));
@@ -23,8 +27,9 @@ function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,
  add('Propagation provider',R.features?.get?.('propagation')?.provider==='app-propagation',R.features?.get?.('propagation')?.provider||'');
  add('Audio safety',R.features?.get?.('audio-safety')?.provider==='app-audio-safety'&&typeof R.openAudioRecovery==='function','orphan audio recovery');
  add('Backup',R.features?.get?.('backup')?.provider==='app-backup','CSV/JSON backup');
- for(const f of ['v25-smart-listening.js','v33-stability-hotfix.js','v34-current-programs.js','v35-audit-fixes.js','v35-runtime-bridge.js','v36-integrity-audit.js','v37-integrity-followup.js','v38-ux-shell.js','v38-listening-mode.js','v39-navigation-state.js','v40-radio-memory.js','v41-propagation-assistant.js','v42-ui-polish.js'])add(`Legacy yok: ${f}`,!document.querySelector(`script[src="${f}"],script[src="./${f}"]`),'retired');
- add('Ana görünüm',!!document.querySelector('#tab-home'),'#tab-home');add('Şu An görünümü',!!document.querySelector('#tab-now'),'#tab-now');add('Akıllı Dinleme görünümü',!!document.querySelector('#tab-smart'),'#tab-smart');add('Propagation görünümü',!!document.querySelector('#tab-propagation'),'#tab-propagation');
+ add('PWA updates',R.features?.get?.('pwa-updates')?.provider==='app-pwa-updates'&&typeof R.pwaUpdates?.check==='function','non-forced update notifier');
+ for(const f of ['v24-achievements.js','v25-smart-listening.js','v26-radio-atlas.js','v33-stability-hotfix.js','v34-current-programs.js','v35-audit-fixes.js','v35-runtime-bridge.js','v36-integrity-audit.js','v37-integrity-followup.js','v38-ux-shell.js','v38-listening-mode.js','v39-navigation-state.js','v40-radio-memory.js','v41-propagation-assistant.js','v42-ui-polish.js','v43-search-hotfix.js'])add(`Legacy yok: ${f}`,!document.querySelector(`script[src="${f}"],script[src="./${f}"]`),'retired');
+ add('Ana görünüm',!!document.querySelector('#tab-home'),'#tab-home');add('Şu An görünümü',!!document.querySelector('#tab-now'),'#tab-now');add('Akıllı Dinleme görünümü',!!document.querySelector('#tab-smart'),'#tab-smart');add('Atlas görünümü',!!document.querySelector('#tab-atlas'),'#tab-atlas');add('Propagation görünümü',!!document.querySelector('#tab-propagation'),'#tab-propagation');
  add('Tek bootstrap',!!document.querySelector('script[src="app-bootstrap.js"],script[src="./app-bootstrap.js"]'),'app-bootstrap.js');add('Core bridge sırası',!!document.querySelector('script[src="app-core-bridge.js"],script[src="./app-core-bridge.js"]'),'app-core-bridge.js');add('Eski insights loader yok',!document.querySelector('script[src="insights.js"],script[src="./insights.js"]'),'legacy insights disabled');add('V43 hotfix yok',!document.querySelector('script[src="v43-search-hotfix.js"],script[src="./v43-search-hotfix.js"]'),'obsolete search shim removed');
  const failed=checks.filter(x=>!x.ok),result={at:new Date().toISOString(),ok:failed.length===0,checks,failed:failed.map(x=>x.name)};R.lastSmoke=result;R.events?.emit?.('smoke:complete',result);if(failed.length)R.reportError?.(new Error(`Smoke check failed: ${failed.map(x=>x.name).join(', ')}`),'smoke',{silent:true});return result}
 R.smoke={run,last:()=>R.lastSmoke||null};R.features?.register?.('smoke',{ready:true});setTimeout(run,700);setTimeout(()=>{if(!R.lastSmoke?.ok)run()},2200);
