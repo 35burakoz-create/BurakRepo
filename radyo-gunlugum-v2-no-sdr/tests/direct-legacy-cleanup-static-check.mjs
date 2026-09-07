@@ -7,7 +7,8 @@ const checks=[];function check(name,ok){checks.push([name,!!ok]);if(!ok)process.
 const index=read('index.html'),boot=read('app-bootstrap.js'),sw=read('sw.js'),language=read('app-language-service.js'),audio=read('app-audio-ui.js'),safety=read('app-audio-safety.js'),analysis=read('app-analysis-ui.js'),map=read('app-map-ui.js'),calendar=read('app-calendar-ui.js'),qslService=read('app-qsl-service.js'),qslUI=read('app-qsl-ui.js');
 for(const f of ['app-language-service.js','app-audio-ui.js','app-analysis-ui.js','app-map-ui.js','app-calendar-ui.js','app-qsl-service.js','app-qsl-ui.js']){let ok=true;try{new vm.Script(read(f),{filename:f})}catch{ok=false}check(`syntax ${f}`,ok)}
 const localScripts=[...index.matchAll(/<script src="([^"]+)"/g)].map(x=>x[1]).filter(x=>!x.startsWith('http'));
-check('direct local script chain minimal',JSON.stringify(localScripts)===JSON.stringify(['app-config.js','core.js','app-core-bridge.js','app-bootstrap.js']));
+check('direct local script chain minimal',JSON.stringify(localScripts)===JSON.stringify(['app-config.js','core.js','app-bootstrap.js']));
+check('core bridge direct loader removed',!index.includes('app-core-bridge.js'));check('core bridge cache removed',!sw.includes('app-core-bridge.js'));
 check('audio-smart direct loader removed',!index.includes('audio-smart.js'));check('app-insights direct loader removed',!index.includes('app-insights.js'));
 check('audio-smart cache removed',!sw.includes('audio-smart.js'));check('app-insights cache removed',!sw.includes('app-insights.js'));
 check('audio-smart file removed',!exists('audio-smart.js'));check('app-insights file removed',!exists('app-insights.js'));
