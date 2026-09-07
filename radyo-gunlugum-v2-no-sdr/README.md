@@ -1,26 +1,22 @@
-# Radyo Günlüğüm — V3.7.5 Wrapper Cleanup & Event UI
+# Radyo Günlüğüm — V3.7.6 Legacy Core Modules Cleanup
 
 Tecsun R-9012 ile, RTL-SDR olmadan kullanılmak üzere geliştirilen kişisel radyo dinleme günlüğü ve saha asistanı.
 
 ## Ana kullanım akışı
 
 - **Ana Sayfa:** o an için öne çıkan yayın adayları ve kişisel özet
-- **Şu An:** SW / MW / FM yayın adayları
-- **Dinleme Modu:** Yakaladım / Zayıf / Yok sonucu ve sinyal 1–5
+- **Şu An:** Türkiye saatine göre gerçekten aktif SW / MW / FM adayları
+- **Dinleme Modu:** Yakaladım / Zayıf / Yok ve sinyal 1–5
 - **Hızlı Kayıt ve Günlük:** dinleme arşivi
 - **Radyo Hafızası:** istasyon, frekans ve ülke profilleri
-- **Yayılım Asistanı:** güneş geometrisi, gray-line, NOAA SWPC verileri ve kişisel geçmişten bant sıralaması
-- **Global Arama:** istasyon, ülke, frekans, kayıt, rehber ve uygulama araçlarında arama
-- **AI Ses Analizi:** tarayıcıda Whisper tabanlı transkripsiyon, dil tahmini ve rehber destekli istasyon adayları
+- **Yayılım Asistanı:** güneş geometrisi, gray-line, NOAA SWPC ve kişisel geçmiş
+- **Global Arama:** istasyon, ülke, frekans, kayıt, rehber ve araçlar
+- **AI Ses Analizi:** Whisper tabanlı transkripsiyon ve istasyon/program adayları
 - **QSL / Atlas / Takvim / Analiz / Akıllı Dinleme** araçları
 
-## V3.7 Foundation mimarisi
+## Başlangıç mimarisi
 
-V3.7 serisi, önceki sürümlerde üst üste eklenen loader, navigation wrapper ve hotfix zincirlerini kontrollü biçimde konsolide eder.
-
-### Statik başlangıç
-
-`index.html` temel bağımlılıkları şu sırayla başlatır:
+`index.html` yalnız temel bağımlılıkları başlatır:
 
 1. `app-config.js`
 2. Supabase ve Leaflet
@@ -32,149 +28,118 @@ V3.7 serisi, önceki sürümlerde üst üste eklenen loader, navigation wrapper 
 8. `app-insights.js`
 9. `app-bootstrap.js`
 
-`app-core-bridge.js`, legacy feature katmanları yüklenmeden önce çekirdeğin temiz `R.switch`, `R.load`, `R.show` ve `R.renderAll` fonksiyonlarını saklar.
+`app-core-bridge.js`, feature katmanları yüklenmeden önce çekirdeğin temiz `R.switch`, `R.load`, `R.show`, `R.renderAll`, `R.body`, `R.reset`, `R.edit` ve `R.del` fonksiyonlarını saklar.
 
-`app-bootstrap.js` gelişmiş özellik modüllerini deterministik sırada yükler ve en sonda `R.boot()` çağrısını yalnız bir kez çalıştırır.
+`app-bootstrap.js`, gelişmiş modülleri deterministik sırada yükler ve `R.boot()` çağrısını yalnız bir kez çalıştırır.
 
-### Aktif production sahipleri
+## Aktif production sahipleri
 
-V3.7.5 ile çekirdek davranışların tek sahipleri şunlardır:
+V3.7.6 ile sorumluluklar tekil modüllere ayrılmıştır:
 
-- **`app-runtime-core.js`** — `R.load`, `R.show`, `R.renderAll`; veri/auth/render event'lerini üretir
+- **`app-runtime-core.js`** — single-flight `R.load`, `R.show`, `R.renderAll`; data/auth/render event'leri
 - **`app-router-core.js`** — `R.router` ve public `R.switch` compatibility giriş noktası
-- **`app-shell.js`** — Ana Sayfa, Şu An, bottom dock, Menü, Hızlı Kayıt, mini Dinleme barı ve ortak UI refresh
-- **`app-propagation.js`** — Yayılım Asistanı; router/store event'leriyle çalışır
+- **`app-current-programs.js`** — Türkiye saati, geçerlilik ve aktif yayın pencerelerine göre `R.radioNowCandidates`
+- **`app-record-integrity.js`** — frekans doğrulama, SW MHz→kHz normalizasyonu, edit/body/reset/delete bütünlüğü ve AI önerisini kayda uygulama
+- **`app-smart-analyzer.js`** — rehber tabanlı akıllı istasyon eşleştirme
+- **`app-user-services.js`** — kullanıcı ayarları, favoriler, hatırlatıcılar, achievement düzeltmeleri ve stale AI bakımı
+- **`app-shell.js`** — Ana Sayfa, Şu An, bottom dock, Menü, Hızlı Kayıt, mini Dinleme barı
+- **`app-propagation.js`** — Yayılım Asistanı
 - **`app-memory.js`** — Radyo Hafızası ve Store indeksleri
-- **`app-ui-state.js`** — URL hash, geri/ileri, filtre, scroll ve günlük taslak durumu
-- **`v44-search-rebuild.js`** — tek Global Arama motoru
+- **`v44-search-rebuild.js`** — Global Arama
+- **`app-audio-safety.js`** — bağsız ses tespiti ve kurtarma
+- **`app-backup.js`** — tam CSV ve JSON metadata yedekleri
+- **`app-ui-state.js`** — URL, geri/ileri, filtre, scroll ve taslak durumu
+- **`app-smoke.js`** — runtime bütünlük kontrolleri
 
-Bu modüller `R.switch`, `R.load`, `R.show` veya `R.renderAll` üzerine zincirleme feature wrapper kurmamalıdır.
+Feature modülleri `R.switch`, `R.load`, `R.show` veya `R.renderAll` üzerine zincirleme wrapper kurmamalıdır.
 
-### Emekliye ayrılan katmanlar
+## V3.7.6 ile emekliye ayrılan V33–V37 katmanları
 
-V3.7.5'te aşağıdaki eski wrapper modülleri repodan kaldırıldı; gerektiğinde Git geçmişinden geri alınabilirler:
+Aşağıdaki eski JavaScript katmanları production zincirinden çıkarıldı ve çalışma ağacından kaldırıldı; Git geçmişinden gerektiğinde geri alınabilir:
 
-- `v38-ux-shell.js`
-- `v39-navigation-state.js`
-- `v40-radio-memory.js`
-- `v40-radio-memory.css`
-- `v41-propagation-assistant.js`
-- `v42-ui-polish.js`
+- `v33-stability-hotfix.js`
+- `v34-current-programs.js`
+- `v35-audit-fixes.js`
+- `v35-runtime-bridge.js`
+- `v36-integrity-audit.js`
+- `v37-integrity-followup.js`
 
-`v38-ux-cleanup.css`, `v41-propagation-assistant.css` ve `v42-design-system.css` hâlâ yeni modüllerin görsel katmanları tarafından kullanılır; yalnız eski JavaScript sahipliği kaldırılmıştır.
+Bunların gerekli davranışları yukarıdaki `app-*` servislerine taşındı. Böylece eski Home'a zorlama tamirleri, global UI CSS enjeksiyonları, body-wide MutationObserver'lar ve çekirdek wrapper zincirleri çalışmıyor.
 
-## Event Bus ve Store
+V3.7.5'te daha önce kaldırılmış eski UI sahipleri de production dışında kalmaya devam eder: `v38-ux-shell.js`, `v39-navigation-state.js`, `v40-radio-memory.js`, `v41-propagation-assistant.js`, `v42-ui-polish.js` ve `v43-search-hotfix.js`.
 
-`app-foundation.js` ortak servisleri sağlar:
+## Foundation servisleri
 
-- `R.events` — event bus
-- `R.clock` — `Europe/Istanbul` merkezli saat servisi
-- `R.store` — log / rehber durumu ve arama indeksleri
+`app-foundation.js` şu ortak altyapıları sağlar:
+
+- `R.events` — Event Bus
+- `R.clock` — `Europe/Istanbul` saat servisi
+- `R.store` — log / rehber state'i ve arama indeksleri
 - `R.features` — feature registry
-- `R.diagnostics` — runtime hata ve sistem durumu tanıları
+- `R.diagnostics` — runtime hata ve sistem tanıları
 
-Yeni UI kodu özellikle şu event'lerden yararlanır:
+Temel olaylar: `route:before`, `route:changed`, `auth:changed`, `data:loading`, `data:loaded`, `store:updated`, `render:all`, `menu:opened`.
 
-- `route:before`
-- `route:changed`
-- `auth:changed`
-- `data:loading`
-- `data:loaded`
-- `store:updated`
-- `render:all`
-- `menu:opened`
+## Veri bütünlüğü
 
-## Navigasyon ve UI State
+`app-record-integrity.js` bant aralıklarını doğrular. Kısa dalgada kullanıcı örneğin `17.650 MHz` biçiminde bir değer girerse uygun olduğunda bunu `17650 kHz` biçimine normalize eder.
 
-`app-router-core.js` gerçek DOM sekme geçişini yalnız `R.coreSwitch` üzerinden yapar. Dinamik ekranlar `router.register(...)` ile kendi `prepare` / `enter` adapter'larını kaydeder.
+Düzenleme sırasında mevcut `source` ve smart alanları gereksiz yere kaybolmaz. Ses preview süresi varsa `audio_duration_seconds` kayda eklenir. Bir kayıt silindiğinde ona bağlı private Storage ses dosyası da temizlenmeye çalışılır.
 
-`app-ui-state.js`, çekirdek fonksiyonları sarmalamadan aşağıdaki davranışları yönetir:
+## Ses güvenliği
 
-- URL hash (`#tab=...`)
-- tarayıcı geri / ileri
-- son açık sekme
-- sekme scroll konumu
-- Şu An `ALL / SW / MW / FM` filtresi
-- Günlük / Rehber / Takvim filtreleri
-- kaydedilmemiş günlük taslağı
-- startup boot guard
+`app-audio-safety.js`, `radio-audio` içindeki kullanıcı dosyalarını günlük kayıtlarının `audio_path` değerleriyle karşılaştırır. Bağsız dosyalar:
 
-## Radio Memory
+- dinlenebilir,
+- yakın zamandaki olası kayda bağlanabilir,
+- yeni bir kayda aktarılabilir.
 
-`app-memory.js` doğrudan Foundation Store indekslerini kullanır ve `memory` route'unu `R.router.register(...)` ile kaydeder.
+Ses dosyalarının kendisi JSON yedeğine gömülmez; `app-backup.js` bunların metadata manifestini yedeğe ekler.
 
-Profil ekranında ilk bakışta yalnız dört ana metrik gösterilir; diğer istatistikler açılır ayrıntı bölümündedir.
+## Şu An ve yayın motoru
 
-## Propagation Assistant
+`app-current-programs.js`, eski V34'ün faydalı hesap mantığını UI'dan ayırır. SW ve MW için aktif saat penceresi zorunludur; FM istasyon hedefleri gün boyu aday olabilir. `valid_from / valid_to`, hafta içi / hafta sonu kuralları, bant profili ve kişisel sinyal geçmişi puana katılır.
 
-`app-propagation.js` artık eski `R.switch / R.load / R.show` wrapper'larını veya `MutationObserver` kullanmaz. Güneş geometrisi cihazda hesaplanır; NOAA SWPC Kp, R/G/S ve F10.7 verileri canlı veya 24 saatlik yerel cache üzerinden kullanılır.
+## Kullanıcı servisleri
 
-0–99 bant puanı kalibre edilmiş bir başarı olasılığı değildir; rehber saati, güneş fazı, uzay havası ve kişisel dinleme geçmişini birleştiren yardımcı sıralamadır.
+`app-user-services.js`:
 
-## Global Arama
+- günlük hedefi,
+- ülke sayacı görünümünü,
+- dinleme serisi görünümünü,
+- favorileri,
+- yayın hatırlatıcılarını,
+- İstanbul saatli reminder kontrolünü,
+- eski achievement semantik düzeltmelerini,
+- 15 dakikadan uzun süre `running` kalan yarım AI analizlerinin hata durumuna alınmasını
 
-V44 arama motoru Foundation Store indeksini kullanabilir. Arama şu alanları kapsar:
+yönetir.
 
-- istasyon
-- ülke
-- frekans
-- dil
-- program / not / transkript
-- yayın rehberi
-- uygulama araçları
+## Navigasyon ve UI state
 
-## Visual Foundation
+`app-router-core.js` gerçek sekme geçişini yalnız `R.coreSwitch` üzerinden yapar. Dinamik ekranlar `router.register(...)` ile route adapter kaydeder.
 
-`styles.css` legacy bileşen stillerini taşımaya devam eder; `app-base.css` hemen ardından yüklenerek temel görsel sistemi merkezi hale getirir.
-
-Ana design token'ları:
-
-- surface / background / text / muted / border
-- primary indigo
-- success / warning / danger
-- 12 px control radius
-- 18 px card radius
-- 24 px panel radius
-- ortak focus ring ve kart gölgesi
-
-Yeni ekranlarda Georgia veya eski bej tema kullanılmamalıdır.
+`app-ui-state.js`, çekirdek fonksiyonları sarmalamadan URL hash (`#tab=...`), geri/ileri, son sekme, scroll, Şu An `ALL / SW / MW / FM` filtresi, günlük/rehber/takvim filtreleri ve kaydedilmemiş günlük taslağını yönetir.
 
 ## PWA ve offline
 
-`sw.js`, cache sürümünü `app-config.js` üzerinden alır. Yerel asset'ler bağımsız olarak cache'lenir; tek bir eksik dosya tüm service worker kurulumunu düşürmez.
-
-Supabase, NOAA SWPC ve Hugging Face canlı/model istekleri service worker tarafından zorla cache'lenmez.
+`sw.js`, cache sürümünü `app-config.js` üzerinden alır. V3.7.6 cache kimliği `v376-legacy-core-cleanup-20260907-1`'dir. Yerel varlıklar bağımsız cache'lenir; Supabase, NOAA SWPC ve Hugging Face canlı/model istekleri zorla cache'lenmez.
 
 ## Tanı ve regresyon kontrolleri
 
-Uygulama içinde **Menü → Sistem Durumu** bölümünden router, store, arama, Radio Memory, Propagation ve PWA durumu görülebilir.
+Uygulamada **Menü → Sistem Durumu** bölümünden router, store, arama, Memory, Propagation ve PWA durumu görülebilir.
 
-`app-smoke.js` özellikle şunları kontrol eder:
+`app-smoke.js` aktif provider'ları ve eski V33–V43 katmanlarının yüklenmediğini kontrol eder.
 
-- pristine core bridge
-- Runtime Core provider
-- Router Core provider
-- App Shell provider
-- App Propagation provider
-- App Memory provider
-- Global Search
-- Home / Şu An / Propagation görünümleri
-- legacy V38/V39/V40/V41/V42/V43 katmanlarının production'da yüklenmemesi
+GitHub Actions **Radio Foundation Check**:
 
-GitHub Actions'taki **Radio Foundation Check** workflow'u production JavaScript dosyalarında `node --check` ve mimari regresyon kontrolleri çalıştırır.
+- production JavaScript dosyalarında `node --check`,
+- bootstrap sahiplik kuralları,
+- service worker cache listesi,
+- eski V33–V37 dosyalarının çalışma ağacından gerçekten kaldırılmış olması,
+- core wrapper'ların geri dönmemesi
 
-## Veri ve Supabase
-
-Supabase projesi: `radyo-gunlugum-v1-1` (`mesbtntnclokgzgunept`).
-
-Başlıca veri alanları:
-
-- `radio_logs`
-- `station_schedules`
-- `radio_session_attempts`
-- `radio_ai_analyses`
-
-`radio-audio` bucket'ı private'tır ve kullanıcı bazlı Storage RLS politikaları kullanır. Service-role anahtarı istemci kodunda kullanılmaz.
+için regresyon kontrolü çalıştırır.
 
 ## Geliştirme kuralı
 
@@ -183,9 +148,9 @@ Yeni özelliklerde tercih edilen sıra:
 1. mevcut Foundation servisini kullan
 2. gerekirse `router.register(...)` veya feature API ekle
 3. modüller arası iletişim için `R.events` / `R.store` kullan
-4. `R.switch`, `R.load`, `R.show`, `R.renderAll` için feature wrapper ekleme
-5. `MutationObserver` yerine açık event üret
+4. çekirdek fonksiyonlara feature wrapper ekleme
+5. body-wide `MutationObserver` yerine açık event üret
 6. sürüm bilgisini yalnız `app-config.js` üzerinden değiştir
 7. CI ve runtime smoke check'i yeşil tut
 
-Bu yaklaşımın amacı, uygulama büyürken navigasyon, arama, PWA ve veri akışının yeniden kırılmasını önlemektir.
+Amaç, özellik sayısı büyürken navigasyon, arama, PWA ve veri akışının yeniden kırılmasını önlemektir.
