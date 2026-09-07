@@ -27,11 +27,10 @@ jobs:
           set -euo pipefail
           APP='radyo-gunlugum-v2-no-sdr'
           for f in \
-            app-config.js app-insights.js app-bootstrap.js \
-            v37-integrity-followup.js v39-navigation-state.js \
-            v41-propagation-assistant.js v42-ui-polish.js \
-            v44-search-rebuild.js app-foundation.js \
-            app-memory.js app-smoke.js; do
+            app-config.js app-core-bridge.js app-insights.js app-bootstrap.js \
+            v37-integrity-followup.js v41-propagation-assistant.js v42-ui-polish.js \
+            v44-search-rebuild.js app-foundation.js app-router-core.js \
+            app-memory.js app-ui-state.js app-smoke.js; do
             echo "Checking $f"
             node --check "$APP/$f"
           done
