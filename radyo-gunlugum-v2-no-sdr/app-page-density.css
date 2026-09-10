@@ -1,0 +1,78 @@
+/* Sayfa bazlı görsel yoğunluk — R-9012 saha günlüğü temasını güçlendirir. */
+.app-page-density-rail{--density-accent:#4f46e5;position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(150px,.72fr) minmax(0,2.5fr);gap:12px;align-items:stretch;margin:0 0 14px;padding:12px;border:1px solid #dfe4ef;border-radius:20px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(248,250,252,.98));box-shadow:0 8px 24px rgba(15,23,42,.045)}
+.app-page-density-rail:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.48;background-image:linear-gradient(90deg,transparent 0 9px,rgba(71,85,105,.055) 10px,transparent 11px),linear-gradient(180deg,transparent 0 23px,rgba(71,85,105,.04) 24px,transparent 25px);background-size:20px 100%,100% 48px}
+.app-page-density-rail:after{content:"";position:absolute;left:12px;right:12px;bottom:6px;height:2px;opacity:.5;background:repeating-linear-gradient(90deg,var(--density-accent) 0 1px,transparent 1px 8px)}
+.app-density-ident{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center;min-width:0;padding:8px 10px;border-radius:14px;background:linear-gradient(145deg,#111827,#1e293b);color:#fff}
+.app-density-ident small{font-size:9.5px;font-weight:850;letter-spacing:.13em;color:#a5b4fc;text-transform:uppercase}
+.app-density-ident b{display:block;margin-top:4px;font-size:13px;line-height:1.25;letter-spacing:-.01em}
+.app-density-ident span{display:block;margin-top:4px;color:#cbd5e1;font-size:10.5px;line-height:1.35}
+.app-density-led{display:flex;gap:4px;margin-top:9px}.app-density-led i{width:5px;height:5px;border-radius:50%;background:#475569}.app-density-led i.on{background:var(--density-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--density-accent) 14%,transparent)}
+.app-density-metrics{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.app-density-metric{min-width:0;padding:9px 10px;border:1px solid #edf0f5;border-radius:13px;background:rgba(255,255,255,.82)}
+.app-density-metric small,.app-density-metric b,.app-density-metric span{display:block}.app-density-metric small{font-size:9.5px;font-weight:800;letter-spacing:.04em;color:#64748b;text-transform:uppercase}.app-density-metric b{margin-top:3px;font-size:17px;line-height:1.05;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.app-density-metric span{margin-top:4px;font-size:10px;line-height:1.25;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-density-mix{position:relative;z-index:1;grid-column:1/-1;display:flex;align-items:center;gap:5px;margin-top:-3px;padding:0 4px 2px;min-width:0}.app-density-mix>span{font-size:9px;font-weight:850;color:#64748b;letter-spacing:.08em;text-transform:uppercase;margin-right:3px}.app-density-mix i{height:5px;min-width:5px;border-radius:999px;background:var(--density-accent);opacity:.82}.app-density-mix em{font-style:normal;font-size:9.5px;color:#64748b;white-space:nowrap}
+.app-page-density-rail[data-density-route="audio"]{--density-accent:#0f766e}.app-page-density-rail[data-density-route="analysis"]{--density-accent:#7c3aed}.app-page-density-rail[data-density-route="map"]{--density-accent:#0369a1}.app-page-density-rail[data-density-route="calendar"]{--density-accent:#b45309}.app-page-density-rail[data-density-route="qsl"]{--density-accent:#be123c}.app-page-density-rail[data-density-route="guide"]{--density-accent:#4338ca}
+
+/* Günlük: form ve arşiv yüzeyleri bir saha defterinin iki bölümü gibi hissedilsin. */
+#tab-log .form-card,#tab-log .records-card{position:relative;overflow:hidden}
+#tab-log .form-card:before,#tab-log .records-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#4f46e5,#818cf8 60%,transparent)}
+#tab-log .form-card{background-image:linear-gradient(180deg,rgba(238,242,255,.38),transparent 130px)!important}
+#tab-log .records-card{background-image:linear-gradient(180deg,rgba(248,250,252,.9),transparent 150px)!important}
+#tab-log .section-head{padding-bottom:10px;border-bottom:1px solid #eef2f7}
+#tab-log .suggestion-strip{position:relative;overflow:hidden;padding-left:17px!important}#tab-log .suggestion-strip:before{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2px;border-radius:99px;background:#a78bfa}
+
+/* Ses: kayıt yüzeyinde hafif dalga/ölçüm izi. */
+#tab-audio>.two-col>.card,#tab-audio>.smart-card{position:relative;overflow:hidden}
+#tab-audio>.two-col>.card:after{content:"";position:absolute;left:16px;right:16px;bottom:10px;height:17px;opacity:.08;pointer-events:none;background:linear-gradient(90deg,transparent 0 2%,#0f766e 2% 3%,transparent 3% 7%,#0f766e 7% 8%,transparent 8% 13%,#0f766e 13% 15%,transparent 15% 20%,#0f766e 20% 21%,transparent 21% 28%,#0f766e 28% 31%,transparent 31% 37%,#0f766e 37% 39%,transparent 39% 48%,#0f766e 48% 49%,transparent 49% 60%,#0f766e 60% 63%,transparent 63% 72%,#0f766e 72% 74%,transparent 74% 83%,#0f766e 83% 84%,transparent 84%)}
+#tab-audio .audio-controls{padding:10px;border:1px solid #dbeafe;border-radius:14px;background:#f8fbff}
+#tab-audio .timer{min-width:64px;text-align:center;padding:5px 8px;border-radius:9px;background:#111827;color:#d1fae5;letter-spacing:.08em}
+#tab-audio .smart-result{min-height:86px;background-image:linear-gradient(90deg,rgba(79,70,229,.025) 1px,transparent 1px);background-size:14px 100%}
+
+/* Analiz: grafik kartlarına ölçüm kâğıdı hissi. */
+#tab-analysis>.two-col>.card{position:relative;overflow:hidden;background-image:linear-gradient(rgba(79,70,229,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(79,70,229,.024) 1px,transparent 1px)!important;background-size:100% 28px,28px 100%}
+#tab-analysis>.two-col>.card h2{display:flex;align-items:center;gap:8px;padding-bottom:9px;border-bottom:1px solid #eef2f7}#tab-analysis>.two-col>.card h2:before{content:"";width:7px;height:7px;border-radius:50%;background:#7c3aed;box-shadow:0 0 0 4px #f3e8ff}
+#tab-analysis .bar-track{height:10px!important;border:1px solid #e2e8f0;background:rgba(241,245,249,.88)!important}
+
+/* Harita: harita çerçevesini saha cihazı ekranı gibi güçlendir. */
+#tab-map>.card{position:relative;overflow:hidden;background-image:radial-gradient(circle at 100% 0,rgba(14,116,144,.08),transparent 230px)!important}
+#tab-map #map{border:6px solid #fff!important;outline:1px solid #dbe4ee;box-shadow:0 12px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(15,23,42,.04)!important}
+#tab-map .section-head:after{content:"LAT / LON · KİŞİSEL ALIM NOKTALARI";margin-left:auto;font-size:9px;font-weight:800;letter-spacing:.09em;color:#94a3b8;align-self:center}
+
+/* Takvim: boş gün hücrelerini de anlamlı bir saha günlüğü ızgarasına dönüştür. */
+#tab-calendar>.card{background-image:linear-gradient(180deg,rgba(255,247,237,.48),transparent 150px)!important}
+#tab-calendar .calendar-grid{padding:8px;border:1px solid #edf0f5;border-radius:16px;background:#fafbfc}
+#tab-calendar .cal-head{font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+#tab-calendar .cal-day{overflow:hidden;transition:border-color .14s ease,transform .14s ease}.cal-day:after{content:"";position:absolute;left:7px;right:7px;bottom:7px;height:1px;background:repeating-linear-gradient(90deg,#cbd5e1 0 1px,transparent 1px 7px);opacity:.5}.cal-day:hover{border-color:#f59e0b!important}.cal-day:active{transform:scale(.985)}
+
+/* QSL: rapor kartlarında telsiz raporu / posta kartı karakteri. */
+#tab-qsl>.card{background-image:linear-gradient(135deg,rgba(255,241,242,.42),transparent 220px)!important}
+#tab-qsl .qsl-item{position:relative;overflow:hidden;padding-left:15px!important;border-left:3px solid #fb7185!important;background-image:repeating-linear-gradient(0deg,transparent 0 27px,rgba(190,18,60,.025) 28px)!important}
+#tab-qsl .qsl-item:after{content:"QSL";position:absolute;right:10px;bottom:5px;font:800 28px/1 Georgia,serif;letter-spacing:.08em;color:rgba(190,18,60,.055);pointer-events:none}
+#tab-qsl .qsl-report{position:relative;background-image:linear-gradient(transparent 23px,rgba(100,116,139,.12) 24px)!important;background-size:100% 24px!important}
+
+/* Rehber: yayın kartlarını analog alıcı satırları gibi ayrıştır. */
+#tab-guide>.card{position:relative;overflow:hidden;background-image:linear-gradient(180deg,rgba(238,242,255,.35),transparent 180px)!important}
+#tab-guide .app-guide-identify{position:relative;overflow:hidden;background-image:linear-gradient(90deg,rgba(67,56,202,.035) 1px,transparent 1px),linear-gradient(rgba(67,56,202,.025) 1px,transparent 1px)!important;background-size:18px 100%,100% 18px!important}
+#tab-guide .guide-item{position:relative;overflow:hidden;padding-left:15px!important}.guide-item:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(#4338ca,#818cf8)}.guide-item:after{content:"";position:absolute;left:15px;right:15px;bottom:5px;height:2px;opacity:.25;background:repeating-linear-gradient(90deg,#6366f1 0 1px,transparent 1px 8px)}
+
+/* Zaten zengin dinamik sayfalar: yeni kart eklemeden cihaz karakteri ekle. */
+.app-smart-hero,.app-atlas-hero,.v41-hero,.am-hero{position:relative;overflow:hidden}
+.app-smart-hero:after,.am-hero:after{content:"";position:absolute;left:18px;right:18px;bottom:9px;height:8px;opacity:.28;pointer-events:none;background:repeating-linear-gradient(90deg,#818cf8 0 1px,transparent 1px 11px)}
+.app-smart-card{position:relative;overflow:hidden}.app-smart-card:before{content:"";position:absolute;top:0;left:14px;width:36px;height:2px;background:#6366f1;border-radius:0 0 8px 8px}
+.app-atlas-hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(125,211,252,.17);border-radius:50%;right:-70px;top:-105px;box-shadow:0 0 0 34px rgba(125,211,252,.055),0 0 0 68px rgba(125,211,252,.035);pointer-events:none}
+.app-atlas-card{position:relative;overflow:hidden;background-image:radial-gradient(circle at 100% 0,rgba(14,165,233,.035),transparent 150px)!important}
+.v41-hero:after{content:"";position:absolute;left:20px;right:20px;bottom:8px;height:8px;opacity:.22;background:repeating-linear-gradient(90deg,#a5b4fc 0 1px,transparent 1px 10px)}
+.v41-band-card{position:relative;overflow:hidden;background-image:linear-gradient(90deg,rgba(79,70,229,.025) 1px,transparent 1px)!important;background-size:13px 100%!important}
+.am-card{position:relative;overflow:hidden}.am-card:before{content:"";position:absolute;left:12px;top:0;width:34px;height:2px;background:#6366f1}.am-section{background-image:linear-gradient(180deg,rgba(248,250,252,.72),transparent 130px)!important}
+.app-collection{background-image:radial-gradient(circle at 100% 0,rgba(99,102,241,.09),transparent 240px),linear-gradient(180deg,#fff,#fbfcff)!important}.app-badge-card{position:relative;overflow:hidden}.app-badge-card:after{content:"";position:absolute;right:-16px;bottom:-16px;width:54px;height:54px;border:1px dashed rgba(99,102,241,.14);border-radius:50%}
+
+/* Ana Sayfa / Şu An: yeni yoğunluk sistemiyle aynı teknik ritim. */
+.v42-section,.v38-section{position:relative}.v42-section:after,.v38-section:after{content:"";position:absolute;left:18px;right:18px;bottom:7px;height:1px;opacity:.2;pointer-events:none;background:repeating-linear-gradient(90deg,#64748b 0 1px,transparent 1px 10px)}
+
+html.night .app-page-density-rail,.night-mode .app-page-density-rail{border-color:#263244;background:linear-gradient(135deg,rgba(17,24,39,.98),rgba(15,23,42,.98))}html.night .app-density-metric,.night-mode .app-density-metric{border-color:#28364a;background:rgba(30,41,59,.82)}html.night .app-density-metric b,.night-mode .app-density-metric b{color:#f8fafc}html.night .app-density-metric small,html.night .app-density-metric span,.night-mode .app-density-metric small,.night-mode .app-density-metric span{color:#94a3b8}
+html.night #tab-audio .audio-controls,.night-mode #tab-audio .audio-controls{background:#101827;border-color:#243244}html.night #tab-calendar .calendar-grid,.night-mode #tab-calendar .calendar-grid{background:#0f172a;border-color:#263244}html.night #tab-analysis>.two-col>.card,.night-mode #tab-analysis>.two-col>.card{background-color:#111827!important}
+
+@media(max-width:820px){.app-page-density-rail{grid-template-columns:1fr}.app-density-ident{display:grid;grid-template-columns:1fr auto;column-gap:12px}.app-density-ident span{grid-column:1/-1}.app-density-led{grid-row:1/3;grid-column:2;align-self:center;margin:0}.app-density-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){.app-page-density-rail{padding:10px;border-radius:17px}.app-density-metrics{grid-template-columns:1fr 1fr}.app-density-metric{padding:8px 9px}.app-density-metric b{font-size:16px}.app-density-mix{display:none}#tab-map .section-head:after{display:none}.app-smart-card:before,.am-card:before{width:26px}.v42-section:after,.v38-section:after{left:12px;right:12px}}
+@media(hover:none){#tab-calendar .cal-day:hover{border-color:var(--ds-line,#e5e7eb)!important}}
+@media(prefers-reduced-motion:reduce){#tab-calendar .cal-day{transition:none}}
