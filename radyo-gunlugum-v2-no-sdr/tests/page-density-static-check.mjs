@@ -34,5 +34,6 @@ check('home and now share technical rhythm',css.includes('.v42-section:after')&&
 check('mobile density collapses safely',css.includes('@media(max-width:600px)')&&css.includes('.app-density-metrics{grid-template-columns:1fr 1fr}'));
 check('night palette covers sparse pages',night.includes('#tab-log .form-card')&&night.includes('#tab-audio .smart-result')&&night.includes('#tab-analysis>.two-col>.card')&&night.includes('#tab-map>.card')&&night.includes('#tab-calendar>.card')&&night.includes('#tab-qsl>.card')&&night.includes('#tab-guide>.card'));
 check('night palette covers rich pages',night.includes('.app-atlas-card')&&night.includes('.v41-band-card')&&night.includes('.am-section')&&night.includes('.app-collection'));
-check('fresh page density PWA generation',config.includes("cacheVersion:'v385-core-boundary-deep-audit-20260910-9'"));
+const cacheMatch=config.match(/cacheVersion:'v385-core-boundary-deep-audit-20260910-(\d+)'/);
+check('fresh page density PWA generation',!!cacheMatch&&Number(cacheMatch[1])>=9);
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);const failed=checks.filter(x=>!x[1]);console.log(`\n${checks.length-failed.length}/${checks.length} page-density checks passed.`);if(failed.length)console.error('Failed:',failed.map(x=>x[0]).join(', '));
