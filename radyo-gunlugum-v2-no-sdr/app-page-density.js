@@ -2,7 +2,7 @@
 const R=window.R;if(!R||R.__pageDensity385)return;R.__pageDensity385=true;
 const $=s=>document.querySelector(s),esc=v=>R.esc?R.esc(v):String(v??'');
 const SUPPORTED=new Set(['log','audio','analysis','map','calendar','qsl','guide']);let timer=null;
-function loadCss(){if(document.querySelector('link[data-page-density-css]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='app-page-density.css';l.dataset.pageDensityCss='1';document.head.appendChild(l)}loadCss();
+function loadCss(){for(const [href,key] of [['app-page-density.css','pageDensityCss'],['app-page-density-night.css','pageDensityNightCss']]){if(document.querySelector(`link[data-${key}]`))continue;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset[key]='1';document.head.appendChild(l)}}loadCss();
 function logs(){return Array.isArray(R.logs)?R.logs:[]}
 function fmt(n){return Number(n||0).toLocaleString('tr-TR')}
 function pct(n){return `${Math.max(0,Math.min(100,Math.round(Number(n)||0)))}%`}
