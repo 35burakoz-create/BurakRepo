@@ -16,10 +16,10 @@ const bands=Object.freeze({
 const config=Object.freeze({
   version:'3.8.5',
   displayVersion:'V3.8.5',
-  codename:'R-9012 Receiver Profile & Turkish Polish',
+  codename:'R-9012 Güvenilirlik ve A26 Düzeltmeleri',
   timezone:'Europe/Istanbul',
   locale:'tr-TR',
-  cacheVersion:'v385-core-boundary-r9012-location-tr-20260910-1',
+  cacheVersion:'v385-r9012-reliability-a26-20260910-2',
   origin:Object.freeze({name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36}),
   receiver:Object.freeze({model:'TECSUN R-9012',bands})
 });
