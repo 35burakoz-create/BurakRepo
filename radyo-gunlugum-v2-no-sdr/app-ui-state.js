@@ -21,7 +21,7 @@ R.events?.on?.('route:before',ctx=>{if(ctx?.from&&ctx.from!==ctx.to)state.scroll
 R.events?.on?.('route:changed',ctx=>{if(!ctx?.to||!VALID.has(ctx.to))return;state.tab=ctx.to;save();if(!browserRouting)writeHash(ctx.to,ctx.historyMode||'replace');if(ctx.to==='now')applyNowMode();if(ctx.restorePosition)restoreScroll(ctx.to)});
 function browserRoute(){const target=readHash();if(!target||!R.me)return;browserRouting=true;try{R.router?.go?.(target,{source:'browser',historyMode:'none',restorePosition:true})}finally{browserRouting=false}}
 window.addEventListener('popstate',browserRoute);window.addEventListener('hashchange',()=>{if(readHash()&&readHash()!==R.router?.current?.())browserRoute()});
-function restoreFilters(){for(const id of FILTER_IDS){const el=document.getElementById(id);if(el&&state.filters[id]!==undefined)el.value=state.filters[id]}try{R.renderRecords?.();R.renderGuide?.();R.renderCalendar?.()}catch(error){R.reportError?.(error,'ui-state-filters',{silent:true})}}
+function restoreFilters(){for(const id of FILTER_IDS){const el=document.getElementById(id);if(el&&state.filters[id]!==undefined)el.value=state.filters[id]}}
 for(const id of FILTER_IDS){const el=document.getElementById(id);if(!el)continue;const remember=()=>{state.filters[id]=el.value;save()};el.addEventListener('input',remember);el.addEventListener('change',remember)}
 function draftValues(){const values={};for(const id of FORM_IDS){const el=document.getElementById(id);if(el&&el.type!=='file')values[id]=el.value}return values}
 function meaningful(v){return !!(v.logId||v.audioPath||v.frequency||v.station||v.language||v.country||v.program||v.transcript||v.notes||v.latitude||v.longitude||v.dialPosition)}
