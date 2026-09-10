@@ -1,0 +1,84 @@
+/* Görsel iyileştirme katmanı — mevcut işlev ve veri akışına dokunmaz. */
+html.v38-menu-open{overflow:hidden}
+body{line-height:1.5}
+.tab-view,.v42-home,.v42-home-grid,.v42-section,.v38-section,.v38-item,.record-card,.guide-item{min-width:0}
+.v42-home-top>div,.v42-alt>div,.v38-itemtop>div,.v38-row-main,.v38-menu-row>span:first-child{min-width:0}
+.v42-home-top p,.v42-section-head p,.v38-item .meta,.v38-detail,.v38-menu-row small,.hint,.small{line-height:1.5}
+.v42-home-top h2,.v42-section-head h3,.v38-nowtitle h2{ text-wrap:balance }
+.v42-primary h3,.v42-alt div span,.v38-item .station,.record-title,.v38-menu-row b{overflow-wrap:anywhere}
+
+/* Menü: ilk görünüm daha sakin, dokunma alanları daha rahat. */
+.v38-sheet{overscroll-behavior:contain;scrollbar-gutter:stable;max-height:min(84dvh,760px)!important}
+.v38-sheethead{position:sticky;top:-16px;z-index:4;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding-top:16px!important;margin-top:-16px}
+.v38-menu-group{margin-top:10px!important}
+.v38-menu-group summary{min-height:50px;padding:13px 15px!important;font-size:13px;line-height:1.25;user-select:none}
+.v38-menu-group summary:after{font-size:18px!important}
+.v38-menu-row{min-height:58px;padding:12px 15px!important;transition:background .14s ease,color .14s ease}
+.v38-menu-row:hover,.v38-menu-row:focus-visible{background:#f8fafc!important}
+.v38-menu-row:active{background:#f1f5f9!important}
+.v38-menu-row b{font-size:13px!important;line-height:1.3}
+.v38-menu-row small{font-size:11.5px!important;margin-top:3px!important}
+.v38-menu-row>span:last-child{align-self:center}
+.v38-menu-footer{margin-top:12px!important;padding-top:4px}
+.v38-menu-footer .btn{min-height:48px}
+.v42-menu-search{min-height:62px;margin:12px 0 10px!important;padding:12px 14px!important}
+.v42-menu-search b{font-size:13px;line-height:1.25}
+.v42-menu-search small{font-size:11px!important;line-height:1.4}
+
+/* Alt gezinti: etiketleri okunur tut, orta kayıt eylemini belirgin bırak. */
+#v38Dock button{font-size:11px!important;line-height:1.15!important}
+#v38Dock button i{margin-bottom:4px}
+#v38Dock button.plus{font-size:10.5px!important}
+
+/* Ana ekran ve kartlar: daha dengeli metin yoğunluğu. */
+.v42-home-top p{line-height:1.55}
+.v42-primary,.v42-prop-card,.v42-alt,.v42-last{min-width:0}
+.v42-alt{min-height:82px}
+.v42-alt div small{font-size:11px!important;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v42-dashboard>div{min-width:0}
+.v42-dashboard span{font-size:10.5px!important;line-height:1.3}
+.v42-last>div{min-width:0}
+.v42-last span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v38-row-main span{font-size:11px!important}
+.v38-itemactions{flex-wrap:wrap}
+.v38-itemactions .btn{min-height:40px}
+
+/* Formlar: özellikle mobil Safari'de odak sırasında otomatik yakınlaştırmayı önle. */
+label{line-height:1.35}
+input,select,textarea{line-height:1.35}
+
+/* Masaüstünde menü, ekranın altına yapışık kesik bir panel yerine yüzen bir kart gibi görünür. */
+@media(min-width:761px){
+  .v38-sheet{bottom:16px!important;border-radius:26px!important;max-height:min(80dvh,760px)!important}
+  .v38-sheethead{top:-16px;border-radius:24px 24px 0 0}
+}
+
+@media(max-width:760px){
+  .shell{padding-left:12px!important;padding-right:12px!important}
+  input,select,textarea{font-size:16px!important}
+  .v38-sheet{left:0!important;bottom:0!important;transform:none!important;width:100%!important;max-height:86dvh!important;border-radius:24px 24px 0 0!important;padding:14px 14px calc(14px + env(safe-area-inset-bottom))!important}
+  .v38-sheethead{top:-14px;margin-top:-14px;padding-top:14px!important}
+  .v42-section-head{align-items:flex-start}
+  .v42-alt{min-height:76px}
+}
+
+@media(max-width:430px){
+  #v38Dock{width:calc(100% - 12px)!important;padding:5px!important;border-radius:21px!important}
+  #v38Dock button{font-size:10px!important;min-width:0;padding-inline:2px!important}
+  #v38Dock button i{font-size:18px!important}
+  .v42-home-hero{border-radius:24px!important}
+  .v42-home-top{gap:10px!important}
+  .v42-home-top h2{font-size:24px!important}
+  .v42-home-top p{font-size:12px!important}
+  .v42-search-button{min-width:42px;min-height:42px;padding:0 11px!important;justify-content:center}
+  .v42-dashboard{gap:6px!important}
+  .v42-dashboard>div{padding:11px 9px!important}
+  .v42-dashboard span{font-size:10px!important}
+  .v38-menu-row{min-height:56px}
+}
+
+.night-mode .v38-sheethead,html.night .v38-sheethead{background:rgba(17,24,39,.97)}
+.night-mode .v38-menu-row:hover,.night-mode .v38-menu-row:focus-visible,html.night .v38-menu-row:hover,html.night .v38-menu-row:focus-visible{background:#172033!important}
+.night-mode .v38-menu-row:active,html.night .v38-menu-row:active{background:#1e293b!important}
+
+@media(prefers-reduced-motion:reduce){.v38-menu-row{transition:none}}
