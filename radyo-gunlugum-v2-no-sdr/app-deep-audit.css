@@ -1,0 +1,46 @@
+/* Derin arayüz denetimi: mevcut tasarım dilini koruyan son düzeltmeler. */
+body{padding-bottom:0!important}
+.shell{padding-bottom:24px!important}
+#appView{padding-bottom:calc(104px + env(safe-area-inset-bottom))!important}
+
+/* Alt gezinme boşluğu yalnızca uygulama görünümünde ayrılır. */
+#authView{margin-bottom:24px}
+
+/* Büyük günlüklar ilk yüklemede parça parça çizilir. */
+.v38-log-more{display:flex;justify-content:center;padding:14px 0 4px}
+.v38-log-more .btn{min-width:min(280px,100%)}
+.v38-log-more .btn span{color:var(--ds-muted,#64748b);font-weight:600}
+
+/* Kaydedilmemiş taslak bildirimi gece görünümünde de okunaklıdır. */
+#v39DraftBanner{border:1px solid #c7d2fe!important;background:#eef2ff!important;color:#3730a3!important}
+.night-mode #v39DraftBanner,html.night #v39DraftBanner{border-color:#4338ca!important;background:#1e1b4b!important;color:#e0e7ff!important}
+.night-mode #v39DraftBanner .btn,html.night #v39DraftBanner .btn{background:#252456!important;color:#e0e7ff!important;border-color:#4338ca!important}
+
+/* Harita farklı ekran yüksekliklerinde taşmadan kullanılabilir kalsın. */
+#map{height:clamp(320px,58vh,560px)!important}
+
+/* Modal ve tanı pencereleri küçük ekranlarda güvenli alanı aşmasın. */
+.foundation-diag,.app-collection,.app-listen-modal{max-height:min(90dvh,820px)}
+.foundation-diag-close,.app-collection-close,.app-listen-modal-close{min-width:44px;min-height:44px}
+
+/* Uzun başlık ve metadata satırlarının yatay taşmasını önle. */
+.record-top>div:first-child,.qsl-item .record-top>div:first-child,.guide-item .record-top>div:first-child{min-width:0}
+.record-meta,.qsl-item .small,.guide-item .small{overflow-wrap:anywhere}
+.row-actions{min-width:0}
+
+/* Dokunmatik cihazlarda yalnız fareye anlamlı hover vurgularını dayatma. */
+@media(hover:none){.v38-menu-row:hover,.v42-alt:hover,.v38-item:hover,.am-card:hover{box-shadow:none!important;transform:none!important}}
+
+@media(max-width:760px){
+  .shell{padding-bottom:16px!important}
+  #appView{padding-bottom:calc(98px + env(safe-area-inset-bottom))!important}
+  .foundation-diag{width:100%!important;max-height:92dvh!important;bottom:0!important;top:auto!important;border-radius:24px 24px 0 0!important;padding-bottom:calc(16px + env(safe-area-inset-bottom))!important}
+  .record-meta{font-size:11.5px;line-height:1.45}
+}
+
+@media(max-width:430px){
+  #map{height:min(56vh,390px)!important}
+  .v38-logbar{align-items:flex-start!important}
+  .v38-logactions{flex-wrap:wrap;justify-content:flex-end}
+  .v38-logactions .btn{min-height:42px}
+}
