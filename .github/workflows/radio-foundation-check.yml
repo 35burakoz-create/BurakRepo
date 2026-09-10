@@ -55,3 +55,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/refresh-routing-static-check.mjs
       - name: Menu and visual regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/menu-visual-static-check.mjs
+      - name: Deep application audit checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/deep-audit-static-check.mjs
