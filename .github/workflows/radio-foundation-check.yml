@@ -2,6 +2,8 @@ name: Radio Foundation Check
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'radyo-gunlugum-v2-no-sdr/**'
       - '.github/workflows/radio-foundation-check.yml'
@@ -63,3 +65,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/broadcast-localization-static-check.mjs
       - name: Radio glossary regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/radio-glossary-static-check.mjs
+      - name: Wide audit regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/wide-audit-static-check.mjs
