@@ -5,7 +5,7 @@ const MODULES=[
 'app-broadcast-locale.js','app-current-programs.js','app-guide-service.js','app-language-service.js','app-qsl-service.js','app-record-service.js','app-record-integrity.js','app-offline-service.js','app-smart-analyzer.js',
 'app-ai-service.js','app-ai-ui.js','app-achievements-service.js','app-collection-ui.js','app-user-services.js','app-listening-service.js','app-atlas-service.js',
 'app-shell-core.js','app-menu-ui.js','app-quick-log.js','app-home-ui.js','app-now-ui.js','app-log-ui.js','app-log-form-ui.js','app-audio-ui.js','app-guide-ui.js','app-analysis-ui.js','app-map-ui.js','app-calendar-ui.js','app-qsl-ui.js',
-'app-listening-ui.js','app-atlas-ui.js','app-propagation.js','app-memory.js','app-page-density.js','v44-search-rebuild.js','app-audio-safety.js','app-backup.js','app-pwa-updates.js','app-smoke.js'
+'app-listening-ui.js','app-atlas-ui.js','app-propagation.js','app-memory.js','app-page-density.js','app-radio-glossary.js','v44-search-rebuild.js','app-audio-safety.js','app-backup.js','app-pwa-updates.js','app-smoke.js'
 ];
 const loaded=new Set(),loading=new Map();
 function preload(){for(const src of MODULES){if(document.querySelector(`link[data-app-preload="${src}"]`))continue;const l=document.createElement('link');l.rel='preload';l.as='script';l.href=src;l.dataset.appPreload=src;document.head.appendChild(l)}}
