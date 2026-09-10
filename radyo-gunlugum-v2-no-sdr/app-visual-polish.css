@@ -1,11 +1,11 @@
 /* Görsel iyileştirme katmanı — mevcut işlev ve veri akışına dokunmaz. */
 html.v38-menu-open{overflow:hidden}
 body{line-height:1.5}
-.tab-view,.v42-home,.v42-home-grid,.v42-section,.v38-section,.v38-item,.record-card,.guide-item{min-width:0}
-.v42-home-top>div,.v42-alt>div,.v38-itemtop>div,.v38-row-main,.v38-menu-row>span:first-child{min-width:0}
+.tab-view,.v42-home,.v42-home-grid,.v42-section,.v38-section,.v38-item,.record-card,.guide-item,.app-smart-card,.app-atlas-card,.app-ai-card,.am-section{min-width:0}
+.v42-home-top>div,.v42-alt>div,.v38-itemtop>div,.v38-row-main,.v38-menu-row>span:first-child,.app-upcoming-row>div,.app-atlas-direction>div,.am-log>div{min-width:0}
 .v42-home-top p,.v42-section-head p,.v38-item .meta,.v38-detail,.v38-menu-row small,.hint,.small{line-height:1.5}
-.v42-home-top h2,.v42-section-head h3,.v38-nowtitle h2{ text-wrap:balance }
-.v42-primary h3,.v42-alt div span,.v38-item .station,.record-title,.v38-menu-row b{overflow-wrap:anywhere}
+.v42-home-top h2,.v42-section-head h3,.v38-nowtitle h2,.app-ai-hero h2,.app-atlas-hero h2,.app-smart-hero h2,.v41-hero h2,.am-hero h2,.am-profile h2{text-wrap:balance}
+.v42-primary h3,.v42-alt div span,.v38-item .station,.record-title,.v38-menu-row b,.app-ai-candidate b,.app-atlas-country b,.am-card h4{overflow-wrap:anywhere}
 
 /* Menü: ilk görünüm daha sakin, dokunma alanları daha rahat. */
 .v38-sheet{overscroll-behavior:contain;scrollbar-gutter:stable;max-height:min(84dvh,760px)!important}
@@ -43,6 +43,24 @@ body{line-height:1.5}
 .v38-itemactions{flex-wrap:wrap}
 .v38-itemactions .btn{min-height:40px}
 
+/* Yoğun bilgi ekranlarında 9–10 px metinleri okunabilir seviyeye taşı. */
+.app-guide-why,.app-guide-status{font-size:11px!important;line-height:1.5}
+.app-guide-score{font-size:10.5px!important}
+.app-smart-summary span,.app-cal-hint{font-size:10.5px!important;line-height:1.4}
+.app-listen-mini-main small,.app-listen-mini-main span{font-size:10.5px!important;line-height:1.35}
+.app-collection-head small,.app-collection-kpi span,.app-badge-open,.app-badge-date,.app-collection-pill{font-size:10.5px!important;line-height:1.4}
+.app-atlas-hero small,.app-atlas-kpi span,.app-atlas-note,.app-atlas-country span,.app-atlas-pill,.app-atlas-direction span{font-size:10.5px!important;line-height:1.45}
+.v41-kicker,.v41-phase span,.v41-phase small,.v41-live,.v41-sun-card span,.v41-weather-card span,.v41-weather-card small{font-size:10.5px!important}
+.v41-daylabels{font-size:10px!important}
+.v41-band-card p{font-size:11px!important;line-height:1.5}
+.v41-band-meta span,.v41-table button small,.v41-forecast span,.v41-forecast small{font-size:10.5px!important;line-height:1.4}
+.am-card>span{font-size:10px!important}.am-log>div:last-child span,.am-log>div:last-child button{font-size:10.5px!important}
+
+/* Açılır alanlar ve modal yüzeyler: tutarlı dokunma hedefleri ve kaydırma. */
+.v41-method summary,.v41-allbands summary,.am-filters summary,.am-more summary,.app-listen summary{min-height:44px;display:flex;align-items:center}
+.app-listen-card,.app-listen-modal,.app-collection,.foundation-diag{overscroll-behavior:contain}
+.app-atlas-table th,.app-atlas-table td{overflow-wrap:anywhere}
+
 /* Formlar: özellikle mobil Safari'de odak sırasında otomatik yakınlaştırmayı önle. */
 label{line-height:1.35}
 input,select,textarea{line-height:1.35}
@@ -60,6 +78,7 @@ input,select,textarea{line-height:1.35}
   .v38-sheethead{top:-14px;margin-top:-14px;padding-top:14px!important}
   .v42-section-head{align-items:flex-start}
   .v42-alt{min-height:76px}
+  .app-collection,.app-listen-modal{padding-bottom:calc(16px + env(safe-area-inset-bottom))!important}
 }
 
 @media(max-width:430px){
