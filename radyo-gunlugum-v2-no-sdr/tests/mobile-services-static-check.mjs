@@ -16,7 +16,7 @@ check('PWA install owns service worker registration',pwa.includes("navigator.ser
 check('menu delegates install',menu.includes("if(a==='install'){close();return R.installPWA?.()}")&&!menu.includes('R.installPrompt.prompt'));
 check('offline keeps legacy IndexedDB identity',offline.includes("DB='radio-gunlugum-v22'")&&offline.includes("STORE='outbox'"));
 check('offline exposes canonical API',offline.includes('R.queueLog=queueLog')&&offline.includes('R.syncOutbox=syncOutbox')&&offline.includes("provider:'app-offline-service'"));
-check('offline edit conflict guard',offline.includes('Offline iken mevcut kayıt düzenlenemez'));
+check('offline edit conflict guard',offline.includes('Çevrimdışıyken mevcut kayıt düzenlenemez'));
 check('offline uses capture submit interception',offline.includes("addEventListener('submit'")&&offline.includes('stopImmediatePropagation'));
 check('log form disclosure provider',form.includes("provider:'app-log-form-ui'")&&form.includes('appLogAdvanced'));
 check('new services avoid core wrappers',![toast,offline,pwa,form].some(x=>x.includes('R.switch=')||x.includes('R.load=')||x.includes('R.show=')||x.includes('R.renderAll=')));
