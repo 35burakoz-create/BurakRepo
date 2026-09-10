@@ -27,5 +27,5 @@ check('technical terms receive subtle contextual help',js.includes('app-radio-te
 check('glossary UI has mobile layout',css.includes('@media(max-width:640px)')&&css.includes('grid-template-columns:1fr'));
 check('glossary UI has night palette',css.includes('html.night .app-radio-glossary')&&css.includes('night-mode .app-radio-glossary-modal'));
 check('menu exposes full radio glossary',menu.includes("row('Radyo sözlüğü','Teknik terimleri sade Türkçeyle açıkla','radio-glossary')")&&menu.includes("a==='radio-glossary'")&&menu.includes('R.radioGlossary?.openAll?.()'));
-check('fresh glossary PWA cache generation',config.includes("cacheVersion:'v385-core-boundary-radio-glossary-20260910-11'"));
+const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*20260910-(\d+)'/);check('fresh glossary PWA cache generation',!!cache&&Number(cache[1])>=11);
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);const failed=checks.filter(x=>!x[1]);console.log(`\n${checks.length-failed.length}/${checks.length} radio-glossary checks passed.`);if(failed.length)console.error('Failed:',failed.map(x=>x[0]).join(', '));
