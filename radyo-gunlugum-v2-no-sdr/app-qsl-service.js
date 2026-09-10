@@ -1,12 +1,13 @@
 (()=>{
 const R=window.R;if(!R||R.__qslService385)return;R.__qslService385=true;
 const C=globalThis.RADIO_APP_CONFIG||{origin:{name:'Bozköy, Torbalı, İzmir'},timezone:'Europe/Istanbul',receiver:{model:'TECSUN R-9012'}};
-const TZ=C.timezone||'Europe/Istanbul';
-const RECEIVER=C.receiver?.model||'TECSUN R-9012';
+const TZ=C.timezone||'Europe/Istanbul',RECEIVER=C.receiver?.model||'TECSUN R-9012';
 const clean=v=>String(v??'').replace(/[\u0000-\u001f\u007f]/g,' ').replace(/\s+/g,' ').trim();
 const fold=v=>clean(v).toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i');
 const dateFmt=new Intl.DateTimeFormat('en-GB',{timeZone:'UTC',day:'2-digit',month:'long',year:'numeric'});
 const numberFmt=new Intl.NumberFormat('en-US',{useGrouping:false,maximumFractionDigits:3});
+const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+let contactsCache=null,contactsFlight=null;
 
 const LANGUAGE_EN=Object.freeze({
  'ingilizce':'English','fransizca':'French','almanca':'German','ispanyolca':'Spanish','italyanca':'Italian','rusca':'Russian','arapca':'Arabic','romence':'Romanian','japonca':'Japanese','korece':'Korean','farsca':'Persian','cince':'Chinese','mandarin cincesi':'Mandarin Chinese','standart cince':'Standard Chinese','standart arapca':'Standard Arabic','kantonca':'Cantonese','hakka cincesi':'Hakka Chinese','min nan cincesi':'Min Nan Chinese','turkce':'Turkish','portekizce':'Portuguese','felemenkce':'Dutch','ukraynaca':'Ukrainian','lehce':'Polish','cekce':'Czech','sirpca':'Serbian','hirvatca':'Croatian','arnavutca':'Albanian','bulgarca':'Bulgarian','ermence':'Armenian','gurcuce':'Georgian','macarca':'Hungarian','fince':'Finnish','isvecce':'Swedish','yunanca':'Greek','ibranice':'Hebrew','darice':'Dari','pestuca':'Pashto','urduca':'Urdu','hintce':'Hindi','bengalce':'Bengali','tamilce':'Tamil','teluguca':'Telugu','nepalce':'Nepali','sinhala':'Sinhala','endonezce':'Indonesian','tagalogca':'Tagalog','vietnamca':'Vietnamese','tayca':'Thai','kmerce':'Khmer','laoca':'Lao','birmanca':'Burmese','mogolca':'Mongolian','uygurca':'Uyghur','kazakca':'Kazakh','kirgizca':'Kyrgyz','tacikce':'Tajik','turkmence':'Turkmen','kurtce':'Kurdish','azerbaycanca':'Azerbaijani','amharca':'Amharic','somalice':'Somali','oromoca':'Oromo','hausaca':'Hausa','svahili':'Swahili','tigrinya':'Tigrinya','yorubaca':'Yoruba','malgasca':'Malagasy','belucca':'Balochi','kinyarwanda':'Kinyarwanda','esperanto':'Esperanto','bislama':'Bislama','birden cok dil':'Multiple languages','belirtilmemis':'Unspecified'
@@ -14,91 +15,45 @@ const LANGUAGE_EN=Object.freeze({
 const COUNTRY_EN=Object.freeze({
  'cin':'China','tayvan':'Taiwan','amerika birlesik devletleri':'United States','abd':'United States','birlesik krallik':'United Kingdom','kuzey kore':'North Korea','guney kore':'South Korea','japonya':'Japan','ispanya':'Spain','romanya':'Romania','iran':'Iran','vietnam':'Vietnam','hindistan':'India','esvatini':'Eswatini','vatikan':'Vatican City','kuba':'Cuba','cezayir':'Algeria','fransa':'France','avustralya':'Australia','macaristan':'Hungary','brezilya':'Brazil','almanya':'Germany','yeni zelanda':'New Zealand','filipinler':'Philippines','turkiye':'Türkiye','endonezya':'Indonesia','kanada':'Canada','ekvador':'Ecuador','finlandiya':'Finland','alaska (abd)':'Alaska (USA)','isvec':'Sweden','malezya':'Malaysia','hollanda':'Netherlands','polonya':'Poland','peru':'Peru','rusya':'Russia','etiyopya':'Ethiopia','tunus':'Tunisia','madagaskar':'Madagascar','myanmar':'Myanmar','italya':'Italy','vanuatu':'Vanuatu','misir':'Egypt','cekya':'Czechia','slovakya':'Slovakia','mogolistan':'Mongolia','mali':'Mali','ukrayna':'Ukraine','kolombiya':'Colombia','solomon adalari':'Solomon Islands','meksika':'Mexico','cad':'Chad','kuveyt':'Kuwait','liberya':'Liberia','isvicre':'Switzerland','bolivya':'Bolivia','belcika':'Belgium','hong kong':'Hong Kong','birlesmis milletler':'United Nations','guam':'Guam','kenya':'Kenya','porto riko':'Puerto Rico','kongo cumhuriyeti':'Republic of the Congo','irlanda':'Ireland','ozbekistan':'Uzbekistan','sri lanka':'Sri Lanka','izlanda':'Iceland','danimarka':'Denmark','fildisi sahili':"Côte d'Ivoire",'hawaii (abd)':'Hawaii (USA)','gizli / bagimsiz yayin':'Clandestine / independent transmission','birlesik arap emirlikleri':'United Arab Emirates','umman':'Oman','bulgaristan':'Bulgaria','ermenistan':'Armenia','tayland':'Thailand','sudan':'Sudan','botsvana':'Botswana','luksemburg':'Luxembourg','suudi arabistan':'Saudi Arabia'
 });
-const COUNTRY_CODE_EN=Object.freeze({
- CHN:'China',TWN:'Taiwan',USA:'United States',G:'United Kingdom',KRE:'North Korea',KOR:'South Korea',J:'Japan',E:'Spain',ROU:'Romania',IRN:'Iran',VTN:'Vietnam',IND:'India',SWZ:'Eswatini',CVA:'Vatican City',CUB:'Cuba',ALG:'Algeria',F:'France',AUS:'Australia',HNG:'Hungary',B:'Brazil',D:'Germany',NZL:'New Zealand',PHL:'Philippines',TUR:'Türkiye',INS:'Indonesia',CAN:'Canada',EQA:'Ecuador',FIN:'Finland',S:'Sweden',MLA:'Malaysia',HOL:'Netherlands',POL:'Poland',PRU:'Peru',RUS:'Russia',ETH:'Ethiopia',TUN:'Tunisia',MDG:'Madagascar',MYA:'Myanmar',I:'Italy',VUT:'Vanuatu',EGY:'Egypt',CZE:'Czechia',SVK:'Slovakia',MNG:'Mongolia',MLI:'Mali',UKR:'Ukraine',CLM:'Colombia',SLM:'Solomon Islands',MEX:'Mexico',TCD:'Chad',KWT:'Kuwait',LBR:'Liberia',SUI:'Switzerland',BOL:'Bolivia',BEL:'Belgium',HKG:'Hong Kong',UN:'United Nations',GUM:'Guam',KEN:'Kenya',PTR:'Puerto Rico',COG:'Republic of the Congo',IRL:'Ireland',UZB:'Uzbekistan',CLN:'Sri Lanka',ISL:'Iceland',DNK:'Denmark',CTI:"Côte d'Ivoire",UAE:'United Arab Emirates',OMA:'Oman',BUL:'Bulgaria',ARM:'Armenia',THA:'Thailand',SDN:'Sudan',BOT:'Botswana',LUX:'Luxembourg'
-});
+const COUNTRY_CODE_EN=Object.freeze({CHN:'China',TWN:'Taiwan',USA:'United States',G:'United Kingdom',KRE:'North Korea',KOR:'South Korea',J:'Japan',E:'Spain',ROU:'Romania',IRN:'Iran',VTN:'Vietnam',IND:'India',SWZ:'Eswatini',CVA:'Vatican City',CUB:'Cuba',ALG:'Algeria',F:'France',AUS:'Australia',HNG:'Hungary',B:'Brazil',D:'Germany',NZL:'New Zealand',PHL:'Philippines',TUR:'Türkiye',INS:'Indonesia',CAN:'Canada',EQA:'Ecuador',FIN:'Finland',S:'Sweden',MLA:'Malaysia',HOL:'Netherlands',POL:'Poland',PRU:'Peru',RUS:'Russia',ETH:'Ethiopia',TUN:'Tunisia',MDG:'Madagascar',MYA:'Myanmar',I:'Italy',VUT:'Vanuatu',EGY:'Egypt',CZE:'Czechia',SVK:'Slovakia',MNG:'Mongolia',MLI:'Mali',UKR:'Ukraine',CLM:'Colombia',SLM:'Solomon Islands',MEX:'Mexico',TCD:'Chad',KWT:'Kuwait',LBR:'Liberia',SUI:'Switzerland',BOL:'Bolivia',BEL:'Belgium',HKG:'Hong Kong',UN:'United Nations',GUM:'Guam',KEN:'Kenya',PTR:'Puerto Rico',COG:'Republic of the Congo',IRL:'Ireland',UZB:'Uzbekistan',CLN:'Sri Lanka',ISL:'Iceland',DNK:'Denmark',CTI:"Côte d'Ivoire",UAE:'United Arab Emirates',OMA:'Oman',BUL:'Bulgaria',ARM:'Armenia',THA:'Thailand',SDN:'Sudan',BOT:'Botswana',LUX:'Luxembourg'});
+const EN_LANG=new Set(Object.values(LANGUAGE_EN).map(fold)),EN_COUNTRY=new Set([...Object.values(COUNTRY_EN),...Object.values(COUNTRY_CODE_EN)].map(fold));
+const TURKISH_HINTS=new Set(['ve','bir','bu','yayin','yayini','istasyon','sinyal','duydum','duyuldu','zayif','guclu','haber','haberler','muzik','konusma','parazit','kayit','radyo','cok','icin','olarak','ses','alindi','dinledim','programi']);
 
-function formatDate(value){
- const raw=clean(value);
- if(!/^\d{4}-\d{2}-\d{2}$/.test(raw))return raw;
- const d=new Date(`${raw}T12:00:00Z`);
- return Number.isNaN(d.getTime())?raw:dateFmt.format(d);
-}
+function formatDate(value){const raw=clean(value);if(!/^\d{4}-\d{2}-\d{2}$/.test(raw))return raw;const d=new Date(`${raw}T12:00:00Z`);return Number.isNaN(d.getTime())?raw:dateFmt.format(d)}
 function formatTime(value){const m=clean(value).match(/^(\d{1,2}):(\d{2})/);return m?`${String(Number(m[1])).padStart(2,'0')}:${m[2]}`:clean(value)}
-function englishLanguage(value){
- const raw=clean(value);if(!raw)return'';
- const direct=LANGUAGE_EN[fold(raw)];if(direct)return direct;
- const parts=raw.split(/[;,/+]/).map(x=>clean(x)).filter(Boolean);
- if(parts.length>1)return[...new Set(parts.map(x=>LANGUAGE_EN[fold(x)]||x))].join(', ');
- return raw;
-}
-function englishCountry(value){
- const raw=clean(value);if(!raw)return'';
- if(COUNTRY_CODE_EN[raw.toUpperCase()])return COUNTRY_CODE_EN[raw.toUpperCase()];
- return COUNTRY_EN[fold(raw)]||raw;
-}
-function formatFrequency(log){
- const n=Number(log?.frequency);if(!Number.isFinite(n))return'';
- const unit=clean(log?.unit)||(log?.band==='FM'?'MHz':'kHz');
- return`${numberFmt.format(n)} ${unit}`;
-}
-function signalReport(value){
- const n=Number(value);if(!Number.isFinite(n)||n<1||n>5)return'Not recorded';
- const label={1:'very weak',2:'weak',3:'fair',4:'good',5:'very good'}[Math.round(n)]||'recorded';
- return`${Math.round(n)}/5 (${label}; personal listening scale)`;
-}
-function utcStamp(log){
- const time=String(log?.time||'00:00').slice(0,5),date=String(log?.date||''),canonical=R.guideService?.wallTimeToInstant?.(date,time),d=canonical instanceof Date?canonical:new Date(`${date}T${time}:00+03:00`);
- if(Number.isNaN(d.getTime()))return{date,time};
- return{date:d.toISOString().slice(0,10),time:d.toISOString().slice(11,16)};
-}
+function englishLanguage(value){const raw=clean(value);if(!raw)return'';const parts=raw.split(/[;,/+]/).map(clean).filter(Boolean),out=[];for(const part of parts){const mapped=LANGUAGE_EN[fold(part)];if(mapped)out.push(mapped);else if(EN_LANG.has(fold(part)))out.push(part)}return[...new Set(out)].join(', ')}
+function englishCountry(value){const raw=clean(value);if(!raw)return'';const code=COUNTRY_CODE_EN[raw.toUpperCase()];if(code)return code;const mapped=COUNTRY_EN[fold(raw)];if(mapped)return mapped;return EN_COUNTRY.has(fold(raw))?raw:''}
+function formatFrequency(log){const n=Number(log?.frequency);if(!Number.isFinite(n))return'';const unit=clean(log?.unit)||(log?.band==='FM'?'MHz':'kHz');return`${numberFmt.format(n)} ${unit}`}
+function signalReport(value){const n=Number(value);if(!Number.isFinite(n)||n<1||n>5)return'Not recorded';const label={1:'very weak',2:'weak',3:'fair',4:'good',5:'very good'}[Math.round(n)]||'recorded';return`${Math.round(n)}/5 (${label}, personal listening scale)`}
+function utcStamp(log){const time=String(log?.time||'00:00').slice(0,5),date=String(log?.date||''),canonical=R.guideService?.wallTimeToInstant?.(date,time),d=canonical instanceof Date?canonical:new Date(`${date}T${time}:00+03:00`);if(Number.isNaN(d.getTime()))return{date,time};return{date:d.toISOString().slice(0,10),time:d.toISOString().slice(11,16)}}
+function looksTurkish(value){const raw=clean(value),tokens=fold(raw).split(/[^a-z0-9]+/).filter(Boolean),hits=tokens.filter(x=>TURKISH_HINTS.has(x)).length;return hits>=2||(hits>=1&&/[çğıöşüÇĞİÖŞÜ]/.test(raw))}
+function safeEnglishText(value){const raw=clean(value);return raw&&!looksTurkish(raw)?raw:''}
+function programmeDetails(log){const x=log||{},explicit=safeEnglishText(x.qsl_notes);if(explicit)return explicit;const auto=[x.program,x.smart_program,x.notes].map(safeEnglishText).filter(Boolean);return[...new Set(auto)].join(' ')}
 function report(log){
- const x=log||{},station=clean(x.station||x.smart_station||'Unknown station'),utc=utcStamp(x);
- const country=englishCountry(x.country),language=englishLanguage(x.language);
- const details=clean(x.program||x.transcript),notes=clean(x.notes),frequency=formatFrequency(x);
- const fields=[
-  `Station: ${station}`,
-  country&&`Country: ${country}`,
-  utc.date&&`UTC date: ${formatDate(utc.date)}`,
-  utc.time&&`UTC time: ${formatTime(utc.time)} UTC`,
-  x.date&&`Local date: ${formatDate(x.date)}`,
-  x.time&&`Local time (${TZ}): ${formatTime(x.time)}`,
-  frequency&&`Frequency: ${frequency}`,
-  clean(x.band)&&`Band: ${clean(x.band)}`,
-  `Reception site: ${clean(x.location||C.origin?.name||'Bozköy, Torbalı, İzmir')}`,
-  `Receiver: ${RECEIVER}`,
-  language&&`Broadcast language: ${language}`,
-  `Signal strength: ${signalReport(x.signal_strength)}`
- ].filter(Boolean);
- const sections=[
-  'Reception Report and QSL Request','',
-  'Dear Sir or Madam,','',
-  `I am pleased to submit the following reception report for ${station}.`,'',
-  ...fields,'',
-  'Programme details / identification heard:',
-  details||'No additional programme details were logged.'
- ];
- if(notes&&fold(notes)!==fold(details))sections.push('','Additional reception notes:',notes);
- sections.push(
-  '',
-  'This report was prepared from my listening log. Signal strength is shown on my personal 1–5 listening scale and is not a calibrated SINPO or S-meter reading.',
-  '',
-  'I would be grateful if you could confirm this reception with a QSL card or e-QSL. If you need any additional reception details, I will be happy to provide them.',
-  '',
-  'Thank you for your broadcast and for taking the time to verify my report.',
-  '',
+ const x=log||{},station=clean(x.station||x.smart_station||'Unknown station'),utc=utcStamp(x),frequency=formatFrequency(x),country=englishCountry(x.country),language=englishLanguage(x.language),details=programmeDetails(x),site=clean(x.location||C.origin?.name||'Bozköy, Torbalı, İzmir');
+ const fields=[`Station: ${station}`,country&&`Broadcaster country: ${country}`,utc.date&&`Date: ${formatDate(utc.date)}`,utc.time&&`Time: ${formatTime(utc.time)} UTC`,frequency&&`Frequency: ${frequency}`,clean(x.band)&&`Band: ${clean(x.band)}`,language&&`Broadcast language: ${language}`,`Reception location: ${site}`,`Receiver: ${RECEIVER}`,`Signal strength: ${signalReport(x.signal_strength)}`].filter(Boolean);
+ return[
+  `Dear ${station} Team,`,'',
+  `I am writing to submit a reception report for your broadcast, received at my listening location in ${site}.`,'',
+  'RECEPTION DETAILS',...fields.map(v=>`• ${v}`),'',
+  'PROGRAMME DETAILS / IDENTIFICATION',details||'The station identification and transmission details above were logged at the time of reception. I did not record additional programme details in English.','',
+  'The signal-strength value above uses my personal 1–5 listening scale; it is not a calibrated SINPO or S-meter measurement.','',
+  'If your station still provides reception confirmations, I would be very grateful if you could verify this report with a QSL card or e-QSL. I will gladly provide any additional details if required.','',
+  'Thank you for your broadcasts and for taking the time to review my reception report.','',
   'Kind regards'
- );
- return sections.join('\n');
+ ].join('\n');
 }
-async function setStatus(id,status){
- if(!R.me)throw new Error('QSL güncellemesi için giriş gerekli.');
- if(!['planned','sent','received'].includes(status))throw new Error('Geçersiz QSL durumu.');
- const today=R.clock?.today?.()||R.today?.()||new Date().toISOString().slice(0,10),patch=status==='planned'?{qsl_status:'planned'}:status==='sent'?{qsl_status:'sent',qsl_sent_at:today}:{qsl_status:'received',qsl_received_at:today};
- const q=await R.S.from('radio_logs').update(patch).eq('id',id).eq('user_id',R.me.id).select().maybeSingle();
- if(q.error)throw q.error;await R.load?.();R.events?.emit?.('qsl:updated',{id,status,row:q.data||null});return q.data||null;
-}
+function subject(log){const x=log||{},station=clean(x.station||x.smart_station||'Radio station'),utc=utcStamp(x),frequency=formatFrequency(x);return['Reception report',station,frequency,utc.date&&formatDate(utc.date),utc.time&&`${formatTime(utc.time)} UTC`].filter(Boolean).join(' – ')}
+function emailDraft(log){return{subject:subject(log),body:report(log)}}
+function savedContact(log){const value=clean(log?.qsl_contact);if(!value)return null;if(EMAIL_RE.test(value))return{station_name:clean(log?.station||log?.smart_station||'Station'),email:value,contact_url:null,source_url:null,verified_at:null,contact_type:'saved',score:110,saved:true};if(/^https:\/\/[^\s]+$/i.test(value))return{station_name:clean(log?.station||log?.smart_station||'Station'),email:null,contact_url:value,source_url:value,verified_at:null,contact_type:'saved',score:110,saved:true};return null}
+async function loadContacts(force=false){if(!R.me)return[];if(!force&&Array.isArray(contactsCache))return contactsCache;if(contactsFlight)return contactsFlight;contactsFlight=(async()=>{const q=await R.S.from('radio_station_contacts').select('*').eq('active',true).order('station_name').limit(1000);if(q.error)throw q.error;contactsCache=q.data||[];return contactsCache})().finally(()=>contactsFlight=null);return contactsFlight}
+function contactScore(contact,log){const station=fold(log?.station||log?.smart_station),country=fold(englishCountry(log?.country)),names=[contact?.station_name,...(Array.isArray(contact?.aliases)?contact.aliases:[])].map(fold).filter(Boolean);if(!station||!names.length)return 0;let score=names.includes(station)?100:0;if(!score&&names.some(n=>n.length>=5&&(station.includes(n)||n.includes(station))))score=82;if(score&&country&&fold(contact?.country)===country)score+=5;return score}
+async function suggestContact(log,{force=false}={}){const saved=savedContact(log);if(saved)return saved;const rows=await loadContacts(force),ranked=rows.map(x=>({...x,score:contactScore(x,log)})).filter(x=>x.score>=82).sort((a,b)=>b.score-a.score||(String(b.verified_at||'').localeCompare(String(a.verified_at||''))));return ranked[0]||null}
+function safeHttpUrl(value){const raw=clean(value);return /^https:\/\/[^\s]+$/i.test(raw)?raw:''}
+async function saveContact(logId,contact){if(!R.me)throw new Error('QSL iletişimini kaydetmek için giriş gerekli.');const value=clean(contact?.email||contact?.contact_url);if(!value)throw new Error('Kaydedilecek iletişim yolu bulunamadı.');const q=await R.S.from('radio_logs').update({qsl_contact:value}).eq('id',logId).eq('user_id',R.me.id).select().maybeSingle();if(q.error)throw q.error;await R.load?.();return q.data||null}
+async function setEnglishDetails(id,text){if(!R.me)throw new Error('QSL ayrıntısını kaydetmek için giriş gerekli.');const value=clean(text);if(value&&looksTurkish(value))throw new Error('Program ayrıntısını İngilizce yaz. Türkçe metin İngilizce QSL raporuna eklenmeyecek.');const q=await R.S.from('radio_logs').update({qsl_notes:value||null}).eq('id',id).eq('user_id',R.me.id).select().maybeSingle();if(q.error)throw q.error;await R.load?.();return q.data||null}
+async function setStatus(id,status){if(!R.me)throw new Error('QSL güncellemesi için giriş gerekli.');if(!['planned','sent','received'].includes(status))throw new Error('Geçersiz QSL durumu.');const today=R.clock?.today?.()||R.today?.()||new Date().toISOString().slice(0,10),patch=status==='planned'?{qsl_status:'planned'}:status==='sent'?{qsl_status:'sent',qsl_sent_at:today}:{qsl_status:'received',qsl_received_at:today};const q=await R.S.from('radio_logs').update(patch).eq('id',id).eq('user_id',R.me.id).select().maybeSingle();if(q.error)throw q.error;await R.load?.();R.events?.emit?.('qsl:updated',{id,status,row:q.data||null});return q.data||null}
 R.qsl=report;
-R.qslService={report,utcStamp,setStatus,englishLanguage,englishCountry,formatDate,formatFrequency,signalReport};
+R.qslService={report,subject,emailDraft,utcStamp,setStatus,setEnglishDetails,loadContacts,suggestContact,saveContact,safeHttpUrl,englishLanguage,englishCountry,formatDate,formatFrequency,signalReport,programmeDetails,looksTurkish,contactScore};
 R.features?.register?.('qsl-service',{ready:true,provider:'app-qsl-service'});
 })();
