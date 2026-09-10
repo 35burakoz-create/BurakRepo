@@ -24,10 +24,10 @@ const DEF=[
  ['ten_countries','🗺️','Eter Atlası','10 farklı ülke kaydet.',s=>s.countries>=10],
  ['ten_stations','🏛️','İstasyon Koleksiyoncusu','10 farklı istasyon kaydet.',s=>s.stations>=10],
  ['first_audio','🎙️','Ses Kanıtı','Bir kayda gerçek ses örneği ekle.',()=>R.logs.some(x=>x.audio_path)],
- ['first_transcript','📝','Eterden Metne','Bir yayının transkriptini kaydet.',()=>R.logs.some(x=>String(x.transcript||'').trim())],
+ ['first_transcript','📝','Eterden Metne','Bir yayının konuşma dökümünü kaydet.',()=>R.logs.some(x=>String(x.transcript||'').trim())],
  ['first_qsl_sent','✉️','İlk QSL','İlk QSL raporunu gönder.',()=>R.logs.some(x=>['sent','received'].includes(x.qsl_status))],
- ['first_qsl_received','📬','Eterden Cevap','İlk QSL cevabını al.',()=>R.logs.some(x=>x.qsl_status==='received')],
- ['night_owl','🦉','Gece MW','00:00–04:59 arasında bir MW yayını kaydet.',()=>R.logs.some(x=>x.band==='MW'&&hourOf(x)<5)],
+ ['first_qsl_received','📬','Eterden Yanıt','İlk QSL yanıtını al.',()=>R.logs.some(x=>x.qsl_status==='received')],
+ ['night_owl','🦉','Gece MW','00.00–04.59 arasında bir MW yayını kaydet.',()=>R.logs.some(x=>x.band==='MW'&&hourOf(x)<5)],
  ['japanese','🇯🇵','Japonca Yayın','İlk Japonca yayını kaydet.',s=>s.languageNames.some(x=>norm(x).includes('japon')||norm(x).includes('japanese'))],
  ['streak_3','🔥','3 Günlük Seri','3 gün üst üste kayıt tut.',s=>s.maxStreak>=3],
  ['streak_7','🔥','Bir Haftalık Seri','7 gün üst üste kayıt tut.',s=>s.maxStreak>=7],
@@ -40,6 +40,6 @@ function progress(){const s=stats(),open=unlocked();return{stats:s,unlocked:stat
 R.achievementDefs=DEF;R.achievements=state.rows;R.achievementsService={state,definitions:DEF,stats,progress,load,sync:syncEarned};
 R.events?.on?.('auth:changed',x=>{if(x?.authenticated)load({force:true}).catch(e=>R.reportError?.(e,'achievements-auth',{silent:true}));else load({sync:false})});
 R.events?.on?.('data:loaded',()=>syncEarned().catch(e=>R.reportError?.(e,'achievements-data',{silent:true})));
-setTimeout(()=>{if(R.me)load({force:true}).catch(e=>R.reportError?.(e,'achievements-initial',{silent:true}))},650);
+setTimeout(()=>{if(R.me)load().catch(e=>R.reportError?.(e,'achievements-initial',{silent:true}))},650);
 R.features?.register?.('achievements-service',{ready:true,provider:'app-achievements-service'});
 })();
