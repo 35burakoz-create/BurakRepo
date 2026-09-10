@@ -1,0 +1,71 @@
+/* Geniş estetik denetim — okunabilirlik, güvenli alan ve odak görünürlüğü. */
+
+/* Teknik panel karakterini korurken 8–10 px mikro metinleri gerçek telefonda okunabilir seviyeye taşı. */
+.v42-console-id span,.v42-radio-scale span,.v42-section-kicker,.v42-week-head small,
+.v42-week-day>b,.v42-week-day>span,.v42-now-summary small,.v42-now-summary span,
+.app-density-ident small,.app-density-metric small,.app-density-mix>span,.app-density-mix em,
+#tab-map .section-head:after,#tab-calendar .cal-head{
+  font-size:10.5px!important;
+  line-height:1.35!important;
+}
+.v42-console-id small,.v42-console-live small,.app-density-metric span{
+  font-size:11px!important;
+  line-height:1.4!important;
+}
+.app-density-ident span{font-size:11.5px!important;line-height:1.45!important}
+.app-smart-summary span,.app-cal-hint,.app-listen-mini-main small,.app-listen-mini-main span,
+.app-listen-row span{font-size:11px!important;line-height:1.4!important}
+
+/* Radyo sözlüğü yeni başlayanlar için küçük ama göz yormayan bir not katmanı olsun. */
+.app-radio-glossary-summary b{font-size:13px!important}
+.app-radio-glossary-summary small{font-size:11.5px!important;line-height:1.45!important}
+.app-radio-glossary>summary>em{font-size:10.5px!important}
+.app-radio-glossary-term b{font-size:12px!important}
+.app-radio-glossary-term p{font-size:11.5px!important;line-height:1.55!important}
+.app-radio-glossary-foot span,.app-radio-glossary-search span{font-size:11px!important;line-height:1.45!important}
+.app-radio-glossary-modal-head small{font-size:10px!important}
+.app-radio-glossary-modal-head p{font-size:12px!important;line-height:1.45!important}
+
+/* Mobil tarayıcı çubukları ve çentikli ekranlar modal içeriğini kesmesin. */
+.app-listen-card{max-height:min(94dvh,820px)!important;padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
+.app-listen-modal,.foundation-diag,.app-collection{max-height:min(92dvh,820px)!important}
+.app-radio-glossary-modal{max-height:min(90dvh,820px)!important}
+.app-radio-glossary-all,.app-listen-modal,.foundation-diag,.app-collection{
+  scrollbar-gutter:stable;
+  overscroll-behavior:contain;
+}
+
+/* Klavye kullanıcıları için odak her zaman görünür kalsın. */
+#v38Sheet button:focus-visible,.app-listen button:focus-visible,.app-listen input:focus-visible,
+.app-radio-glossary-modal button:focus-visible,.app-radio-glossary-modal input:focus-visible{
+  outline:3px solid rgba(99,102,241,.34)!important;
+  outline-offset:2px!important;
+}
+
+/* Dar ekranda uzun teknik satırlar yatay kaydırma üretmesin. */
+.v42-now-summary>div,.app-density-metric,.app-radio-glossary-term,.app-upcoming-row>div:first-child{
+  min-width:0;
+}
+.v42-now-summary span,.app-density-metric span,.app-radio-glossary-term p{
+  overflow-wrap:anywhere;
+}
+.app-radio-glossary-term p{hyphens:auto}
+
+@media(max-width:680px){
+  .app-listen-modal,.foundation-diag,.app-collection{
+    padding-bottom:calc(16px + env(safe-area-inset-bottom))!important;
+  }
+  .app-radio-glossary-modal{
+    width:calc(100vw - 12px)!important;
+    max-height:92dvh!important;
+    border-radius:18px!important;
+  }
+  .app-radio-glossary-term p{font-size:12px!important}
+  .v42-now-summary small,.v42-now-summary span{font-size:11px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .v42-radio-needle,.cal-day,.v38-menu-row{
+    transition:none!important;
+  }
+}
