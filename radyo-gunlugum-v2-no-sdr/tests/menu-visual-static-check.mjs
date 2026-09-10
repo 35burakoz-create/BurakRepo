@@ -18,5 +18,6 @@ check('mobile form controls avoid zoom',css.includes('input,select,textarea{font
 check('mobile menu uses full-width bottom sheet',css.includes('width:100%!important')&&css.includes('max-height:86dvh!important'));
 check('menu touch targets are enlarged',css.includes('.v38-menu-row{min-height:58px')&&css.includes('.v38-menu-group summary{min-height:50px'));
 check('dense microcopy readability overrides exist',css.includes('.app-listen-mini-main small')&&css.includes('.v41-forecast span')&&css.includes('.app-atlas-pill'));
-check('fresh PWA identity for visual changes',config.includes('menu-visual-polish-20260910-5'));
+const cache=config.match(/cacheVersion:'(v385-core-boundary-(?:menu-visual-polish|deep-audit)-20260910-(\d+))'/);
+check('fresh PWA identity for visual changes',!!cache&&Number(cache[2])>=5);
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);const failed=checks.filter(x=>!x[1]);console.log(`\n${checks.length-failed.length}/${checks.length} menu/visual checks passed.`);if(failed.length)console.error('Failed:',failed.map(x=>x[0]).join(', '));
