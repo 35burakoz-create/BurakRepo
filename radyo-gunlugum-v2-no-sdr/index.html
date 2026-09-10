@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#111827">
-  <meta name="description" content="Tecsun R-9012 için Türkiye saatine göre çalışan kişisel radyo günlüğü, yayın rehberi ve saha asistanı">
+  <meta name="description" content="TECSUN R-9012 için Türkiye saatine göre çalışan kişisel radyo günlüğü, yayın rehberi ve saha asistanı">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Radyo Günlüğüm</title>
@@ -27,13 +27,13 @@
   </header>
 
   <section id="authView" class="auth card">
-    <div class="auth-tabs"><button class="auth-tab active" data-mode="login">Giriş</button><button class="auth-tab" data-mode="signup">Kayıt Ol</button></div>
+    <div class="auth-tabs" role="tablist" aria-label="Hesap işlemi"><button class="auth-tab active" data-mode="login">Giriş</button><button class="auth-tab" data-mode="signup">Kayıt Ol</button></div>
     <form id="authForm">
       <label>E-posta<input id="authEmail" type="email" autocomplete="email" required></label>
       <label>Şifre<input id="authPassword" type="password" minlength="8" autocomplete="current-password" required></label>
       <button id="authSubmit" class="btn primary" type="submit">Giriş Yap</button>
     </form>
-    <p id="authMsg" class="msg"></p>
+    <p id="authMsg" class="msg" role="status" aria-live="polite"></p>
   </section>
 
   <section id="appView" class="hidden">
@@ -66,7 +66,7 @@
             <label class="span2">Konum<input id="location" value="Bozköy, Torbalı, İzmir"></label>
             <label>Enlem<input id="latitude" type="number" step="0.000001"></label>
             <label>Boylam<input id="longitude" type="number" step="0.000001"></label>
-            <div class="span2 row-actions"><button id="geoBtn" class="btn ghost" type="button">📍 GPS koordinatlarını al</button><span id="geoMsg" class="hint"></span></div>
+            <div class="span2 row-actions"><button id="geoBtn" class="btn ghost" type="button">📍 GPS koordinatlarını al</button><span id="geoMsg" class="hint" role="status" aria-live="polite"></span></div>
             <label>Sinyal gücü<select id="signal"><option value="">—</option><option value="1">1 — taşıyıcı veya parazit</option><option value="2">2 — kısmen anlaşılır</option><option value="3">3 — anlaşılır</option><option value="4">4 — temiz</option><option value="5">5 — çok güçlü</option></select></label>
             <label>Durum<select id="status"><option value="candidate">Aday</option><option value="confirmed">Doğrulandı</option></select></label>
             <label>Anten yönü<input id="antennaDirection" placeholder="Batı, 270°"></label>
@@ -82,7 +82,7 @@
               <label class="span2">QSL notu<input id="qslNotes"></label>
             </div></fieldset>
             <div class="span2 suggestion-strip" id="formSuggestionStrip">Frekans ve saati girdikten sonra akıllı eşleştirmeyi kullanabilirsin.</div>
-            <div class="span2 row-actions"><button id="saveBtn" class="btn primary" type="submit">Kaydı ekle</button><span id="formMsg" class="msg"></span></div>
+            <div class="span2 row-actions"><button id="saveBtn" class="btn primary" type="submit">Kaydı ekle</button><span id="formMsg" class="msg" role="status" aria-live="polite"></span></div>
           </form>
         </section>
 
@@ -96,17 +96,17 @@
 
     <section id="tab-audio" class="tab-view hidden">
       <div class="two-col">
-        <section class="card"><h2>Ses kaydı</h2><p class="hint">Radyodan kısa bir ses örneği kaydet veya daha önce kaydettiğin bir ses dosyasını yükle.</p><div class="audio-controls"><button id="recordStartBtn" class="btn primary">● Kaydı başlat</button><button id="recordStopBtn" class="btn ghost" disabled>■ Durdur</button><span id="recordTimer" class="timer">00:00</span></div><audio id="audioPreview" class="audio-preview hidden" controls></audio><label class="upload-label">Ses dosyası seç<input id="audioFile" type="file" accept="audio/*"></label><button id="uploadAudioBtn" class="btn primary" disabled>Yükle</button><p id="audioMsg" class="msg"></p></section>
-        <section class="card"><h2>Canlı konuşma dökümü</h2><p class="hint">Tarayıcının konuşma tanıma özelliğini kullanır.</p><label>Tanıma dili<select id="speechLang"><option value="tr-TR">Türkçe</option><option value="en-US">İngilizce</option><option value="ar-SA">Arapça</option><option value="fr-FR">Fransızca</option><option value="es-ES">İspanyolca</option><option value="de-DE">Almanca</option><option value="it-IT">İtalyanca</option><option value="ru-RU">Rusça</option></select></label><div class="row-actions"><button id="speechStartBtn" class="btn primary">🎙️ Başlat</button><button id="speechStopBtn" class="btn ghost" disabled>Durdur</button></div><textarea id="speechText" rows="8"></textarea><button id="copyTranscriptBtn" class="btn ghost">Forma aktar</button><p id="speechMsg" class="msg"></p></section>
+        <section class="card"><h2>Ses kaydı</h2><p class="hint">Radyodan kısa bir ses örneği kaydet veya daha önce kaydettiğin bir ses dosyasını yükle.</p><div class="audio-controls"><button id="recordStartBtn" class="btn primary">● Kaydı başlat</button><button id="recordStopBtn" class="btn ghost" disabled>■ Durdur</button><span id="recordTimer" class="timer">00:00</span></div><audio id="audioPreview" class="audio-preview hidden" controls></audio><label class="upload-label">Ses dosyası seç<input id="audioFile" type="file" accept="audio/*"></label><button id="uploadAudioBtn" class="btn primary" disabled>Yükle</button><p id="audioMsg" class="msg" role="status" aria-live="polite"></p></section>
+        <section class="card"><h2>Canlı konuşma dökümü</h2><p class="hint">Tarayıcının konuşma tanıma özelliğini kullanır.</p><label>Tanıma dili<select id="speechLang"><option value="tr-TR">Türkçe</option><option value="en-US">İngilizce</option><option value="ar-SA">Arapça</option><option value="fr-FR">Fransızca</option><option value="es-ES">İspanyolca</option><option value="de-DE">Almanca</option><option value="it-IT">İtalyanca</option><option value="ru-RU">Rusça</option></select></label><div class="row-actions"><button id="speechStartBtn" class="btn primary">🎙️ Başlat</button><button id="speechStopBtn" class="btn ghost" disabled>Durdur</button></div><textarea id="speechText" rows="8"></textarea><button id="copyTranscriptBtn" class="btn ghost">Forma aktar</button><p id="speechMsg" class="msg" role="status" aria-live="polite"></p></section>
       </div>
       <section class="card smart-card"><div class="section-head"><div><h2>Akıllı istasyon ve program önerisi</h2><p class="hint">Frekans, saat, dil ve yayın çizelgesi birlikte değerlendirilir.</p></div><button id="analyzeBtn" class="btn primary">Analiz et</button></div><div id="smartResult" class="smart-result empty">Henüz analiz yapılmadı.</div></section>
     </section>
 
     <section id="tab-analysis" class="tab-view hidden"><div id="analysisCards" class="stats"></div><div class="two-col"><section class="card"><h2>Bant dağılımı</h2><div id="bandBars" class="bars"></div></section><section class="card"><h2>Dil dağılımı</h2><div id="langBars" class="bars"></div></section><section class="card"><h2>En iyi dinleme saatlerin</h2><div id="predictions"></div></section><section class="card"><h2>En sık dinlediğin istasyonlar</h2><div id="stationBars" class="bars"></div></section></div></section>
     <section id="tab-map" class="tab-view hidden"><section class="card"><div class="section-head"><div><h2>Dinleme haritası</h2><p class="hint">Konum bilgisi eklenmiş dinleme kayıtları.</p></div><span id="mapCount" class="badge"></span></div><div id="map"></div></section></section>
-    <section id="tab-calendar" class="tab-view hidden"><section class="card"><div class="section-head"><div><h2>Dinleme takvimi</h2></div><input id="calendarMonth" type="month"></div><div id="calendarGrid" class="calendar-grid"></div></section></section>
+    <section id="tab-calendar" class="tab-view hidden"><section class="card"><div class="section-head"><div><h2>Dinleme takvimi</h2></div><input id="calendarMonth" type="month" aria-label="Takvim ayı"></div><div id="calendarGrid" class="calendar-grid"></div></section></section>
     <section id="tab-qsl" class="tab-view hidden"><section class="card"><div class="section-head"><div><h2>QSL merkezi</h2><p class="hint">Gönderilen QSL raporlarını ve gelen yanıtları takip et.</p></div></div><div id="qslList"></div></section></section>
-    <section id="tab-guide" class="tab-view hidden"><section class="card"><div class="section-head"><div><h2>Yayın rehberi</h2><p class="hint">TECSUN R-9012'nin alabileceği FM, MW ve kısa dalga yayınları.</p></div></div><div class="filters guide-filters"><select id="guideBand"><option value="">Tüm bantlar</option></select><input id="guideFreq" type="number" step="0.001" placeholder="Frekans"><input id="guideSearch" placeholder="İstasyon, dil veya ülke"></div><div id="guideList"></div></section></section>
+    <section id="tab-guide" class="tab-view hidden"><section class="card"><div class="section-head"><div><h2>Yayın rehberi</h2><p class="hint">TECSUN R-9012'nin alabileceği FM, MW ve kısa dalga yayınları.</p></div></div><div class="filters guide-filters"><select id="guideBand" aria-label="Yayın rehberi bandı"><option value="">Tüm bantlar</option></select><input id="guideFreq" type="number" step="0.001" placeholder="Frekans" aria-label="Yayın rehberi frekansı"><input id="guideSearch" placeholder="İstasyon, dil veya ülke" aria-label="Yayın rehberinde ara"></div><div id="guideList"></div></section></section>
   </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
