@@ -4,10 +4,11 @@ import vm from 'node:vm';
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const checks=[];function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
-const js=read('app-page-density.js'),css=read('app-page-density.css'),boot=read('app-bootstrap.js'),sw=read('sw.js'),config=read('app-config.js');
+const js=read('app-page-density.js'),css=read('app-page-density.css'),night=read('app-page-density-night.css'),boot=read('app-bootstrap.js'),sw=read('sw.js'),config=read('app-config.js');
 let syntax=true;try{new vm.Script(js,{filename:'app-page-density.js'})}catch{syntax=false}check('page density module syntax',syntax);
 check('page density module is booted',boot.includes("'app-page-density.js'"));
-check('page density assets are cached',sw.includes("'./app-page-density.js'")&&sw.includes("'./app-page-density.css'"));
+check('page density assets are cached',sw.includes("'./app-page-density.js'")&&sw.includes("'./app-page-density.css'")&&sw.includes("'./app-page-density-night.css'"));
+check('page density loads light and night palettes',js.includes("'app-page-density.css','pageDensityCss'")&&js.includes("'app-page-density-night.css','pageDensityNightCss'"));
 check('static sparse routes have telemetry',js.includes("['log','audio','analysis','map','calendar','qsl','guide']")&&js.includes('app-page-density-rail'));
 check('journal telemetry uses real logs',js.includes("rail('log','Dinleme günlüğü'")&&js.includes("x.status==='confirmed'"));
 check('audio telemetry uses audio and transcript data',js.includes("rail('audio','Ses çalışma alanı'")&&js.includes('x.audio_path')&&js.includes('x.transcript'));
@@ -31,6 +32,7 @@ check('memory visual treatment exists',css.includes('.am-hero:after')&&css.inclu
 check('collection visual treatment exists',css.includes('.app-collection{')&&css.includes('.app-badge-card:after'));
 check('home and now share technical rhythm',css.includes('.v42-section:after')&&css.includes('.v38-section:after'));
 check('mobile density collapses safely',css.includes('@media(max-width:600px)')&&css.includes('.app-density-metrics{grid-template-columns:1fr 1fr}'));
-check('night density palette exists',css.includes('html.night .app-page-density-rail'));
-check('fresh page density PWA generation',config.includes("cacheVersion:'v385-core-boundary-deep-audit-20260910-8'"));
+check('night palette covers sparse pages',night.includes('#tab-log .form-card')&&night.includes('#tab-audio .smart-result')&&night.includes('#tab-analysis>.two-col>.card')&&night.includes('#tab-map>.card')&&night.includes('#tab-calendar>.card')&&night.includes('#tab-qsl>.card')&&night.includes('#tab-guide>.card'));
+check('night palette covers rich pages',night.includes('.app-atlas-card')&&night.includes('.v41-band-card')&&night.includes('.am-section')&&night.includes('.app-collection'));
+check('fresh page density PWA generation',config.includes("cacheVersion:'v385-core-boundary-deep-audit-20260910-9'"));
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);const failed=checks.filter(x=>!x[1]);console.log(`\n${checks.length-failed.length}/${checks.length} page-density checks passed.`);if(failed.length)console.error('Failed:',failed.map(x=>x[0]).join(', '));
