@@ -65,3 +65,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/radio-glossary-static-check.mjs
       - name: Wide audit regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/wide-audit-static-check.mjs
+      - name: QSL English report regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/qsl-english-report-static-check.mjs
