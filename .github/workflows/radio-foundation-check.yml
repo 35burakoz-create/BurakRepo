@@ -30,7 +30,7 @@ jobs:
             app-config.js core.js app-bootstrap.js \
             v44-search-rebuild.js \
             app-foundation.js app-toast.js app-pwa-install.js app-runtime-core.js app-auth-service.js app-router-core.js app-ui-state.js app-auth-ui.js \
-            app-current-programs.js app-guide-service.js app-language-service.js app-qsl-service.js app-record-service.js \
+            app-broadcast-locale.js app-current-programs.js app-guide-service.js app-language-service.js app-qsl-service.js app-record-service.js \
             app-record-integrity.js app-offline-service.js app-smart-analyzer.js \
             app-ai-service.js app-ai-ui.js app-achievements-service.js app-collection-ui.js \
             app-user-services.js app-listening-service.js app-atlas-service.js \
@@ -59,3 +59,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/deep-audit-static-check.mjs
       - name: Page density regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/page-density-static-check.mjs
+      - name: Broadcast localization regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/broadcast-localization-static-check.mjs
