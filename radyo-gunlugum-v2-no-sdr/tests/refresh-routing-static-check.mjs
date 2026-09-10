@@ -25,7 +25,7 @@ check('route restore does not depend on appView visibility',state.includes("rest
 check('authenticated session restores route immediately',state.includes("R.events?.on?.('auth:changed',x=>{if(x?.authenticated){restoreFilters();restoreDraft();R.navigation.restore()}})"));
 check('route is re-entered after all modules register',state.includes("R.events?.on?.('bootstrap:ready',()=>{if(R.me){restoreFilters();R.navigation.restore()}})"));
 check('slow fallback timer removed',!state.includes('3900')&&!state.includes('setTimeout(()=>{bootGuardUntil'));
-check('route fix has a fresh PWA cache identity',/cacheVersion:'v385-core-boundary-route-refresh-[^']+'/.test(config));
+check('route fix has a non-legacy PWA cache identity',/cacheVersion:'v385-core-boundary-(?!20260907-1)[^']+'/.test(config));
 check('service worker navigation remains network first',sw.includes("if(req.mode==='navigate')")&&sw.includes("fetch(req,{cache:'no-store'})"));
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
