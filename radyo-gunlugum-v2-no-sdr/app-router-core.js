@@ -7,8 +7,8 @@ function ensureTab(name){let tab=document.getElementById(`tab-${name}`);if(tab)r
 function switchView(name){const tab=document.getElementById(`tab-${name}`);if(!tab)throw new Error(`Route view missing: ${name}`);$$('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));$$('.tab-view').forEach(v=>v.classList.add('hidden'));tab.classList.remove('hidden');return name}
 function updateDock(route){$$('#v38Dock [data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===route))}
 let current=hashRoute()||R.uiState?.tab||visibleRoute()||'home';
-function defaultPrepare(route){if(route==='home'||route==='now')ensureTab(route);if(route==='propagation'){try{R.renderPropagation?.(false)}catch(error){R.reportError?.(error,'propagation-prepare',{silent:true})}ensureTab('propagation')}}
-function defaultEnter(route){updateDock(route);if(route==='propagation')setTimeout(()=>R.renderPropagation?.(false),0)}
+function defaultPrepare(route){if(route==='home'||route==='now'||route==='propagation')ensureTab(route)}
+function defaultEnter(route){updateDock(route)}
 const router={
  register(name,adapter={}){if(!name)return()=>{};KNOWN.add(name);hooks.set(name,adapter||{});return()=>hooks.delete(name)},
  has(name){return KNOWN.has(String(name))||!!document.getElementById(`tab-${String(name)}`)},
@@ -19,7 +19,7 @@ const router={
  switchView
 };
 R.router=router;R.switch=(name,meta={})=>router.go(name,{source:'R.switch',...meta});
-router.register('home',{prepare:()=>ensureTab('home')});router.register('now',{prepare:()=>ensureTab('now')});router.register('propagation',{prepare:()=>{try{R.renderPropagation?.(false)}catch{};ensureTab('propagation')},enter:()=>setTimeout(()=>R.renderPropagation?.(false),0)});
+router.register('home',{prepare:()=>ensureTab('home')});router.register('now',{prepare:()=>ensureTab('now')});router.register('propagation',{prepare:()=>ensureTab('propagation')});
 $$('.main-tab').forEach(b=>b.onclick=null);document.addEventListener('click',e=>{const b=e.target.closest('.main-tab[data-tab]');if(!b)return;e.preventDefault();router.go(b.dataset.tab,{source:'main-tab',historyMode:'push'})},true);
 R.features?.register?.('router',{ready:true,provider:'app-router-core'});events?.emit?.('router:ready',{provider:'app-router-core',current,routes:router.routes()});
 })();
