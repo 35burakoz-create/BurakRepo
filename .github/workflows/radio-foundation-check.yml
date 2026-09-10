@@ -36,7 +36,7 @@ jobs:
             app-user-services.js app-listening-service.js app-atlas-service.js \
             app-shell-core.js app-menu-ui.js app-quick-log.js app-home-ui.js app-now-ui.js app-log-ui.js app-log-form-ui.js \
             app-audio-ui.js app-guide-ui.js app-analysis-ui.js app-map-ui.js app-calendar-ui.js app-qsl-ui.js \
-            app-listening-ui.js app-atlas-ui.js app-propagation.js app-memory.js \
+            app-listening-ui.js app-atlas-ui.js app-propagation.js app-memory.js app-page-density.js \
             app-audio-safety.js app-backup.js app-pwa-updates.js app-smoke.js; do
             echo "Checking $f"
             node --check "$APP/$f"
@@ -57,3 +57,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/menu-visual-static-check.mjs
       - name: Deep application audit checks
         run: node radyo-gunlugum-v2-no-sdr/tests/deep-audit-static-check.mjs
+      - name: Page density regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/page-density-static-check.mjs
