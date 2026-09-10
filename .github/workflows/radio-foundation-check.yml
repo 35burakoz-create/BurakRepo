@@ -51,3 +51,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/direct-legacy-cleanup-static-check.mjs
       - name: Core boundary regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/core-boundary-static-check.mjs
+      - name: Refresh routing regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/refresh-routing-static-check.mjs
