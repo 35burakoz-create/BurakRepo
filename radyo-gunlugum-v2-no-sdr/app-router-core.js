@@ -6,8 +6,8 @@ function hashRoute(){const h=decodeURIComponent(location.hash||'').replace(/^#/,
 function ensureTab(name){let tab=document.getElementById(`tab-${name}`);if(tab)return tab;tab=document.createElement('section');tab.id=`tab-${name}`;tab.className='tab-view hidden';const app=$('#appView'),log=$('#tab-log');app?.insertBefore(tab,log||app.firstChild);return tab}
 function switchView(name){const tab=document.getElementById(`tab-${name}`);if(!tab)throw new Error(`Route view missing: ${name}`);$$('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));$$('.tab-view').forEach(v=>v.classList.add('hidden'));tab.classList.remove('hidden');return name}
 function updateDock(route){$$('#v38Dock [data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===route))}
-let current=hashRoute()||R.uiState?.tab||visibleRoute()||'home';
-function defaultPrepare(route){if(route==='home'||route==='now'||route==='propagation')ensureTab(route)}
+let current=hashRoute()||'home';
+function defaultPrepare(route){if(!document.getElementById(`tab-${route}`))ensureTab(route)}
 function defaultEnter(route){updateDock(route)}
 const router={
  register(name,adapter={}){if(!name)return()=>{};KNOWN.add(name);hooks.set(name,adapter||{});return()=>hooks.delete(name)},
