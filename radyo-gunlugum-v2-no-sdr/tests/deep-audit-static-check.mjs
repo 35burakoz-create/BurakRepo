@@ -17,6 +17,9 @@ const foundation=read('app-foundation.js');
 const collection=read('app-collection-ui.js');
 const achievements=read('app-achievements-service.js');
 const shell=read('app-shell-core.js');
+const home=read('app-home-ui.js');
+const now=read('app-now-ui.js');
+const visualCss=read('app-visual-polish.css');
 const deepCss=read('app-deep-audit.css');
 const sw=read('sw.js');
 const manifest=read('manifest.webmanifest');
@@ -45,6 +48,13 @@ check('deep visual layer is cached by PWA',sw.includes("'./app-deep-audit.css'")
 check('manifest description is natural Turkish',manifest.includes('Radyo Hafızası')&&manifest.includes('Yayılım Asistanı')&&manifest.includes('yapay zekâ araçlarını')&&!/Radio Memory|Propagation Assistant|global arama|AI araç/.test(manifest));
 check('achievement wording uses Turkish UI terminology',achievements.includes('konuşma dökümünü')&&achievements.includes('QSL yanıtını')&&!achievements.includes('transkriptini'));
 check('achievement fallback load reuses cache',achievements.includes("setTimeout(()=>{if(R.me)load().catch"));
+check('home includes receiver band dial tied to current candidate',home.includes("const BAND_ORDER=['FM','MW','SW1'")&&home.includes('function dialPosition')&&home.includes('v42-radio-console')&&home.includes('v42-radio-needle'));
+check('home includes real seven day listening rhythm',home.includes('function weekActivity')&&home.includes('v42-week-bars')&&home.includes('SON 7 GÜN'));
+check('home primary candidate includes frequency ruler',home.includes('v42-freq-ruler'));
+check('now view includes live spectrum distribution summary',now.includes('function spectrumSummary')&&now.includes('v42-now-summary')&&now.includes('kısa dalga')&&now.includes('orta dalga'));
+check('radio density styling includes analog dial scale',visualCss.includes('.v42-radio-dial')&&visualCss.includes('.v42-radio-needle')&&visualCss.includes('repeating-linear-gradient'));
+check('radio density styling remains responsive',visualCss.includes('@media(max-width:760px)')&&visualCss.includes('.v42-radio-console{grid-template-columns:auto minmax(0,1fr)'));
+check('now spectrum console has responsive styling',deepCss.includes('.v42-now-summary')&&deepCss.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(x=>!x[1]);
