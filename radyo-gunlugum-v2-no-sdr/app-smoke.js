@@ -48,6 +48,18 @@ function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,
  add('UI state',R.features?.get?.('ui-state')?.provider==='app-ui-state','state');
  add('Store',!!R.store&&typeof R.store.search==='function',JSON.stringify(R.store?.counts?.()||{}));
  add('Global search',typeof R.openGlobalSearch==='function'&&typeof R.v44SearchEngine==='function','search');
+ const requiredBands=['FM','MW',...Array.from({length:10},(_,i)=>`SW${i+1}`)],configuredBands=cfg.receiver?.bands||{};
+ add('R-9012 alıcı profili',cfg.receiver?.model==='TECSUN R-9012'&&requiredBands.every(b=>Number.isFinite(Number(configuredBands[b]?.min))&&Number.isFinite(Number(configuredBands[b]?.max))&&Number(configuredBands[b].max)>Number(configuredBands[b].min)),`${Object.keys(configuredBands).length} bant`);
+ const origin=R.listeningOrigin?.()||cfg.origin||{},originOK=String(origin.name||'').trim()&&Number.isFinite(Number(origin.lat))&&Number(origin.lat)>=-90&&Number(origin.lat)<=90&&Number.isFinite(Number(origin.lon))&&Number(origin.lon)>=-180&&Number(origin.lon)<=180;
+ add('Dinleme konumu',typeof R.listeningOrigin==='function'&&originOK,`${origin.name||'?'} · ${origin.lat??'?'} / ${origin.lon??'?'}`);
+ add('Runtime sayfalama',R.runtime?.pageSize===1000&&typeof R.runtime?.fetchLogs==='function'&&typeof R.runtime?.fetchSchedules==='function',`${R.runtime?.pageSize||'?'} satır/sayfa`);
+ const guideTargets=(R.guideEntries||[]).filter(x=>x.entry_type==='station_target'),outside=guideTargets.filter(x=>R.guideService?.receiverCompatible?.(x)===false);
+ add('R-9012 rehber filtresi',!guideTargets.length||outside.length===0,`${guideTargets.length} hedef · ${outside.length} bant dışı`);
+ const utcProbe={mode:'SW',band:'SW5',frequency:9700,valid_from:'2026-01-01',valid_to:'2026-12-31',time_ranges:[[60,120]],raw:{schedule:{start_minute:60,end_minute:120,days_iso:'1234567',source_timezone:'UTC'}}};
+ add('A26 UTC dönüşümü',R.guideService?.activeAt?.(utcProbe,'2026-09-10','04:30')===true,'01:30 UTC → 04:30 Türkiye');
+ const reminderProbe=R.userServices?.defaultReminderTime?.(utcProbe);
+ add('Hatırlatıcı saat dönüşümü',reminderProbe==='04:00',`01:00 UTC → ${reminderProbe||'?'} Türkiye`);
+ if(R.me&&Array.isArray(R.schedules)&&R.schedules.length){const a26=(R.schedules||[]).filter(x=>x.season==='A26').length;add('A26 çizelge yüklemesi',a26>=5000,`${a26.toLocaleString('tr-TR')} A26 kayıt`)}
  for(const f of ['app-core-bridge.js','audio-smart.js','app-insights.js','v21-guide.js','v22-mobile.js','app-shell.js','v24-achievements.js','v25-smart-listening.js','v26-radio-atlas.js','v30-ai-radio-assistant.js','v33-stability-hotfix.js','v34-current-programs.js','v35-audit-fixes.js','v35-runtime-bridge.js','v36-integrity-audit.js','v37-integrity-followup.js','v38-ux-shell.js','v38-listening-mode.js','v39-navigation-state.js','v40-radio-memory.js','v41-propagation-assistant.js','v42-ui-polish.js','v43-search-hotfix.js'])add(`Legacy yok: ${f}`,!document.querySelector(`script[src="${f}"],script[src="./${f}"]`),'retired');
  add('Direct app chain minimal',!!document.querySelector('script[src="core.js"],script[src="./core.js"]')&&!!document.querySelector('script[src="app-bootstrap.js"],script[src="./app-bootstrap.js"]')&&!document.querySelector('script[src="app-core-bridge.js"],script[src="./app-core-bridge.js"]'),'core → bootstrap');
  for(const name of ['home','now','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai','propagation'])add(`${name} view`,!!document.querySelector(`#tab-${name}`),`#tab-${name}`);
