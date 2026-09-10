@@ -1,0 +1,22 @@
+/* Sayfa yoğunluk katmanının gece görünümü. */
+html.night #tab-log .form-card,.night-mode #tab-log .form-card{background-image:linear-gradient(180deg,rgba(67,56,202,.13),transparent 130px)!important}
+html.night #tab-log .records-card,.night-mode #tab-log .records-card{background-image:linear-gradient(180deg,rgba(30,41,59,.72),transparent 150px)!important}
+html.night #tab-log .section-head,.night-mode #tab-log .section-head{border-bottom-color:#263244}
+html.night #tab-audio .smart-result,.night-mode #tab-audio .smart-result{background-image:linear-gradient(90deg,rgba(129,140,248,.045) 1px,transparent 1px)!important}
+html.night #tab-analysis>.two-col>.card,.night-mode #tab-analysis>.two-col>.card{background-image:linear-gradient(rgba(129,140,248,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(129,140,248,.04) 1px,transparent 1px)!important}
+html.night #tab-analysis>.two-col>.card h2,.night-mode #tab-analysis>.two-col>.card h2{border-bottom-color:#263244}
+html.night #tab-analysis .bar-track,.night-mode #tab-analysis .bar-track{background:#172033!important;border-color:#334155}
+html.night #tab-map>.card,.night-mode #tab-map>.card{background-image:radial-gradient(circle at 100% 0,rgba(14,116,144,.12),transparent 230px)!important}
+html.night #tab-map #map,.night-mode #tab-map #map{border-color:#1e293b!important;outline-color:#334155}
+html.night #tab-calendar>.card,.night-mode #tab-calendar>.card{background-image:linear-gradient(180deg,rgba(180,83,9,.08),transparent 150px)!important}
+html.night #tab-calendar .cal-day:after,.night-mode #tab-calendar .cal-day:after{background:repeating-linear-gradient(90deg,#475569 0 1px,transparent 1px 7px)}
+html.night #tab-qsl>.card,.night-mode #tab-qsl>.card{background-image:linear-gradient(135deg,rgba(190,18,60,.09),transparent 220px)!important}
+html.night #tab-qsl .qsl-item,.night-mode #tab-qsl .qsl-item{background-image:repeating-linear-gradient(0deg,transparent 0 27px,rgba(251,113,133,.035) 28px)!important}
+html.night #tab-qsl .qsl-report,.night-mode #tab-qsl .qsl-report{background-image:linear-gradient(transparent 23px,rgba(148,163,184,.11) 24px)!important}
+html.night #tab-guide>.card,.night-mode #tab-guide>.card{background-image:linear-gradient(180deg,rgba(67,56,202,.12),transparent 180px)!important}
+html.night #tab-guide .app-guide-identify,.night-mode #tab-guide .app-guide-identify{background-image:linear-gradient(90deg,rgba(129,140,248,.045) 1px,transparent 1px),linear-gradient(rgba(129,140,248,.035) 1px,transparent 1px)!important}
+html.night .app-atlas-card,.night-mode .app-atlas-card{background-image:radial-gradient(circle at 100% 0,rgba(14,165,233,.07),transparent 150px)!important}
+html.night .v41-band-card,.night-mode .v41-band-card{background-image:linear-gradient(90deg,rgba(129,140,248,.045) 1px,transparent 1px)!important}
+html.night .am-section,.night-mode .am-section{background-image:linear-gradient(180deg,rgba(30,41,59,.68),transparent 130px)!important}
+html.night .app-collection,.night-mode .app-collection{background-image:radial-gradient(circle at 100% 0,rgba(99,102,241,.12),transparent 240px),linear-gradient(180deg,#111827,#0f172a)!important}
+html.night .app-badge-card:after,.night-mode .app-badge-card:after{border-color:rgba(165,180,252,.16)}
