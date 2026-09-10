@@ -29,7 +29,7 @@ jobs:
           for f in \
             app-config.js core.js app-bootstrap.js \
             v44-search-rebuild.js \
-            app-foundation.js app-toast.js app-pwa-install.js app-runtime-core.js app-auth-service.js app-router-core.js app-auth-ui.js \
+            app-foundation.js app-toast.js app-pwa-install.js app-runtime-core.js app-auth-service.js app-router-core.js app-ui-state.js app-auth-ui.js \
             app-current-programs.js app-guide-service.js app-language-service.js app-qsl-service.js app-record-service.js \
             app-record-integrity.js app-offline-service.js app-smart-analyzer.js \
             app-ai-service.js app-ai-ui.js app-achievements-service.js app-collection-ui.js \
@@ -37,7 +37,7 @@ jobs:
             app-shell-core.js app-menu-ui.js app-quick-log.js app-home-ui.js app-now-ui.js app-log-ui.js app-log-form-ui.js \
             app-audio-ui.js app-guide-ui.js app-analysis-ui.js app-map-ui.js app-calendar-ui.js app-qsl-ui.js \
             app-listening-ui.js app-atlas-ui.js app-propagation.js app-memory.js \
-            app-audio-safety.js app-backup.js app-pwa-updates.js app-ui-state.js app-smoke.js; do
+            app-audio-safety.js app-backup.js app-pwa-updates.js app-smoke.js; do
             echo "Checking $f"
             node --check "$APP/$f"
           done
@@ -53,3 +53,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/core-boundary-static-check.mjs
       - name: Refresh routing regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/refresh-routing-static-check.mjs
+      - name: Menu and visual regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/menu-visual-static-check.mjs
