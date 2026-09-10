@@ -1,0 +1,19 @@
+{% if cell.location %}
+  <a id="loc-{{ cell.location.id }}" class="stock-cell {% if cell.product_count %}has-stock{% endif %}" href="{% url 'product_list' %}?location={{ cell.location.id }}">
+    <strong>{{ cell.code }}</strong>
+    {% if cell.product_count %}
+      <span>{{ cell.product_count }} aktif stok</span>
+      {% for product in cell.products|slice:':2' %}
+        <small>{{ product.sku }} · {{ product.available_m2 }} m²</small>
+      {% endfor %}
+      {% if cell.product_count > 2 %}<small>+{{ cell.product_count|add:'-2' }} stok daha</small>{% endif %}
+    {% else %}
+      <span>Aktif stok yok</span>
+    {% endif %}
+  </a>
+{% else %}
+  <div class="stock-cell missing-location">
+    <strong>{{ cell.code }}</strong>
+    <span>Konum tanımlı değil</span>
+  </div>
+{% endif %}

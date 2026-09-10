@@ -1,0 +1,30 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.DashboardView.as_view(), name='dashboard'),
+    path('kroki/', views.StockMapView.as_view(), name='stock_map'),
+    path('products/', views.ProductListView.as_view(), name='product_list'),
+    path('imports/excel/', views.ExcelImportView.as_view(), name='excel_import'),
+    path('imports/excel/<int:pk>/confirm/', views.ExcelImportConfirmView.as_view(), name='excel_import_confirm'),
+    path('products/new/', views.ProductCreateView.as_view(), name='product_create'),
+    path('sales/new/', views.SaleCreateView.as_view(), name='sale_create'),
+    path('customers/', views.CustomerListView.as_view(), name='customer_list'),
+    path('customers/new/', views.CustomerCreateView.as_view(), name='customer_create'),
+    path('offers/', views.OfferListView.as_view(), name='offer_list'),
+    path('offers/new/', views.OfferCreateView.as_view(), name='offer_create'),
+    path('offers/<int:pk>/', views.OfferDetailView.as_view(), name='offer_detail'),
+    path('offers/<int:pk>/pdf/', views.offer_pdf, name='offer_pdf'),
+    path('products/<int:pk>/', views.ProductDetailView.as_view(), name='product_detail'),
+    path('products/<int:pk>/edit/', views.ProductUpdateView.as_view(), name='product_update'),
+    path('products/<int:pk>/change-location/', views.ProductLocationChangeView.as_view(), name='product_change_location'),
+    path('products/<int:pk>/reservations/new/', views.ReservationCreateView.as_view(), name='reservation_create'),
+    path('products/<int:pk>/sales/new/', views.SaleCreateView.as_view(), name='product_sale_create'),
+    path('reservations/<int:pk>/cancel/', views.ReservationCancelView.as_view(), name='reservation_cancel'),
+    path('locations/', views.LocationListView.as_view(), name='location_list'),
+    path('locations/new/', views.LocationCreateView.as_view(), name='location_create'),
+    path('movements/', views.MovementListView.as_view(), name='movement_list'),
+    path('movements/new/', views.MovementCreateView.as_view(), name='movement_create'),
+    path('reports/stock.xlsx', views.stock_excel_export, name='stock_excel_export'),
+    path('reports/stock.pdf', views.stock_pdf_report, name='stock_pdf_report'),
+]

@@ -1,0 +1,33 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="mb-1">Stok Krokisi</h1>
+    <p class="text-muted mb-0">A sırası solda, koridor ortada, B sırası sağda gösterilir. Hücreler aktif stokları özetler.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'product_list' %}">Stok listesi</a>
+</div>
+
+<div class="stock-map">
+  <div class="stock-map-header">
+    <span>A Sırası</span>
+    <span>Koridor</span>
+    <span>B Sırası</span>
+  </div>
+  {% for row in rows %}
+    <div class="stock-map-row">
+      <div class="stock-map-side">
+        {% for cell in row.a_cells %}
+          {% include 'inventory/partials/stock_map_cell.html' with cell=cell %}
+        {% endfor %}
+      </div>
+      <div class="stock-map-aisle">KORİDOR<br><small>Satır {{ row.number }}</small></div>
+      <div class="stock-map-side">
+        {% for cell in row.b_cells %}
+          {% include 'inventory/partials/stock_map_cell.html' with cell=cell %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

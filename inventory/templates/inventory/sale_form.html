@@ -1,0 +1,11 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1>Satıştan Stok Düş</h1>
+    {% if product %}<p class="text-muted mb-0">{{ product.sku }} - {{ product.display_material_name }} / Satılabilir: {{ product.available_m2 }} m²</p>{% endif %}
+  </div>
+  {% if product %}<a class="btn btn-outline-secondary" href="{{ product.get_absolute_url }}">Detaya dön</a>{% else %}<a class="btn btn-outline-secondary" href="{% url 'product_list' %}">Stok listesi</a>{% endif %}
+</div>
+<div class="card"><div class="card-body"><form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary">Satışı kaydet</button></form></div></div>
+{% endblock %}

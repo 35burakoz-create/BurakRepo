@@ -1,0 +1,12 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3"><h1>Excel Stok Import</h1><a class="btn btn-outline-secondary" href="{% url 'product_list' %}">Stok listesi</a></div>
+<div class="card mb-4"><div class="card-body"><form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary">Yükle ve önizle</button></form><p class="text-muted small mt-3 mb-0">Eşleşmeler: B=Konum/Bölme, C=Sıra, D=Malzeme, E=Kesim, F=Yüzey, G=Kalite, H=Kalınlık, I=Ölçü, K=Kasa m², M=Toplam m².</p></div></div>
+{% if import_file %}
+  <div class="card mb-4"><div class="card-header">Önizleme: {{ import_file.original_name }}</div><div class="card-body">
+    {% if errors %}<div class="alert alert-danger"><strong>Hatalı satırlar var.</strong><ul class="mb-0">{% for error in errors %}<li>Satır {{ error.row_number }}: {{ error.messages|join:', ' }}</li>{% endfor %}</ul></div>{% else %}<div class="alert alert-success">Hata bulunmadı. Import onaylanabilir.</div>{% endif %}
+    {% if can_import %}<form method="post" action="{% url 'excel_import_confirm' import_file.pk %}">{% csrf_token %}<button class="btn btn-success">Import'u onayla</button></form>{% endif %}
+  </div></div>
+  <div class="card"><div class="table-responsive"><table class="table table-sm table-hover mb-0"><tr><th>Satır</th><th>Konum</th><th>Malzeme</th><th>Kesim</th><th>Yüzey</th><th>Kalite</th><th>Kalınlık</th><th>Ölçü</th><th>Kasa m²</th><th>Toplam m²</th><th>Durum</th></tr>{% for row in preview_rows %}<tr class="{% if row.errors %}table-danger{% endif %}"><td>{{ row.row_number }}</td><td>{{ row.location_code }}</td><td>{{ row.material_name }}</td><td>{{ row.cut_direction }}</td><td>{{ row.surface_finish }}</td><td>{{ row.quality }}</td><td>{{ row.thickness }}</td><td>{{ row.size }}</td><td>{{ row.crate_m2 }}</td><td>{{ row.quantity_m2 }}</td><td>{% if row.errors %}{{ row.errors|join:', ' }}{% else %}OK{% endif %}</td></tr>{% empty %}<tr><td colspan="11">Önizlenecek satır yok.</td></tr>{% endfor %}</table></div></div>
+{% endif %}
+{% endblock %}
