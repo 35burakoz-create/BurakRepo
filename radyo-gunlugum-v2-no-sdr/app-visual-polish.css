@@ -65,6 +65,27 @@ body{line-height:1.5}
 label{line-height:1.35}
 input,select,textarea{line-height:1.35}
 
+/* Radyo karakteri: boş yüzeyleri çok hafif teknik doku ve kadran ayrıntılarıyla doldur. */
+body{background-image:radial-gradient(circle at 1px 1px,rgba(79,70,229,.035) 1px,transparent 0);background-size:24px 24px;background-attachment:fixed}
+.v42-home-hero{background-image:radial-gradient(circle at 82% 7%,rgba(165,180,252,.19),transparent 26%),linear-gradient(145deg,#111827 0%,#1e1b4b 55%,#312e81 100%)!important}
+.v42-home-hero:before{content:"";position:absolute;left:0;right:0;bottom:0;height:72px;background:repeating-linear-gradient(90deg,transparent 0 18px,rgba(199,210,254,.07) 18px 19px);mask-image:linear-gradient(to top,#000,transparent);pointer-events:none}
+.v42-radio-console{position:relative;z-index:1;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;margin-top:12px;padding:11px 13px;border:1px solid rgba(255,255,255,.14);border-radius:18px;background:rgba(2,6,23,.2);box-shadow:inset 0 1px rgba(255,255,255,.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.v42-console-id span,.v42-console-id small,.v42-console-live small{display:block}.v42-console-id span{font-size:8px;font-weight:850;letter-spacing:.18em;color:#818cf8}.v42-console-id b{display:block;font-size:13px;letter-spacing:.04em;color:#fff}.v42-console-id small{font-size:9px;color:#94a3b8;white-space:nowrap}
+.v42-radio-dial{position:relative;min-width:0;padding:13px 0 4px}.v42-radio-dial:before{content:"";position:absolute;left:0;right:0;top:5px;height:10px;background:repeating-linear-gradient(90deg,rgba(199,210,254,.36) 0 1px,transparent 1px 2.5%,rgba(199,210,254,.16) 2.5% 2.7%,transparent 2.7% 5%);border-bottom:1px solid rgba(199,210,254,.25)}
+.v42-radio-scale{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px}.v42-radio-scale span{text-align:center;font-size:8px;font-weight:700;color:#94a3b8;white-space:nowrap}.v42-radio-scale span.active{color:#fff;text-shadow:0 0 12px rgba(165,180,252,.9)}
+.v42-radio-needle{position:absolute;top:0;width:2px;height:19px;background:#f8fafc;border-radius:4px;box-shadow:0 0 0 2px rgba(129,140,248,.28),0 0 16px rgba(165,180,252,.8);transform:translateX(-50%);transition:left .28s ease}
+.v42-console-live{display:grid;grid-template-columns:auto auto;column-gap:6px;align-items:center;justify-items:end}.v42-live-dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 0 4px rgba(52,211,153,.12)}.v42-console-live b{font-size:15px;color:#fff}.v42-console-live small{grid-column:1/-1;color:#94a3b8;font-size:9px}
+.v42-freq-ruler{height:7px;margin:-1px 0 10px;border-radius:4px;background:repeating-linear-gradient(90deg,#c7d2fe 0 1px,transparent 1px 11px),linear-gradient(90deg,#eef2ff,#e0e7ff);opacity:.72}
+.v42-section{position:relative;overflow:hidden}.v42-section:before{content:"";position:absolute;left:18px;right:18px;top:0;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,rgba(79,70,229,.5),rgba(79,70,229,.08) 42%,transparent)}
+.v42-section-kicker{display:block;margin-bottom:4px;font-size:9px;font-weight:850;letter-spacing:.14em;color:#6366f1}.v42-onair-section .v42-section-head,.v42-journal-section .v42-section-head{padding-top:3px}
+.v42-alt{position:relative;overflow:hidden}.v42-alt:after{content:"";position:absolute;left:14px;right:14px;bottom:7px;height:2px;background:repeating-linear-gradient(90deg,#e0e7ff 0 7px,transparent 7px 13px);opacity:.7;pointer-events:none}
+.v42-dashboard>div{position:relative;overflow:hidden}.v42-dashboard>div:after{content:"";position:absolute;right:8px;top:8px;width:22px;height:14px;background:repeating-linear-gradient(90deg,#c7d2fe 0 1px,transparent 1px 5px);opacity:.5}
+.v42-week{margin-top:10px;padding:13px 14px 11px;border:1px solid #eef2f7;border-radius:18px;background:linear-gradient(180deg,#fbfcff,#f8fafc)}.v42-week-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.v42-week-head small{display:block;font-size:8px;font-weight:850;letter-spacing:.14em;color:#6366f1}.v42-week-head b{display:block;margin-top:1px;font-size:13px}.v42-week-head>span{font-size:10px;font-weight:700;color:#64748b;background:#fff;border:1px solid #e5e7eb;border-radius:999px;padding:4px 7px}
+.v42-week-bars{height:72px;display:grid;grid-template-columns:repeat(7,1fr);gap:7px;align-items:end;margin-top:9px}.v42-week-day{height:100%;display:grid;grid-template-rows:13px 1fr 14px;gap:3px;align-items:end;text-align:center}.v42-week-day>b{font-size:8px;color:#64748b;min-height:11px}.v42-week-day>i{height:40px;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid #dbe2ea;background:repeating-linear-gradient(to top,transparent 0 9px,#eef2f7 9px 10px)}.v42-week-day>i>em{display:block;width:min(16px,52%);min-height:4px;border-radius:5px 5px 1px 1px;background:linear-gradient(180deg,#818cf8,#4f46e5)}.v42-week-day>span{font-size:8px;font-weight:700;color:#94a3b8;text-transform:uppercase}
+
+/* Şu An ve liste kartlarında analog kadran hissi veren ince frekans çizgisi. */
+.v38-item,.guide-item,.record-card,.app-smart-card,.app-ai-card,.am-card{position:relative;overflow:hidden}.v38-item:before,.guide-item:before,.record-card:before,.app-smart-card:before,.app-ai-card:before,.am-card:before{content:"";position:absolute;left:14px;right:14px;top:0;height:3px;background:repeating-linear-gradient(90deg,rgba(99,102,241,.24) 0 1px,transparent 1px 10px,rgba(99,102,241,.1) 10px 11px,transparent 11px 20px);pointer-events:none}.v38-section{background-image:linear-gradient(180deg,#fff 0,#fff 62%,#fcfcff 100%)!important}
+
 /* Masaüstünde menü, ekranın altına yapışık kesik bir panel yerine yüzen bir kart gibi görünür. */
 @media(min-width:761px){
   .v38-sheet{bottom:16px!important;border-radius:26px!important;max-height:min(80dvh,760px)!important}
@@ -79,6 +100,7 @@ input,select,textarea{line-height:1.35}
   .v42-section-head{align-items:flex-start}
   .v42-alt{min-height:76px}
   .app-collection,.app-listen-modal{padding-bottom:calc(16px + env(safe-area-inset-bottom))!important}
+  .v42-radio-console{grid-template-columns:auto minmax(0,1fr);gap:9px}.v42-console-live{grid-column:1/-1;display:flex;justify-content:flex-start;gap:6px;border-top:1px solid rgba(255,255,255,.1);padding-top:8px}.v42-console-live small{grid-column:auto}.v42-console-id small{display:none}.v42-radio-scale span{font-size:7px}.v42-week-bars{gap:4px}
 }
 
 @media(max-width:430px){
@@ -94,10 +116,13 @@ input,select,textarea{line-height:1.35}
   .v42-dashboard>div{padding:11px 9px!important}
   .v42-dashboard span{font-size:10px!important}
   .v38-menu-row{min-height:56px}
+  .v42-radio-console{padding:10px}.v42-radio-scale span:nth-child(even){opacity:.55}.v42-radio-scale span{font-size:6.5px}.v42-week{padding:11px 10px}.v42-week-bars{height:66px}.v42-week-day>i{height:36px}
 }
 
+.night-mode body,html.night body{background-image:radial-gradient(circle at 1px 1px,rgba(129,140,248,.055) 1px,transparent 0)}
 .night-mode .v38-sheethead,html.night .v38-sheethead{background:rgba(17,24,39,.97)}
 .night-mode .v38-menu-row:hover,.night-mode .v38-menu-row:focus-visible,html.night .v38-menu-row:hover,html.night .v38-menu-row:focus-visible{background:#172033!important}
 .night-mode .v38-menu-row:active,html.night .v38-menu-row:active{background:#1e293b!important}
+.night-mode .v42-week,html.night .v42-week{background:linear-gradient(180deg,#111827,#0f172a);border-color:#253046}.night-mode .v42-week-head>span,html.night .v42-week-head>span{background:#172033;border-color:#2a3650;color:#cbd5e1}.night-mode .v42-week-day>i,html.night .v42-week-day>i{border-color:#334155;background:repeating-linear-gradient(to top,transparent 0 9px,#1e293b 9px 10px)}
 
-@media(prefers-reduced-motion:reduce){.v38-menu-row{transition:none}}
+@media(prefers-reduced-motion:reduce){.v38-menu-row{transition:none}.v42-radio-needle{transition:none}}
