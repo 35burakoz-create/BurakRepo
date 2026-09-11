@@ -11,6 +11,7 @@ const desktop=read('app-desktop.css');
 const shell=read('app-shell-core.js');
 const search=read('v44-search-rebuild.js');
 const log=read('app-log-ui.js');
+const logForm=read('app-log-form-ui.js');
 const offline=read('app-offline-service.js');
 const atlas=read('app-atlas-service.js');
 const atlasUI=read('app-atlas-ui.js');
@@ -18,7 +19,7 @@ const mapUI=read('app-map-ui.js');
 const backup=read('app-backup.js');
 const sw=read('sw.js');
 
-for(const [file,src] of [['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI],['app-backup.js',backup]]){
+for(const [file,src] of [['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-log-form-ui.js',logForm],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI],['app-backup.js',backup]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)
 }
 
@@ -42,12 +43,17 @@ check('journal supports Enter and Space expansion',log.includes("['Enter',' '].i
 check('journal expansion updates aria-expanded',log.includes("setAttribute('aria-expanded',expanded?'true':'false')"));
 check('journal filter button exposes expanded state',log.includes('data-log-filters aria-expanded="false"')&&log.includes("filterButton.setAttribute('aria-expanded'"));
 check('opening journal filters moves focus into search',log.includes("if(open)setTimeout(()=>$('#search')?.focus(),0)"));
+check('online journal submits are coalesced per account',logForm.includes('saveFlights=new Map()')&&logForm.includes('saveFlights.has(userId)')&&logForm.includes('saveFlights.set(userId,true)'));
+check('online journal save completion cannot reset another account form',logForm.includes('if(activeUserId()!==userId)return')&&logForm.includes('if(activeUserId()===userId&&msg)'));
+check('journal cancel stays blocked while its account save is active',logForm.includes('cancel.disabled=true')&&logForm.includes('if(!isSaving())reset()'));
 
 check('offline sync flights are keyed by account',offline.includes('syncFlights=new Map()')&&offline.includes('syncFlights.has(userId)')&&offline.includes('syncFlights.set(userId,flight)'));
 check('offline list only returns active account rows',offline.includes('async function list(userId=R.me?.id||null)')&&offline.includes('rows.filter(x=>ownerOf(x)===userId)'));
 check('offline transaction resolves only on transaction complete',offline.includes('t.oncomplete=()=>')&&offline.includes('resolve(result)'));
 check('offline sync aborts safely after account transition',offline.includes("if(R.me?.id!==userId){interrupted=true;break}"));
 check('offline UI updates only for the active account',offline.includes('if(R.me?.id===userId){if(synced)'));
+check('offline journal submits are coalesced per account',offline.includes('formQueueFlights=new Map()')&&offline.includes('formQueueFlights.has(userId)')&&offline.includes('formQueueFlights.set(userId,true)'));
+check('offline form result never resets a different account form',offline.includes("if(R.me?.id===userId){R.reset?.()"));
 
 check('atlas has canonical coordinate range validator',atlas.includes('function validCoords(lat,lon)')&&atlas.includes('a>=-90&&a<=90')&&atlas.includes('b>=-180&&b<=180'));
 check('atlas manual origin rejects impossible coordinates',atlas.includes("if(!validCoords(lat,lon))throw new Error"));
