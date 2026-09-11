@@ -8,7 +8,7 @@ const service=read('app-guide-service.js'),current=read('app-current-programs.js
 for(const[file,src]of[['app-guide-service.js',service],['app-current-programs.js',current],['app-now-ui.js',nowUi]]){let ok=true,detail='';try{new vm.Script(src,{filename:file})}catch(e){ok=false;detail=e.message}check(`syntax ${file}`,ok,detail)}
 check('guide service exposes current-candidate eligibility',service.includes('function nowCandidateEligible')&&service.includes('targetAdjustment'));
 check('zero-duration schedules are not all-day',service.includes('else if(start===end){inside=false}'));
-check('current UI uses occurrence-aware time text',nowUi.includes('currentWindowText')&&nowUi.includes('Geçerli yayın penceresi:'));
+check('current UI uses occurrence-aware time text',nowUi.includes('currentWindowText')&&nowUi.includes('Yayın saati:'));
 check('current UI labels recommendations as suitable, not every global broadcast',nowUi.includes('<small>UYGUN</small>'));
 check('current programs filters unsuitable targets before scoring',current.includes("typeof svc?.nowCandidateEligible==='function'&&!svc.nowCandidateEligible(e)"));
 check('current programs computes ALL once and derives band subsets',current.includes("computeCandidates('ALL',n)")&&current.includes('rows=all.filter(x=>x.mode===which)'));
