@@ -10,6 +10,7 @@ function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
 const uiMode=read('app-ui-mode.js');
 const desktop=read('app-desktop.css');
 const shell=read('app-shell-core.js');
+const router=read('app-router-core.js');
 const search=read('v44-search-rebuild.js');
 const log=read('app-log-ui.js');
 const logForm=read('app-log-form-ui.js');
@@ -21,7 +22,7 @@ const backup=read('app-backup.js');
 const boot=read('app-bootstrap.js');
 const sw=read('sw.js');
 
-for(const [file,src] of [['app-ui-mode.js',uiMode],['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-log-form-ui.js',logForm],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI],['app-backup.js',backup]]){
+for(const [file,src] of [['app-ui-mode.js',uiMode],['app-shell-core.js',shell],['app-router-core.js',router],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-log-form-ui.js',logForm],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI],['app-backup.js',backup]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)
 }
 
@@ -69,6 +70,10 @@ check('shell refreshes when UI mode context changes',shell.includes("window.addE
 check('global search is not injected on signed-out screen',shell.includes("if(!top||!R.me||$('#appView')?.classList.contains('hidden')){old?.remove();return null}"));
 check('sign out removes both navigation shells and search',shell.includes('removeNavigation()')&&shell.includes("$('[data-v44search]')?.remove()"));
 check('shell click delegation tolerates non-Element targets',shell.includes('e.target instanceof Element?e.target:null'));
+check('router updates both desktop and mobile active navigation',router.includes("#v38Dock [data-route],#appDesktopNav [data-route]")&&router.includes("setAttribute('aria-current','page')"));
+check('router ignores malformed encoded hashes instead of crashing',router.includes('try{h=decodeURIComponent(location.hash||\'\')}catch(error)')&&router.includes("R.reportError?.(error,'router-hash',{silent:true})"));
+check('router sync rejects stale unknown stored routes',router.includes("next=router.has(candidate)?candidate:'home'"));
+check('router click delegation tolerates non-Element targets',router.includes('e.target instanceof Element?e.target:null'));
 
 check('shell traps Tab inside the top visible modal',shell.includes('function trapModalFocus(e)')&&shell.includes("if(e.key!=='Tab')return")&&shell.includes('visibleModal()'));
 check('modal focus trap wraps first and last controls',shell.includes('e.shiftKey&&active===first')&&shell.includes('active===last'));
