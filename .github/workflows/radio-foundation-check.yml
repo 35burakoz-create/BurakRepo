@@ -27,7 +27,7 @@ jobs:
           set -euo pipefail
           APP='radyo-gunlugum-v2-no-sdr'
           for f in \
-            app-config.js core.js app-bootstrap.js \
+            app-config.js core.js app-bootstrap.js app-ui-mode.js \
             v44-search-rebuild.js \
             app-foundation.js app-toast.js app-pwa-install.js app-runtime-core.js app-auth-service.js app-router-core.js app-ui-state.js app-auth-ui.js \
             app-broadcast-locale.js app-current-programs.js app-guide-service.js app-language-service.js app-qsl-service.js app-record-service.js \
