@@ -15,9 +15,10 @@ const offline=read('app-offline-service.js');
 const atlas=read('app-atlas-service.js');
 const atlasUI=read('app-atlas-ui.js');
 const mapUI=read('app-map-ui.js');
+const backup=read('app-backup.js');
 const sw=read('sw.js');
 
-for(const [file,src] of [['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI]]){
+for(const [file,src] of [['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI],['app-backup.js',backup]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)
 }
 
@@ -57,6 +58,12 @@ check('atlas detects a replaced Leaflet host node',atlasUI.includes('if(map&&map
 check('atlas invalidates map size after desktop resize',atlasUI.includes("window.addEventListener('resize',resizeMap")&&atlasUI.includes('map.invalidateSize?.({pan:false})'));
 check('location map invalidates size after desktop resize',mapUI.includes("window.addEventListener('resize',resizeMap")&&mapUI.includes('map.invalidateSize?.({pan:false})'));
 check('both Leaflet views release maps on sign out',atlasUI.includes("if(!x?.authenticated)destroyMap()")&&mapUI.includes("if(!x?.authenticated)destroy()"));
+
+check('full backup pins the initiating account',backup.includes('const userId=activeUserId()')&&backup.includes('assertUser(userId)')&&backup.includes("fetchUserRows('radio_favorites','created_at',userId)"));
+check('backup pagination never rereads account identity mid-page',backup.includes(".eq('user_id',userId)")&&backup.includes('fetchAudioManifest(userId=activeUserId())'));
+check('offline backup explicitly requests the same account queue',backup.includes('R.offline.list(userId)'));
+check('backup aborts rather than exporting after account switch',backup.includes('Oturum değişti; yedekleme güvenli biçimde durduruldu.'));
+check('CSV export blocks duplicate desktop clicks',backup.includes('csv.disabled=true')&&backup.includes('finally{csv.disabled=false}'));
 
 {
   const R={logs:[],events:{emit(){},on(){}},features:{register(){}},norm:v=>String(v??'').toLocaleLowerCase('tr-TR')};
