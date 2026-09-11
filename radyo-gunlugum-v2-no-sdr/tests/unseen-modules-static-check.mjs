@@ -19,7 +19,7 @@ const toast=read('app-toast.js');
 check('offline queue assigns a stable idempotency key',offline.includes('offline_queue_id')&&offline.includes('queue_id:id'));
 check('offline queue sync is conflict-safe',offline.includes("onConflict:'user_id,offline_queue_id'")&&offline.includes('ignoreDuplicates:true'));
 check('offline queue never claims ownerless legacy rows for the current account',offline.includes('ownerOf(x)!==userId'));
-check('offline queue count is account-scoped',offline.includes("userId?rows.filter(x=>ownerOf(x)===userId).length:0"));
+check('offline queue count is account-scoped',offline.includes('async function list(userId=R.me?.id||null)')&&offline.includes('rows.filter(x=>ownerOf(x)===userId)')&&offline.includes('async function count(userId=R.me?.id||null)')&&offline.includes('if(R.me?.id===userId)R.events?.emit?.'));
 check('achievement sync tolerates concurrent tabs',achievements.includes("onConflict:'user_id,achievement_key'")&&achievements.includes('ignoreDuplicates:true'));
 check('achievement state is refreshed after conflict-safe sync',achievements.includes('const fresh=await fetchRows(userId)'));
 check('achievement async loads are scoped per account',achievements.includes('loadFlights=new Map()')&&achievements.includes('syncFlights=new Map()')&&achievements.includes('if(!applyRows(rows,userId))return state'));
