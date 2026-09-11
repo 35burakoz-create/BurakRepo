@@ -14,7 +14,7 @@ const map=read('app-map-ui.js');
 
 check('last valid account route is restored when no hash exists',ui.includes("state.tab=hash||(VALID.has(saved.tab)?saved.tab:'home')"));
 check('UI state storage is scoped to the authenticated user',ui.includes('function stateStorageKey')&&ui.includes('`${STATE_KEY}:${userId}`'));
-check('draft storage is scoped to the authenticated user',ui.includes('function draftStorageKey()')&&ui.includes('`${DRAFT_KEY}:${id}`'));
+check('draft storage is scoped to the authenticated user',ui.includes('function draftStorageKey(userId=R.me?.id)')&&ui.includes('`${DRAFT_KEY}:${userId}`'));
 check('legacy unscoped draft key is explicitly cleared',ui.includes('function clearLegacyDraft()')&&ui.includes('localStorage.removeItem(DRAFT_KEY)'));
 check('logout clears the visible form without deleting another account draft',ui.includes('function resetVisibleForm()')&&ui.includes('suppressDraftClear=true')&&ui.includes('setTimeout(resetVisibleForm,0)'));
 check('sign out persists the current user draft first',auth.includes('R.uiStatePersistence?.saveDraft?.();')&&auth.indexOf('saveDraft')<auth.indexOf('R.S.auth.signOut'));
