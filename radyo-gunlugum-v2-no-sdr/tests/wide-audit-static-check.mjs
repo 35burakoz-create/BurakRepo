@@ -37,8 +37,8 @@ check('menu restores focus and reports reminder toggle failures',menu.includes('
 check('wide audit CSS is loaded and cached',shell.includes("css('app-audit-polish.css','appAuditPolishCss')")&&sw.includes("'./app-audit-polish.css'"));
 check('wide audit raises microcopy readability',css.includes('font-size:10.5px!important')&&css.includes('.app-radio-glossary-term p')&&css.includes('font-size:12px!important'));
 check('wide audit uses dynamic viewport and safe area',css.includes('94dvh')&&css.includes('92dvh')&&css.includes('env(safe-area-inset-bottom)'));
-const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*20260910-(\d+)'/);
-check('fresh PWA generation for wide audit',!!cache&&Number(cache[1])>=12);
+const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*-(\d{8})-(\d+)'/);
+check('fresh PWA generation for wide audit',!!cache&&Number(cache[1])>=20260910&&Number(cache[2])>=12);
 
 // Functional reminder timing checks with a minimal browser-like sandbox.
 {
