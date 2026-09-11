@@ -12,7 +12,7 @@ check('V22 file removed',!exists('v22-mobile.js'));
 for(const f of ['app-toast.js','app-pwa-install.js','app-offline-service.js','app-log-form-ui.js'])check(`bootstrap loads ${f}`,boot.includes(`'${f}'`));
 for(const f of ['app-toast.css','app-toast.js','app-pwa-install.js','app-offline-service.js','app-log-form.css','app-log-form-ui.js'])check(`SW caches ${f}`,sw.includes(`'./${f}'`));
 check('toast provider',toast.includes("provider:'app-toast'")&&toast.includes('R.toast='));
-check('PWA install owns service worker registration',pwa.includes("navigator.serviceWorker.register('./sw.js')")&&pwa.includes("addEventListener('beforeinstallprompt'")&&pwa.includes('R.installPWA=install'));
+check('PWA install owns service worker registration',/navigator\.serviceWorker\.register\('\.\/sw\.js'(?:,\{scope:'\.\/'\})?\)/.test(pwa)&&pwa.includes("addEventListener('beforeinstallprompt'")&&pwa.includes('R.installPWA=install'));
 check('menu delegates install',menu.includes("if(a==='install'){close();return R.installPWA?.()}")&&!menu.includes('R.installPrompt.prompt'));
 check('offline keeps legacy IndexedDB identity',offline.includes("DB='radio-gunlugum-v22'")&&offline.includes("STORE='outbox'"));
 check('offline exposes canonical API',offline.includes('R.queueLog=queueLog')&&offline.includes('R.syncOutbox=syncOutbox')&&offline.includes("provider:'app-offline-service'"));
