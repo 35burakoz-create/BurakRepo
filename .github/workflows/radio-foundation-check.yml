@@ -75,3 +75,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/unseen-modules-static-check.mjs
       - name: Account, PWA and calendar regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/deep-account-pwa-audit-static-check.mjs
+      - name: Desktop browser and offline regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/desktop-offline-audit-static-check.mjs
