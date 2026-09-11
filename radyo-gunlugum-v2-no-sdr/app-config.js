@@ -19,7 +19,7 @@ const config=Object.freeze({
   codename:'R-9012 Güvenilirlik ve A26 Düzeltmeleri',
   timezone:'Europe/Istanbul',
   locale:'tr-TR',
-  cacheVersion:'v385-core-boundary-radio-intelligence-20260911-27',
+  cacheVersion:'v385-core-boundary-radio-intelligence-20260911-28',
   origin:Object.freeze({name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36}),
   receiver:Object.freeze({model:'TECSUN R-9012',bands})
 });
