@@ -5,9 +5,9 @@ const norm=v=>R.norm?R.norm(v):String(v??'').toLocaleLowerCase('tr-TR');
 const wallFmt=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
 let historyLogsRef=null,historyByBand=new Map();
 function modeForBand(band){return String(band||'').startsWith('SW')?'SW':String(band||'')}
-function bandOf(e){return e?.mode==='SW'?(e.band||'SW'):(e?.mode||e?.band||'')}
+function bandOf(e){return e?.mode==='SW'?(e.band||''):(e?.mode||e?.band||'')}
 function unitOf(e){return e?.unit||(bandOf(e)==='FM'?'MHz':'kHz')}
-function receiverCompatible(e){const band=bandOf(e),range=C.receiver?.bands?.[band],f=Number(e?.frequency);if(!range)return true;return Number.isFinite(f)&&f>=Number(range.min)&&f<=Number(range.max)}
+function receiverCompatible(e){const band=bandOf(e),bands=C.receiver?.bands||null,range=bands?.[band],f=Number(e?.frequency);if(bands&&Object.keys(bands).length&&!range)return false;if(!range)return true;return Number.isFinite(f)&&f>=Number(range.min)&&f<=Number(range.max)}
 function minuteOf(time){const[h,m]=String(time||'00:00').slice(0,5).split(':').map(Number);return(h||0)*60+(m||0)}
 function inRange(minute,range){let[a,b]=range||[];a=Number(a);b=Number(b);if(!Number.isFinite(a)||!Number.isFinite(b))return false;if(b===1440)return minute>=a;if(a===b)return true;return a<b?minute>=a&&minute<b:minute>=a||minute<b}
 function dayOf(date){return new Date(`${date||R.clock?.today?.()||new Date().toLocaleDateString('en-CA')}T12:00:00Z`).getUTCDay()}
