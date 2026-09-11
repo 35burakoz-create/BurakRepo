@@ -69,3 +69,48 @@
     transition:none!important;
   }
 }
+
+/* Modal geometri sözleşmesi: alt gezinme hiçbir iletişim penceresinin üstüne çıkamaz. */
+:root{
+  --app-layer-dock:15000;
+  --app-layer-sheet:16000;
+  --app-layer-modal-bg:19990;
+  --app-layer-modal:20000;
+  --app-layer-fullscreen:21000;
+  --app-layer-toast:30000;
+}
+#v38Dock{z-index:var(--app-layer-dock)!important}
+.foundation-diag-overlay,.app-listen-modal-bg,.app-radio-glossary-bg,.app-collection-overlay{
+  z-index:var(--app-layer-modal-bg)!important;
+}
+.foundation-diag,.app-listen-modal,.app-radio-glossary-modal,.app-collection{
+  z-index:var(--app-layer-modal)!important;
+  overscroll-behavior:contain;
+}
+.app-listen{z-index:var(--app-layer-fullscreen)!important}
+.app-toast{z-index:var(--app-layer-toast)!important}
+
+/* Hatırlatıcı ve ayarlar gibi uzun alt pencerelerde ana eylem her zaman dokunulabilir kalsın. */
+#appReminder #appRemSave,#appPrefs #appPrefsSave{
+  position:sticky!important;
+  bottom:max(0px,env(safe-area-inset-bottom))!important;
+  z-index:4!important;
+  min-height:52px!important;
+  margin-top:14px!important;
+  box-shadow:0 -10px 24px rgba(15,23,42,.12),0 8px 20px rgba(91,92,240,.20)!important;
+}
+
+@media(max-width:680px){
+  .foundation-diag,.app-listen-modal,.app-collection,.app-radio-glossary-modal{
+    max-height:min(92dvh,820px)!important;
+    padding-bottom:calc(18px + env(safe-area-inset-bottom))!important;
+  }
+  .foundation-diag{
+    bottom:0!important;
+    top:auto!important;
+    border-radius:24px 24px 0 0!important;
+  }
+  #appReminder #appRemSave,#appPrefs #appPrefsSave{
+    bottom:0!important;
+  }
+}
