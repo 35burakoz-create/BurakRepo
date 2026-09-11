@@ -3,9 +3,9 @@ const R=window.R;if(!R||R.__bootstrap385)return;R.__bootstrap385=true;
 const MODULES=[
 'app-ui-mode.js','app-foundation.js','app-toast.js','app-pwa-install.js','app-runtime-core.js','app-auth-service.js','app-router-core.js','app-ui-state.js','app-auth-ui.js',
 'app-broadcast-locale.js','app-current-programs.js','app-guide-service.js','app-language-service.js','app-qsl-service.js','app-record-service.js','app-record-integrity.js','app-offline-service.js','app-smart-analyzer.js',
-'app-ai-service.js','app-ai-ui.js','app-achievements-service.js','app-collection-ui.js','app-user-services.js','app-listening-service.js','app-atlas-service.js',
+'app-ai-service.js','app-ai-ui.js','app-achievements-service.js','app-collection-ui.js','app-user-services.js','app-listening-service.js','app-atlas-service.js','app-radio-intelligence.js',
 'app-shell-core.js','app-menu-ui.js','app-quick-log.js','app-home-ui.js','app-now-ui.js','app-log-ui.js','app-log-form-ui.js','app-audio-ui.js','app-guide-ui.js','app-analysis-ui.js','app-map-ui.js','app-calendar-ui.js','app-qsl-ui.js',
-'app-listening-ui.js','app-atlas-ui.js','app-propagation.js','app-memory.js','app-page-density.js','app-radio-glossary.js','app-radio-tooltips.js','v44-search-rebuild.js','app-audio-safety.js','app-backup.js','app-pwa-updates.js','app-smoke.js'
+'app-listening-ui.js','app-atlas-ui.js','app-radio-intelligence-ui.js','app-propagation.js','app-memory.js','app-page-density.js','app-radio-glossary.js','app-radio-tooltips.js','v44-search-rebuild.js','app-audio-safety.js','app-backup.js','app-pwa-updates.js','app-smoke.js'
 ];
 const CRITICAL=new Set(['app-foundation.js','app-ui-mode.js','app-runtime-core.js','app-auth-service.js','app-router-core.js','app-ui-state.js','app-auth-ui.js']);
 const loaded=new Set(),loading=new Map(),failed=new Map();
