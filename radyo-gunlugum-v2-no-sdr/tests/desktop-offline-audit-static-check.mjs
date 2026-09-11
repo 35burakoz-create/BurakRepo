@@ -7,6 +7,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const checks=[];
 function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
 
+const uiMode=read('app-ui-mode.js');
 const desktop=read('app-desktop.css');
 const shell=read('app-shell-core.js');
 const search=read('v44-search-rebuild.js');
@@ -17,19 +18,57 @@ const atlas=read('app-atlas-service.js');
 const atlasUI=read('app-atlas-ui.js');
 const mapUI=read('app-map-ui.js');
 const backup=read('app-backup.js');
+const boot=read('app-bootstrap.js');
 const sw=read('sw.js');
 
-for(const [file,src] of [['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-log-form-ui.js',logForm],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI],['app-backup.js',backup]]){
+for(const [file,src] of [['app-ui-mode.js',uiMode],['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-log-form-ui.js',logForm],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI],['app-backup.js',backup]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)
 }
 
+function simulateUiMode({ua='',uaMobile=false,platform='',touch=0,standalone=false,coarse=false,fine=false,screenWidth=1920,screenHeight=1080,innerWidth=1280,innerHeight=720}={}){
+  const rootEl={dataset:{},classList:{toggle(){}}};
+  const navigator={userAgent:ua,userAgentData:{mobile:uaMobile},platform,maxTouchPoints:touch,standalone:false};
+  const listeners=[];
+  const window={R:{},navigator,screen:{width:screenWidth,height:screenHeight},innerWidth,innerHeight,matchMedia(q){return{matches:q==='(display-mode: standalone)'?standalone:q==='(pointer: coarse)'?coarse:q==='(pointer: fine)'?fine:false,addEventListener(){}}},dispatchEvent(e){listeners.push(e)},addEventListener(){}};
+  const sandbox={window,document:{documentElement:rootEl},navigator,CustomEvent:class{constructor(type,init){this.type=type;this.detail=init?.detail}},Object,Number,String,Math,console};
+  vm.createContext(sandbox);vm.runInContext(uiMode,sandbox,{filename:'app-ui-mode.js'});
+  return{state:window.R.uiMode.state,root:rootEl,events:listeners};
+}
+
+{
+  const d=simulateUiMode({ua:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',fine:true,screenWidth:1920,screenHeight:1080,innerWidth:520,innerHeight:700});
+  check('narrow desktop browser stays desktop instead of becoming mobile',d.state.mode==='desktop'&&d.state.context==='browser'&&d.root.dataset.uiMode==='desktop');
+  const p=simulateUiMode({ua:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Mobile',touch:5,standalone:true,coarse:true,screenWidth:390,screenHeight:844,innerWidth:844,innerHeight:390});
+  check('landscape installed phone stays mobile app',p.state.mode==='mobile'&&p.state.context==='app'&&p.root.dataset.uiMode==='mobile');
+  const a=simulateUiMode({ua:'Mozilla/5.0 (Linux; Android 16; Pixel) Mobile',uaMobile:true,touch:5,coarse:true,screenWidth:412,screenHeight:915,innerWidth:915,innerHeight:412});
+  check('wide landscape Android browser remains mobile hardware',a.state.mode==='mobile');
+  const t=simulateUiMode({ua:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',touch:10,coarse:true,fine:true,screenWidth:1366,screenHeight:768});
+  check('touch capable computer with fine pointer remains desktop',t.state.mode==='desktop');
+  const i=simulateUiMode({ua:'Mozilla/5.0 (Macintosh; Intel Mac OS X)',platform:'MacIntel',touch:5,coarse:true,fine:false,screenWidth:1024,screenHeight:1366});
+  check('touch iPad style device remains mobile',i.state.mode==='mobile');
+}
+
+check('UI mode contract loads before other bootstrap modules',boot.includes("const MODULES=[\n'app-ui-mode.js','app-foundation.js'"));
+check('UI mode contract is a critical bootstrap module',boot.includes("'app-ui-mode.js'" )&&boot.includes('const CRITICAL=new Set'));
+check('UI mode contract is cached and critical offline',sw.includes("'./app-ui-mode.js'")&&sw.match(/const CRITICAL=\[[^\]]*'\.\/app-ui-mode\.js'/s));
 check('desktop stylesheet is loaded after shell polish',shell.includes("css('app-desktop.css','appDesktopCss')"));
 check('desktop stylesheet is cached for installed PWA',sw.includes("'./app-desktop.css'"));
-check('desktop expands shell beyond mobile width',desktop.includes('@media (min-width:960px)')&&desktop.includes('max-width:1120px!important'));
-check('desktop restores authenticated user box',desktop.includes('#userBox:not(.hidden){display:flex!important}'));
-check('large desktop converts bottom dock into side rail',desktop.includes('@media (min-width:1280px)')&&desktop.includes('top:50%!important')&&desktop.includes('grid-template-columns:1fr!important'));
-check('large desktop no longer reserves mobile bottom dock space',desktop.includes('body{padding-bottom:0!important}')&&desktop.includes('#appView{padding-bottom:38px!important}'));
-check('fine pointer devices receive desktop hover treatment',desktop.includes('@media (hover:hover) and (pointer:fine)'));
+check('desktop styling is explicitly scoped to desktop mode',desktop.includes('html[data-ui-mode="desktop"] body')&&desktop.includes('html[data-ui-mode="desktop"] #appDesktopNav'));
+check('mobile mode explicitly excludes desktop navigation',desktop.includes('html[data-ui-mode="mobile"] #appDesktopNav{display:none!important}'));
+check('desktop mode explicitly excludes mobile dock',desktop.includes('html[data-ui-mode="desktop"] #v38Dock{display:none!important}'));
+check('desktop uses a separate navigation DOM',shell.includes("d.id='appDesktopNav'")&&shell.includes("d.className='app-desktop-nav'"));
+check('mobile dock is created only in mobile mode',shell.includes("if(mode()!=='mobile'){$('#v38Dock')?.remove();return null}"));
+check('desktop navigation is created only in desktop mode',shell.includes("if(mode()!=='desktop'){$('#appDesktopNav')?.remove();return null}"));
+check('desktop navigation removes mobile dock',shell.includes("if(mode()==='desktop'){$('#v38Dock')?.remove();return ensureDesktopNav()}"));
+check('mobile navigation removes desktop navigation',shell.includes("$('#appDesktopNav')?.remove();return ensureDock()"));
+check('desktop navigation exposes desktop-specific primary tools',shell.includes('data-route="propagation"')&&shell.includes('data-route="memory"')&&shell.includes('desktop-quick'));
+check('desktop navigation can become a wide-screen side rail',desktop.includes('@media (min-width:1280px)')&&desktop.includes('flex-direction:column')&&desktop.includes('position:fixed'));
+check('large desktop no longer reserves mobile bottom dock space',desktop.includes('html[data-ui-mode="desktop"] body{padding-bottom:0!important}')&&desktop.includes('html[data-ui-mode="desktop"] #appView{padding-bottom:38px!important}'));
+check('fine pointer hover treatment is desktop-scoped',desktop.includes('@media (hover:hover) and (pointer:fine)')&&desktop.includes('html[data-ui-mode="desktop"] #appDesktopNav button:hover'));
+check('shell refreshes when UI mode context changes',shell.includes("window.addEventListener('app:uimode',()=>refresh())"));
+check('global search is not injected on signed-out screen',shell.includes("if(!top||!R.me||$('#appView')?.classList.contains('hidden')){old?.remove();return null}"));
+check('sign out removes both navigation shells and search',shell.includes('removeNavigation()')&&shell.includes("$('[data-v44search]')?.remove()"));
+check('shell click delegation tolerates non-Element targets',shell.includes('e.target instanceof Element?e.target:null'));
 
 check('shell traps Tab inside the top visible modal',shell.includes('function trapModalFocus(e)')&&shell.includes("if(e.key!=='Tab')return")&&shell.includes('visibleModal()'));
 check('modal focus trap wraps first and last controls',shell.includes('e.shiftKey&&active===first')&&shell.includes('active===last'));
@@ -84,5 +123,5 @@ check('CSV export blocks duplicate desktop clicks',backup.includes('csv.disabled
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
-console.log(`\n${checks.length-failed.length}/${checks.length} desktop/offline audit checks passed.`);
+console.log(`\n${checks.length-failed.length}/${checks.length} desktop/mobile isolation and audit checks passed.`);
 if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
