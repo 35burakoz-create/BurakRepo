@@ -19,10 +19,11 @@ check('no static tab-view is initially visible',![...index.matchAll(/<section id
 check('UI state loads before authenticated UI',boot.indexOf("'app-ui-state.js'")>boot.indexOf("'app-router-core.js'")&&boot.indexOf("'app-ui-state.js'")<boot.indexOf("'app-auth-ui.js'"));
 check('router defaults to home rather than visible markup',router.includes("let current=hashRoute()||'home'")&&!router.includes("let current=hashRoute()||R.uiState?.tab||visibleRoute()||'home'"));
 check('router can stage any known route before its UI module loads',router.includes("if(!document.getElementById(`tab-${route}`))ensureTab(route)"));
-check('empty URL ignores stale persisted route',state.includes("const state={tab:readHash()||'home'")&&!state.includes("readHash()||old.tab||'home'"));
+check('empty URL restores the last valid persisted route',state.includes("const state={tab:readHash()||(VALID.has(old.tab)?old.tab:'home')"));
+check('invalid persisted routes still fall back to home',state.includes("VALID.has(old.tab)?old.tab:'home'"));
 check('legacy boot redirect guard removed',!state.includes('bootGuardUntil'));
 check('route restore does not depend on appView visibility',state.includes("restore(){if(!R.me)return null;")&&!state.includes("$('#appView')?.classList.contains('hidden')"));
-check('authenticated session restores route immediately',state.includes("R.events?.on?.('auth:changed',x=>{if(x?.authenticated){restoreFilters();restoreDraft();R.navigation.restore()}})"));
+check('authenticated session restores route immediately',state.includes("R.events?.on?.('auth:changed',x=>{if(x?.authenticated){restoreFilters();restoreDraft();R.navigation.restore()"));
 check('route is re-entered after all modules register',state.includes("R.events?.on?.('bootstrap:ready',()=>{if(R.me){restoreFilters();R.navigation.restore()}})"));
 check('slow fallback timer removed',!state.includes('3900')&&!state.includes('setTimeout(()=>{bootGuardUntil'));
 check('route fix has a non-legacy PWA cache identity',/cacheVersion:'v385-core-boundary-(?!20260907-1)[^']+'/.test(config));
