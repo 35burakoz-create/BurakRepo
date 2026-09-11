@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
+const read=f=>fs.readFileSync(path.join(root,f),'utf8');
+const checks=[];function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
+const index=read('index.html'),home=read('app-home-ui.js'),now=read('app-now-ui.js'),guide=read('app-guide-ui.js'),menu=read('app-menu-ui.js'),qsl=read('app-qsl-ui.js'),analysis=read('app-analysis-ui.js'),auth=read('app-auth-ui.js'),form=read('app-log-form-ui.js'),intel=read('app-radio-intelligence.js');
+check('authentication buttons use Turkish sentence case',index.includes('Kayıt ol')&&index.includes('Giriş yap')&&auth.includes("?'Giriş yap':'Kayıt ol'")&&!index.includes('Kayıt Ol')&&!index.includes('Giriş Yap'));
+check('main navigation uses sentence case',index.includes('Ses ve akıllı analiz')&&index.includes('Yayın rehberi')&&!index.includes('Ses ve Akıllı Analiz'));
+check('guide description is natural Turkish',index.includes('TECSUN R-9012 ile dinlenebilen FM, MW ve kısa dalga yayınları.'));
+check('home uses suitable-candidate wording',home.includes('uygun aday')&&home.includes('Şu anda dinlemeye uygun bir yayın adayı yok')&&!home.includes('etkin aday'));
+check('home uses natural activity wording',home.includes('Dinleme sıklığı')&&home.includes('ardışık gün')&&home.includes('ŞİMDİ DİNLENEBİLİR')&&!home.includes('Dinleme ritmi')&&!home.includes('günlük seri')&&!home.includes('ETERDE ŞİMDİ'));
+check('now screen avoids awkward radio jargon',now.includes('ŞU ANKİ YAYIN ADAYLARI')&&now.includes('Yayın saati:')&&now.includes('yerel FM')&&!now.includes('CANLI ETER GÖRÜNÜMÜ')&&!now.includes('Geçerli yayın penceresi'));
+check('station fallback is consistently phrased',home.includes("'Yayın adayı'")&&now.includes("'Yayın adayı'")&&guide.includes("'Yayın adayı'")&&!guide.includes("'Aday yayın'"));
+check('guide candidate and pagination text is user-facing',guide.includes('farklı yayın adayı')&&guide.includes('yayın daha')&&guide.includes('istasyon–frekans eşleşmesi')&&!guide.includes('satır daha'));
+check('menu labels use Turkish sentence case',menu.includes('Radyo hafızası')&&menu.includes('Radyo atlası')&&menu.includes('Yayılım asistanı')&&menu.includes('Yayın rehberi')&&menu.includes('Sistem durumu'));
+check('menu descriptions avoid technical queue language',menu.includes('Çevrimdışı kayıtları bulutla eşitle')&&!menu.includes('Çevrimdışı kuyruğu buluta gönder'));
+check('QSL center copy is clear Turkish',qsl.includes('QSL raporu yalnızca İngilizce hazırlanır')&&qsl.includes('İletişim bilgisi bul')&&qsl.includes('Program ayrıntıları (İngilizce, isteğe bağlı)')&&!qsl.includes('English programme details'));
+check('analysis labels describe counts accurately',analysis.includes('QSL gönderimi')&&analysis.includes('Farklı konum')&&analysis.includes('Sinyal puanı içeren kayıtlar'));
+check('advanced form wording is concise',form.includes('＋ Ek ayrıntılar')&&form.includes('Yaklaşık kadran konumu')&&form.includes('“Ses ve akıllı analiz”'));
+check('recommendation probability explanation uses Turkish wording',intel.includes('Bu puan, duyulma olasılığını yüzde olarak göstermez')&&!intel.includes('Bu skor bir duyulma olasılığı yüzdesi değildir'));
+for(const[name,ok]of checks)console.log(`${ok?'✓':'✗'} ${name}`);const failed=checks.filter(x=>!x[1]);console.log(`\n${checks.length-failed.length}/${checks.length} Turkish copy checks passed.`);if(failed.length)console.error('Failed:',failed.map(x=>x[0]).join(', '));
