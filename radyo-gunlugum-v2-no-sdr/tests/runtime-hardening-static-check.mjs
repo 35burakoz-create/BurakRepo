@@ -14,8 +14,9 @@ const smoke=read('app-smoke.js');
 const intelligence=read('app-radio-intelligence.js');
 const integrity=read('app-record-integrity.js');
 const menu=read('app-menu-ui.js');
+const quickLog=read('app-quick-log.js');
 
-for(const [file,src] of [['app-foundation.js',foundation],['sw.js',sw],['app-pwa-updates.js',updates],['app-smoke.js',smoke],['app-radio-intelligence.js',intelligence],['app-record-integrity.js',integrity],['app-menu-ui.js',menu]]){
+for(const [file,src] of [['app-foundation.js',foundation],['sw.js',sw],['app-pwa-updates.js',updates],['app-smoke.js',smoke],['app-radio-intelligence.js',intelligence],['app-record-integrity.js',integrity],['app-menu-ui.js',menu],['app-quick-log.js',quickLog]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}
   check(`syntax ${file}`,ok);
 }
@@ -83,6 +84,10 @@ check('manual log coordinate validation enforces latitude and longitude ranges',
 
 check('menu sync reports pending rows instead of false success',menu.includes("if(pending>0)R.toast?.(`${pending} çevrimdışı kayıt hâlâ bekliyor"));
 check('menu sync reports actual synchronization failures',menu.includes("R.reportError?.(error,'menu-offline-sync'")&&menu.includes('Senkronizasyon tamamlanamadı'));
+check('menu sheets close when authenticated account identity changes',menu.includes('const changedAccount=!!x?.previousUserId&&x.previousUserId!==R.me?.id')&&menu.includes('if(!x?.authenticated||changedAccount)'));
+check('quick log pins the account that opened the sheet',quickLog.includes('const userId=R.me?.id')&&quickLog.includes('user_id:userId'));
+check('quick log aborts stale-account actions before saving',quickLog.includes("if(R.me?.id!==userId){R.menuUI.close()")&&quickLog.includes('if(R.me?.id!==userId)return;'));
+check('quick log avoids reloading another account after an old save finishes',quickLog.includes('if(R.me?.id!==userId)return;if(navigator.onLine)await R.load?.()'));
 
 check('season engine still uses last-Sunday A/B boundaries',intelligence.includes('lastSunday(y,2)')&&intelligence.includes('lastSunday(y,9)'));
 check('transmitter intelligence refuses missing/invalid coordinates',intelligence.includes("if(!s||!validCoords(s.latitude,s.longitude))return null"));
