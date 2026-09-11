@@ -13,8 +13,10 @@ const menu=read('app-menu-ui.js');
 const qslService=read('app-qsl-service.js');
 const qslUI=read('app-qsl-ui.js');
 const audioSafety=read('app-audio-safety.js');
+const memory=read('app-memory.js');
+const smart=read('app-smart-analyzer.js');
 
-for(const [file,src] of [['sw.js',sw],['app-menu-ui.js',menu],['app-qsl-service.js',qslService],['app-qsl-ui.js',qslUI],['app-audio-safety.js',audioSafety]]){
+for(const [file,src] of [['sw.js',sw],['app-menu-ui.js',menu],['app-qsl-service.js',qslService],['app-qsl-ui.js',qslUI],['app-audio-safety.js',audioSafety],['app-memory.js',memory],['app-smart-analyzer.js',smart]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}
   check(`syntax ${file}`,ok);
 }
@@ -47,6 +49,18 @@ check('audio attachment validates owning account and path prefix',audioSafety.in
 check('audio recovery signed URL cannot open after account switch',audioSafety.includes('if(R.me?.id===userId&&p.isConnected)window.open'));
 check('audio recovery modal closes on authenticated account switch',audioSafety.includes('changedAccount=!!x?.previousUserId&&x.previousUserId!==userId')&&audioSafety.includes("closeModal();$('#appAudioActions')?.remove()"));
 check('audio recovery click delegation tolerates non-Element targets',audioSafety.includes("const target=e.target,p=target?.closest?.('[data-audio-play]')"));
+
+check('Radio Memory state storage is account-scoped',memory.includes("KEY='radio-memory-v373'")&&memory.includes('`${KEY}:${userId}`'));
+check('legacy global Radio Memory state is retired',memory.includes("localStorage.removeItem(LEGACY_KEY)"));
+check('Radio Memory attempt pagination pins one account',memory.includes('async function loadAttempts(userId=R.me?.id)')&&memory.includes(".eq('user_id',userId)"));
+check('Radio Memory attempt pagination stops applying stale account rows',memory.includes('if(R.me?.id!==userId)return[]')&&memory.includes('if(R.me?.id===userId){attempts=out;attemptsUserId=userId}'));
+check('Radio Memory only uses cached attempts for the active account',memory.includes("attemptsUserId!==R.me?.id")&&memory.includes('R.listening?.state?.userId===userId'));
+check('Radio Memory resets account state immediately on auth change',memory.includes("R.events?.on?.('auth:changed',x=>{attempts=null;attemptsUserId=null")&&memory.includes('readState(userId):blankState()'));
+check('Radio Memory delegated menu click tolerates non-Element targets',memory.includes("e.target?.closest?.('[data-v38menu]')"));
+check('Radio Memory ignores invalid legacy hours in best-hour summary',memory.includes('Number.isFinite(h)&&h>=0&&h<=23'));
+
+check('smart analyzer delegated click tolerates non-Element targets',smart.includes("e.target?.closest?.('[data-smart-apply]')"));
+check('smart analyzer clears stale candidate state on account change',smart.includes("R.lastSmart=null")&&smart.includes("x.previousUserId!==x?.user?.id"));
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
