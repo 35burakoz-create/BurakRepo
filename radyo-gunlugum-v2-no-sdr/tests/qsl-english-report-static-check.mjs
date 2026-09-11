@@ -34,6 +34,6 @@ check('contact scoring recognizes exact station aliases',R.qslService.contactSco
 check('QSL UI exposes verified contact lookup',ui.includes('İletişim öner')&&ui.includes('E-posta taslağını aç')&&ui.includes('Resmî formu aç'));
 check('QSL UI exposes English-only programme details',ui.includes('English programme details (optional)')&&ui.includes('Türkçe serbest metin'));
 check('contact service queries curated station directory',qsl.includes("from('radio_station_contacts')")&&qsl.includes('suggestContact')&&qsl.includes('saveContact'));
-const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*20260910-(\d+)'/);check('QSL contact release has fresh PWA generation',!!cache&&Number(cache[1])>=14);
+const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*-(\d{8})-(\d+)'/);check('QSL contact release has fresh PWA generation',!!cache&&Number(cache[1])>=20260910&&Number(cache[2])>=14);
 
-for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);const failed=checks.filter(([,ok])=>!ok);console.log(`\n${checks.length-failed.length}/${checks.length} QSL English/contact checks passed.`);if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
+for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);const failed=checks.filter(x=>!x[1]);console.log(`\n${checks.length-failed.length}/${checks.length} QSL English/contact checks passed.`);if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
