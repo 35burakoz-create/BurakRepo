@@ -35,8 +35,8 @@ check('radio glossary modal is bounded on mobile',glossary.includes('max-height:
 check('collection modal is bounded on mobile',collection.includes('max-height:92vh'));
 check('reminder action exists in canonical user service',user.includes('id="appRemSave"')&&user.includes('Hatırlatıcıyı kaydet'));
 check('settings action exists in canonical user service',user.includes('id="appPrefsSave"')&&user.includes('Ayarları kaydet'));
-const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*20260910-(\d+)'/);
-check('geometry fix has a fresh PWA generation',!!cache&&Number(cache[1])>=17);
+const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*-(\d{8})-(\d+)'/);
+check('geometry fix has a fresh PWA generation',!!cache&&Number(cache[1])>=20260910&&Number(cache[2])>=17);
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
