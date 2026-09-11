@@ -12,8 +12,10 @@ const sw=read('sw.js');
 const updates=read('app-pwa-updates.js');
 const smoke=read('app-smoke.js');
 const intelligence=read('app-radio-intelligence.js');
+const integrity=read('app-record-integrity.js');
+const menu=read('app-menu-ui.js');
 
-for(const [file,src] of [['app-foundation.js',foundation],['sw.js',sw],['app-pwa-updates.js',updates],['app-smoke.js',smoke],['app-radio-intelligence.js',intelligence]]){
+for(const [file,src] of [['app-foundation.js',foundation],['sw.js',sw],['app-pwa-updates.js',updates],['app-smoke.js',smoke],['app-radio-intelligence.js',intelligence],['app-record-integrity.js',integrity],['app-menu-ui.js',menu]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}
   check(`syntax ${file}`,ok);
 }
@@ -61,6 +63,26 @@ check('diagnostic serializer handles bigint values',foundation.includes("typeof 
   let item=null,ok=true;try{item=R.reportError(circular,'runtime-hardening',{silent:true})}catch{ok=false}
   check('diagnostics can record a circular non-Error payload without crashing',ok&&String(item?.message||'').includes('[Circular]'));
 }
+
+check('manual log submit validates coordinate pairs',integrity.includes('validateCoordinates')&&integrity.includes("enlem ve boylamı birlikte gir"));
+check('manual log coordinate validation enforces latitude and longitude ranges',integrity.includes('latitude<-90||latitude>90')&&integrity.includes('longitude<-180||longitude>180'));
+{
+  const R={features:{register(){}},norm:v=>String(v??'').toLowerCase()};
+  const document={querySelector(){return null},addEventListener(){}};
+  const sandbox={window:{R},document,RADIO_APP_CONFIG:{},Intl,Math,Number,String,Object,Array,Map,Set,console,alert(){}};
+  vm.createContext(sandbox);vm.runInContext(integrity,sandbox,{filename:'app-record-integrity.js'});
+  const valid=R.recordIntegrity.validateCoordinates('38,151','27.36');
+  const partial=R.recordIntegrity.validateCoordinates('38.151','');
+  const badLat=R.recordIntegrity.validateCoordinates('91','27');
+  const badLon=R.recordIntegrity.validateCoordinates('38','181');
+  check('coordinate validator accepts Turkish decimal comma and normal coordinates',valid.ok&&Math.abs(valid.latitude-38.151)<1e-9&&valid.longitude===27.36);
+  check('coordinate validator rejects a half coordinate pair',partial.ok===false);
+  check('coordinate validator rejects latitude above 90',badLat.ok===false);
+  check('coordinate validator rejects longitude above 180',badLon.ok===false);
+}
+
+check('menu sync reports pending rows instead of false success',menu.includes("if(pending>0)R.toast?.(`${pending} çevrimdışı kayıt hâlâ bekliyor"));
+check('menu sync reports actual synchronization failures',menu.includes("R.reportError?.(error,'menu-offline-sync'")&&menu.includes('Senkronizasyon tamamlanamadı'));
 
 check('season engine still uses last-Sunday A/B boundaries',intelligence.includes('lastSunday(y,2)')&&intelligence.includes('lastSunday(y,9)'));
 check('transmitter intelligence refuses missing/invalid coordinates',intelligence.includes("if(!s||!validCoords(s.latitude,s.longitude))return null"));
