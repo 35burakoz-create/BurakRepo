@@ -13,9 +13,11 @@ const search=read('v44-search-rebuild.js');
 const log=read('app-log-ui.js');
 const offline=read('app-offline-service.js');
 const atlas=read('app-atlas-service.js');
+const atlasUI=read('app-atlas-ui.js');
+const mapUI=read('app-map-ui.js');
 const sw=read('sw.js');
 
-for(const [file,src] of [['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-offline-service.js',offline],['app-atlas-service.js',atlas]]){
+for(const [file,src] of [['app-shell-core.js',shell],['v44-search-rebuild.js',search],['app-log-ui.js',log],['app-offline-service.js',offline],['app-atlas-service.js',atlas],['app-atlas-ui.js',atlasUI],['app-map-ui.js',mapUI]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)
 }
 
@@ -50,6 +52,11 @@ check('atlas has canonical coordinate range validator',atlas.includes('function 
 check('atlas manual origin rejects impossible coordinates',atlas.includes("if(!validCoords(lat,lon))throw new Error"));
 check('atlas haversine clamps floating point domain',atlas.includes('Math.min(1,Math.max(0,raw))'));
 check('atlas ignores non-finite legacy frequencies',atlas.includes('if(!Number.isFinite(f))continue'));
+check('atlas destroys Leaflet instance before replacing map DOM',atlasUI.includes('function destroyMap()')&&atlasUI.includes('destroyMap();root.innerHTML='));
+check('atlas detects a replaced Leaflet host node',atlasUI.includes('if(map&&mapHost!==node)destroyMap()'));
+check('atlas invalidates map size after desktop resize',atlasUI.includes("window.addEventListener('resize',resizeMap")&&atlasUI.includes('map.invalidateSize?.({pan:false})'));
+check('location map invalidates size after desktop resize',mapUI.includes("window.addEventListener('resize',resizeMap")&&mapUI.includes('map.invalidateSize?.({pan:false})'));
+check('both Leaflet views release maps on sign out',atlasUI.includes("if(!x?.authenticated)destroyMap()")&&mapUI.includes("if(!x?.authenticated)destroy()"));
 
 {
   const R={logs:[],events:{emit(){},on(){}},features:{register(){}},norm:v=>String(v??'').toLocaleLowerCase('tr-TR')};
