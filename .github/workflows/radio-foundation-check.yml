@@ -81,3 +81,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/radio-intelligence-static-check.mjs
       - name: Runtime hardening regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/runtime-hardening-static-check.mjs
+      - name: Account, media and receiver hardening checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/account-media-receiver-hardening-static-check.mjs
