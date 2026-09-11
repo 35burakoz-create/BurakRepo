@@ -46,6 +46,7 @@ check('diagnostic serializer handles bigint values',foundation.includes("typeof 
     head:{appendChild(){}},
     title:'',
     querySelector(){return null},
+    addEventListener(){},
     createElement(){return{dataset:{},setAttribute(){},append(){},appendChild(){},querySelector(){return null},querySelectorAll(){return[]},remove(){},focus(){}}}
   };
   const R={norm:v=>String(v??'').toLowerCase(),esc:v=>String(v??'')};
