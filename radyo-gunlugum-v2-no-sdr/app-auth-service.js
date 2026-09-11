@@ -1,6 +1,6 @@
 (()=>{
 const R=window.R;if(!R||R.__authService385)return;R.__authService385=true;const events=R.events;let currentId=null,booting=null;
-function applyUser(user,source='auth'){const next=user||null,id=next?.id||null,changed=id!==currentId;currentId=id;R.me=next;if(!next){R.logs=[];R.schedules=[];R.store?.sync?.('auth-cleared')}if(changed||source==='boot')events?.emit?.('auth:changed',{user:next,authenticated:!!next,source});return next}
+function applyUser(user,source='auth'){const next=user||null,id=next?.id||null,previousUserId=currentId,changed=id!==previousUserId;currentId=id;R.me=next;if(changed){R.logs=[];if(!next)R.schedules=[];R.store?.sync?.(next?'auth-user-changed':'auth-cleared')}if(changed||source==='boot')events?.emit?.('auth:changed',{user:next,authenticated:!!next,source,previousUserId});return next}
 async function signIn(email,password){const q=await R.S.auth.signInWithPassword({email,password});if(q.error)throw q.error;applyUser(q.data?.user||null,'sign-in');if(q.data?.user)await R.load?.();return q.data}
 async function signUp(email,password){const q=await R.S.auth.signUp({email,password});if(q.error)throw q.error;if(q.data?.user&&q.data?.session){applyUser(q.data.user,'sign-up');await R.load?.()}return q.data}
 async function signOut(){R.uiStatePersistence?.saveDraft?.();const q=await R.S.auth.signOut();if(q.error)throw q.error;applyUser(null,'sign-out');return true}
