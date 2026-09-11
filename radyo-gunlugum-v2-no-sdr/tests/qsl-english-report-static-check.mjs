@@ -31,8 +31,8 @@ check('localized helper values remain English',R.qslService.englishCountry('Amer
 check('unknown localized labels are omitted rather than leaked',R.qslService.englishCountry('Bilinmeyen Ülke')===''&&R.qslService.englishLanguage('Bilinmeyen Dil')==='');
 const kbs={station_name:'KBS WORLD Radio - English Service',aliases:['KBS World Radio','KBS WORLD Radio'],country:'South Korea'};
 check('contact scoring recognizes exact station aliases',R.qslService.contactScore(kbs,{station:'KBS World Radio',country:'Güney Kore'})>=100);
-check('QSL UI exposes verified contact lookup',ui.includes('İletişim öner')&&ui.includes('E-posta taslağını aç')&&ui.includes('Resmî formu aç'));
-check('QSL UI exposes English-only programme details',ui.includes('English programme details (optional)')&&ui.includes('Türkçe serbest metin'));
+check('QSL UI exposes verified contact lookup',ui.includes('İletişim bilgisi bul')&&ui.includes('E-posta taslağını aç')&&ui.includes('Resmî formu aç'));
+check('QSL UI exposes English-only programme details',ui.includes('Program ayrıntıları (İngilizce, isteğe bağlı)')&&ui.includes('Bu alan İngilizce olmalıdır'));
 check('contact service queries curated station directory',qsl.includes("from('radio_station_contacts')")&&qsl.includes('suggestContact')&&qsl.includes('saveContact'));
 const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*-(\d{8})-(\d+)'/);check('QSL contact release has fresh PWA generation',!!cache&&Number(cache[1])>=20260910&&Number(cache[2])>=14);
 
