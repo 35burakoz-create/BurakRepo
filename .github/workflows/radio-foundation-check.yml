@@ -67,3 +67,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/wide-audit-static-check.mjs
       - name: QSL English report regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/qsl-english-report-static-check.mjs
+      - name: Modal geometry regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/modal-geometry-static-check.mjs
