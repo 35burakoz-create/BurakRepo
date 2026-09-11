@@ -8,7 +8,7 @@ const FORM_IDS=['logId','audioPath','date','time','band','frequency','station','
 function json(raw,fallback){try{return raw?JSON.parse(raw):fallback}catch{return fallback}}
 function readHash(){const h=decodeURIComponent(location.hash||'').replace(/^#/,'').replace(/^tab=/,'');return VALID.has(h)?h:null}
 const old=json(localStorage.getItem(KEY),{});
-const state={tab:readHash()||'home',nowMode:['ALL','SW','MW','FM'].includes(old.nowMode)?old.nowMode:'ALL',filters:{...(old.filters||{})},scroll:{...(old.scroll||{})}};
+const state={tab:readHash()||(VALID.has(old.tab)?old.tab:'home'),nowMode:['ALL','SW','MW','FM'].includes(old.nowMode)?old.nowMode:'ALL',filters:{...(old.filters||{})},scroll:{...(old.scroll||{})}};
 let draftDirty=false,browserRouting=false;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}}
 function writeHash(tab,mode='replace'){if(mode==='none')return;const u=new URL(location.href);u.hash=`tab=${tab}`;try{history[mode==='push'?'pushState':'replaceState']({radioTab:tab},'',u)}catch{}}
@@ -25,15 +25,18 @@ function restoreFilters(){for(const id of FILTER_IDS){const el=document.getEleme
 for(const id of FILTER_IDS){const el=document.getElementById(id);if(!el)continue;const remember=()=>{state.filters[id]=el.value;save()};el.addEventListener('input',remember);el.addEventListener('change',remember)}
 function draftValues(){const values={};for(const id of FORM_IDS){const el=document.getElementById(id);if(el&&el.type!=='file')values[id]=el.value}return values}
 function meaningful(v){return !!(v.logId||v.audioPath||v.frequency||v.station||v.language||v.country||v.program||v.transcript||v.notes||v.latitude||v.longitude||v.dialPosition)}
-function clearDraft(){draftDirty=false;try{localStorage.removeItem(DRAFT_KEY)}catch{};$('#v39DraftBanner')?.remove()}
-function saveDraft(){const values=draftValues();if(!draftDirty&&!meaningful(values))return;try{localStorage.setItem(DRAFT_KEY,JSON.stringify({at:Date.now(),values}))}catch{}}
-function restoreDraft(){const d=json(localStorage.getItem(DRAFT_KEY),null);if(!d?.values||Date.now()-Number(d.at||0)>7*86400000)return clearDraft();if(!meaningful(d.values))return clearDraft();for(const [id,v] of Object.entries(d.values)){const el=document.getElementById(id);if(el&&el.type!=='file')el.value=v??''}draftDirty=true;R.unit?.();if(state.tab==='log')$('#tab-log')?.classList.add('v38-form-open');const card=$('#tab-log .form-card');if(card&&!$('#v39DraftBanner')){const b=document.createElement('div');b.id='v39DraftBanner';b.style.cssText='margin:0 0 12px;padding:10px 12px;border-radius:12px;background:#eef2ff;color:#3730a3;font-size:12px;display:flex;justify-content:space-between;gap:8px;align-items:center';b.innerHTML='<span>Kaydedilmemiş taslak geri yüklendi.</span><button type="button" class="btn ghost" style="padding:6px 9px">Taslağı sil</button>';b.querySelector('button').onclick=()=>{clearDraft();R.reset?.()};card.prepend(b)}}
+function draftStorageKey(){const id=R.me?.id;return id?`${DRAFT_KEY}:${id}`:null}
+function clearLegacyDraft(){try{localStorage.removeItem(DRAFT_KEY)}catch{}}
+function clearDraft(){draftDirty=false;const key=draftStorageKey();try{if(key)localStorage.removeItem(key);localStorage.removeItem(DRAFT_KEY)}catch{};$('#v39DraftBanner')?.remove()}
+function saveDraft(){const key=draftStorageKey();if(!key)return false;const values=draftValues();if(!draftDirty&&!meaningful(values))return false;try{localStorage.setItem(key,JSON.stringify({at:Date.now(),values}));return true}catch{return false}}
+function restoreDraft(){const key=draftStorageKey();if(!key)return;const d=json(localStorage.getItem(key),null);if(!d?.values||Date.now()-Number(d.at||0)>7*86400000)return clearDraft();if(!meaningful(d.values))return clearDraft();for(const [id,v] of Object.entries(d.values)){const el=document.getElementById(id);if(el&&el.type!=='file')el.value=v??''}draftDirty=true;R.unit?.();if(state.tab==='log')$('#tab-log')?.classList.add('v38-form-open');const card=$('#tab-log .form-card');if(card&&!$('#v39DraftBanner')){const b=document.createElement('div');b.id='v39DraftBanner';b.style.cssText='margin:0 0 12px;padding:10px 12px;border-radius:12px;background:#eef2ff;color:#3730a3;font-size:12px;display:flex;justify-content:space-between;gap:8px;align-items:center';b.innerHTML='<span>Kaydedilmemiş taslak geri yüklendi.</span><button type="button" class="btn ghost" style="padding:6px 9px">Taslağı sil</button>';b.querySelector('button').onclick=()=>{clearDraft();R.reset?.()};card.prepend(b)}}
 const form=$('#logForm');if(form){form.addEventListener('input',()=>{draftDirty=true});form.addEventListener('change',()=>{draftDirty=true})}
 window.addEventListener('pagehide',()=>{saveDraft();state.scroll[state.tab]=window.scrollY||0;save()});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveDraft()});
 R.events?.on?.('form:reset',clearDraft);
 R.events?.on?.('data:loaded',()=>{restoreFilters();if(R.router?.current?.()==='now')applyNowMode()});
-R.events?.on?.('auth:changed',x=>{if(x?.authenticated){restoreFilters();restoreDraft();R.navigation.restore()}});
+R.events?.on?.('auth:changed',x=>{if(x?.authenticated){restoreFilters();restoreDraft();R.navigation.restore()}else setTimeout(()=>{R.reset?.();$('#v39DraftBanner')?.remove()},0)});
 R.events?.on?.('bootstrap:ready',()=>{if(R.me){restoreFilters();R.navigation.restore()}});
-save();writeHash(state.tab,'replace');if(R.me){restoreFilters();restoreDraft();R.navigation.restore()}
+clearLegacyDraft();save();writeHash(state.tab,'replace');if(R.me){restoreFilters();restoreDraft();R.navigation.restore()}
+R.uiStatePersistence={saveDraft,restoreDraft,clearDraft,draftStorageKey};
 R.features?.register?.('ui-state',{ready:true,provider:'app-ui-state'});
 })();
