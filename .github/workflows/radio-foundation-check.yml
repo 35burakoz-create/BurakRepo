@@ -71,3 +71,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/modal-geometry-static-check.mjs
       - name: Newly audited module regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/untouched-areas-static-check.mjs
+      - name: Deep unseen-module regression checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/unseen-modules-static-check.mjs
