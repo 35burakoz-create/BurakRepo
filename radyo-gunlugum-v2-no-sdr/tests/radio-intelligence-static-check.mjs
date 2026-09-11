@@ -7,7 +7,7 @@ for(const[file,src]of[['app-radio-intelligence.js',js],['app-radio-intelligence-
 check('intelligence service loads after atlas and guide services',boot.indexOf("'app-radio-intelligence.js'")>boot.indexOf("'app-atlas-service.js'")&&boot.indexOf("'app-radio-intelligence.js'")>boot.indexOf("'app-guide-service.js'"));
 check('intelligence UI loads after home now guide and atlas UI',boot.indexOf("'app-radio-intelligence-ui.js'")>boot.indexOf("'app-home-ui.js'")&&boot.indexOf("'app-radio-intelligence-ui.js'")>boot.indexOf("'app-atlas-ui.js'"));
 check('intelligence assets are cached',sw.includes("'./app-radio-intelligence.js'")&&sw.includes("'./app-radio-intelligence-ui.js'")&&sw.includes("'./app-radio-intelligence.css'"));
-check('recommendation explains instead of presenting score as probability',js.includes('Bu skor bir duyulma olasılığı yüzdesi değildir')&&ui.includes('Neden bunu öneriyorum?'));
+check('recommendation explains instead of presenting score as probability',js.includes('Bu puan, duyulma olasılığını yüzde olarak göstermez')&&ui.includes('Neden bunu öneriyorum?'));
 check('recommendation uses personal reception history',js.includes('kişisel kaydın var')&&js.includes('sc.history?.count'));
 check('recommendation includes transmitter power path and target when known',js.includes("kind:'power'")&&js.includes("kind:'path'")&&js.includes("kind:'target'"));
 check('season manager supports generic A and B seasons',js.includes("/^([AB])(\\d{2})$/")&&js.includes("/^[AB]\\d{2}$/"));
