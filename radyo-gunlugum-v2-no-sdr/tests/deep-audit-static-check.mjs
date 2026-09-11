@@ -33,7 +33,7 @@ check('propagation reacts to fresh listening attempts',propagation.includes("R.e
 check('journal renders records progressively',log.includes('const VISIBLE_STEP=100')&&log.includes('rows.slice(0,visibleCount)')&&log.includes('data-log-more'));
 check('listening map uses selected listening origin',map.includes('R.listeningOrigin?.()')&&map.includes("R.events?.on?.('user:settings'"));
 check('audio devices stop when leaving audio route',audio.includes("R.events?.on?.('route:before'")&&audio.includes("x?.from==='audio'")&&audio.includes('cleanup()'));
-check('audio preview URL is released on form reset',audio.includes("R.events?.on?.('form:reset',releasePreview)"));
+check('audio preview URL is released on form reset',audio.includes("R.events?.on?.('form:reset',resetAudioState)")&&audio.includes('function resetAudioState(){R.recordedBlob=null;releasePreview()'));
 check('hidden smart view is not redrawn on every data load',listening.includes("if(route==='smart')renderSmart()")&&!listening.includes("R.events?.on?.('data:loaded',()=>{renderSmart();"));
 check('listening helper modal has dialog semantics',listening.includes("m.setAttribute('role','dialog')")&&listening.includes("m.setAttribute('aria-modal','true')")&&listening.includes("e.key==='Escape'&&$('#appListenModal')"));
 check('collection modal has dialog semantics',collection.includes("m.setAttribute('role','dialog')")&&collection.includes("m.setAttribute('aria-modal','true')"));
