@@ -12,10 +12,11 @@ const audio=read('app-audio-ui.js');
 const audioSafety=read('app-audio-safety.js');
 const map=read('app-map-ui.js');
 
-check('last valid route is restored when no hash exists',ui.includes("readHash()||(VALID.has(old.tab)?old.tab:'home')"));
+check('last valid account route is restored when no hash exists',ui.includes("state.tab=hash||(VALID.has(saved.tab)?saved.tab:'home')"));
+check('UI state storage is scoped to the authenticated user',ui.includes('function stateStorageKey')&&ui.includes('`${STATE_KEY}:${userId}`'));
 check('draft storage is scoped to the authenticated user',ui.includes('function draftStorageKey()')&&ui.includes('`${DRAFT_KEY}:${id}`'));
 check('legacy unscoped draft key is explicitly cleared',ui.includes('function clearLegacyDraft()')&&ui.includes('localStorage.removeItem(DRAFT_KEY)'));
-check('logout clears the visible form after auth state changes',ui.includes("if(x?.authenticated){restoreFilters();restoreDraft();R.navigation.restore()}else setTimeout(()=>{R.reset?.()"));
+check('logout clears the visible form without deleting another account draft',ui.includes('function resetVisibleForm()')&&ui.includes('suppressDraftClear=true')&&ui.includes('setTimeout(resetVisibleForm,0)'));
 check('sign out persists the current user draft first',auth.includes('R.uiStatePersistence?.saveDraft?.();')&&auth.indexOf('saveDraft')<auth.indexOf('R.S.auth.signOut'));
 check('recording cleanup discards a capture when leaving the audio route',audio.includes('discardOnStop=true')&&audio.includes('if(discard)return'));
 check('recorder errors restore recording controls',audio.includes('activeRecorder.onerror')&&audio.includes('setRecordingControls(false)'));
