@@ -74,7 +74,7 @@ check('PWA update banner clears device safe area',updatesCss.includes('calc(86px
 
 check('analysis splits multi-value language fields',analysis.includes('const splitValues=')&&analysis.includes("count(logs,x=>splitValues(x.language))"));
 check('analysis ignores invalid legacy hours',analysis.includes('!Number.isInteger(hour)||hour<0||hour>23'));
-check('analysis counts normalized unique locations',analysis.includes("['Konum',uniqueCount(logs,x=>x.location)]"));
+check('analysis counts normalized unique locations',analysis.includes("['Farklı konum',uniqueCount(logs,x=>x.location)]"));
 check('language service distinguishes ambiguous Arabic-script text safely',language.includes('Arapça ile Farsça güvenle ayrılamadı'));
 check('language service distinguishes ambiguous Cyrillic text safely',language.includes('Kiril yazısı kullanılıyor; dil güvenle ayrılamadı'));
 check('language service recognizes Greek script',language.includes("language:'Yunanca'"));
