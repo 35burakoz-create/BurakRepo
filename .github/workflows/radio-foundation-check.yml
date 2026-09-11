@@ -79,6 +79,8 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/desktop-offline-audit-static-check.mjs
       - name: Radio intelligence regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/radio-intelligence-static-check.mjs
+      - name: Current recommendation and performance checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/current-recommendation-performance-static-check.mjs
       - name: Runtime hardening regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/runtime-hardening-static-check.mjs
       - name: Account, media and receiver hardening checks
