@@ -15,8 +15,11 @@ const qslUI=read('app-qsl-ui.js');
 const audioSafety=read('app-audio-safety.js');
 const memory=read('app-memory.js');
 const smart=read('app-smart-analyzer.js');
+const collection=read('app-collection-ui.js');
+const aiService=read('app-ai-service.js');
+const aiUI=read('app-ai-ui.js');
 
-for(const [file,src] of [['sw.js',sw],['app-menu-ui.js',menu],['app-qsl-service.js',qslService],['app-qsl-ui.js',qslUI],['app-audio-safety.js',audioSafety],['app-memory.js',memory],['app-smart-analyzer.js',smart]]){
+for(const [file,src] of [['sw.js',sw],['app-menu-ui.js',menu],['app-qsl-service.js',qslService],['app-qsl-ui.js',qslUI],['app-audio-safety.js',audioSafety],['app-memory.js',memory],['app-smart-analyzer.js',smart],['app-collection-ui.js',collection],['app-ai-service.js',aiService],['app-ai-ui.js',aiUI]]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}
   check(`syntax ${file}`,ok);
 }
@@ -61,6 +64,23 @@ check('Radio Memory ignores invalid legacy hours in best-hour summary',memory.in
 
 check('smart analyzer delegated click tolerates non-Element targets',smart.includes("e.target?.closest?.('[data-smart-apply]')"));
 check('smart analyzer clears stale candidate state on account change',smart.includes("R.lastSmart=null")&&smart.includes("x.previousUserId!==x?.user?.id"));
+
+check('collection open is pinned to the account that requested it',collection.includes('async function open(){const userId=R.me?.id')&&collection.includes('if(R.me?.id!==userId)return null'));
+check('collection modal closes on authenticated account switch',collection.includes("R.events?.on?.('auth:changed',x=>")&&collection.includes('close({restoreFocus:false})'));
+check('collection country navigation cannot continue in another account',collection.includes("if(R.me?.id!==userId){close({restoreFocus:false});return}"));
+
+check('AI service clears user state immediately on account switch',aiService.includes('function clearUserState()')&&aiService.includes('if(!x?.authenticated||changedAccount)clearUserState()'));
+check('AI service scopes loaded data events to the active account',aiService.includes("emit?.('ai:data',{count:state.analyses.length,userId})"));
+check('AI service guards completion and error events by account',aiService.includes("emit?.('ai:analysis-complete',{logId:log.id,analysis:latest,userId})")&&aiService.includes("if(R.me?.id===userId){await load({force:true}).catch(()=>{});R.events?.emit?.('ai:analysis-error'"));
+check('AI apply verifies owned row and account after reload',aiService.includes(".eq('user_id',userId).select('id').maybeSingle()")&&aiService.includes("emit?.('ai:applied',{logId:log.id,analysisId:a.id,textOnly,userId})"));
+check('AI candidate selection verifies owned row and account after reload',aiService.includes("throw new Error('Yapay zekâ analizi bulunamadı veya bu hesaba ait değil.')")&&aiService.includes("emit?.('ai:candidate-selected',{analysisId:a.id,index:Number(index),logId:a.log_id,userId})"));
+check('AI language detection reuses the safer language service',aiService.includes("R.languageService?.detect?.(original)||R.detect?.(original)"));
+check('AI weekday fallback uses timezone-stable UTC calendar math',aiService.includes("+'T12:00:00Z'),w=d.getUTCDay()"));
+
+check('AI UI async actions pin account identity before awaiting service',aiUI.includes('async function analyze(id){const userId=R.me?.id')&&aiUI.includes('async function apply(id,textOnly=false){const userId=R.me?.id')&&aiUI.includes('async function choose(id,index){const userId=R.me?.id'));
+check('AI UI does not toast stale completions into another account',aiUI.includes('await A.analyze(id);if(R.me?.id!==userId)return')&&aiUI.includes('await A.applyAnalysis(id,{textOnly});if(R.me?.id!==userId)return'));
+check('AI UI clears selected log on account transition',aiUI.includes('selected=null;A.state.selectedLogId=null'));
+check('AI UI delegated click tolerates non-Element targets',aiUI.includes("const target=e.target,an=target?.closest?.('[data-ai-analyze]')"));
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
