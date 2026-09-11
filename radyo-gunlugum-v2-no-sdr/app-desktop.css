@@ -1,0 +1,70 @@
+/* Masaüstü tarayıcı katmanı: mobil kabuğu geniş ekrana doğal biçimde uyarlar. */
+@media (min-width:960px){
+  .shell{max-width:1120px!important;padding-left:22px!important;padding-right:22px!important}
+  .topbar{gap:16px!important;padding-top:12px!important;padding-bottom:14px!important}
+  .topbar .sub{display:block!important;max-width:680px!important;font-size:11px!important}
+  #userBox:not(.hidden){display:flex!important}
+  .userbox #userEmail{display:block!important;max-width:230px!important}
+  .v42-top-search kbd{display:inline-flex;align-items:center;border:1px solid #e2e8f0;border-bottom-color:#cbd5e1;background:#f8fafc;color:#64748b;border-radius:7px;padding:2px 5px;font:700 9px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;margin-left:2px}
+  .two-col{grid-template-columns:minmax(360px,.9fr) minmax(0,1.35fr)!important;gap:16px!important}
+  #tab-analysis .two-col{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .v42-home-grid{grid-template-columns:minmax(0,1.7fr) minmax(240px,.8fr)!important;gap:16px!important}
+  .v38-list{gap:14px!important}
+  .records-card,.form-card,.v42-section,.app-atlas-card{min-width:0}
+  .app-atlas-map{height:540px!important}
+  .v44-sheet{width:min(820px,calc(100vw - 64px))!important}
+  .v38-sheet{width:min(700px,calc(100vw - 64px))!important}
+  .foundation-diag{width:min(820px,calc(100vw - 64px))!important}
+  .record-top[role="button"]:hover{background:#f8fafc;border-radius:12px}
+  .record-top[role="button"]{outline-offset:4px}
+}
+
+@media (min-width:1280px){
+  body{padding-bottom:0!important}
+  .shell{padding-bottom:38px!important}
+  #appView{padding-bottom:38px!important}
+  #v38Dock{
+    left:max(18px,calc(50% - 660px))!important;
+    right:auto!important;
+    top:50%!important;
+    bottom:auto!important;
+    transform:translateY(-50%)!important;
+    width:88px!important;
+    height:auto!important;
+    grid-template-columns:1fr!important;
+    grid-auto-rows:minmax(58px,auto)!important;
+    gap:5px!important;
+    padding:8px!important;
+    border-radius:25px!important;
+  }
+  #v38Dock button{min-height:58px!important;padding:7px 4px!important}
+  #v38Dock button.plus{height:64px!important;min-height:64px!important;margin:0!important;border-radius:18px!important}
+  #v38Dock button i{margin-bottom:3px}
+  .v38-sheet{
+    top:50%!important;
+    bottom:auto!important;
+    transform:translate(-50%,-50%)!important;
+    max-height:min(82dvh,780px)!important;
+    border-radius:26px!important;
+  }
+  .app-update-banner{bottom:24px!important}
+  .v42-home,.v38-now,.app-smart,.app-atlas,.app-memory,.app-propagation{scroll-margin-top:20px}
+}
+
+@media (min-width:1440px){
+  .shell{max-width:1160px!important}
+  #v38Now .v38-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .app-atlas-grid{gap:16px!important}
+}
+
+@media (hover:hover) and (pointer:fine){
+  #v38Dock button:hover{background:#f8fafc!important;color:#334155!important}
+  #v38Dock button.active:hover{background:var(--ds-primary-soft,#eef2ff)!important;color:var(--ds-primary,#4f46e5)!important}
+  #v38Dock button.plus:hover{filter:brightness(1.05)}
+  .record-top[role="button"],.app-atlas-country,.v38-menu-row,.v44-result{transition:background .14s ease,border-color .14s ease,box-shadow .14s ease}
+  .record-top[role="button"]{cursor:pointer}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .record-top[role="button"],.app-atlas-country,.v38-menu-row,.v44-result{transition:none!important}
+}
