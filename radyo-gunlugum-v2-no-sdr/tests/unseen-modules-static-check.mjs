@@ -24,7 +24,7 @@ check('achievement sync tolerates concurrent tabs',achievements.includes("onConf
 check('achievement state is refreshed after conflict-safe sync',achievements.includes('const fresh=await fetchRows(userId)'));
 check('achievement async loads are scoped per account',achievements.includes('loadFlights=new Map()')&&achievements.includes('syncFlights=new Map()')&&achievements.includes('if(!applyRows(rows,userId))return state'));
 check('quick log blocks duplicate submits',quick.includes('let sig=3,saving=false')&&quick.includes('if(saving)return')&&quick.includes('save.disabled=true'));
-check('quick log requires an authenticated user',quick.includes("if(!R.me?.id)return R.toast?.('Hızlı kayıt için giriş yapmalısın.')"));
+check('quick log requires and pins an authenticated user',quick.includes('const userId=R.me?.id')&&quick.includes("if(!userId)return R.toast?.('Hızlı kayıt için giriş yapmalısın.')")&&quick.includes('user_id:userId'));
 check('AI history is paged instead of capped at 200',ai.includes('const PAGE_SIZE=1000,MAX_ANALYSES=10000')&&ai.includes('.range(from,from+PAGE_SIZE-1)')&&!ai.includes('.limit(200)'));
 check('stale running AI analyses recover as errors',ai.includes('STALE_RUNNING_MS=30*60*1000')&&ai.includes('ai-stale-recovery'));
 check('duplicate AI analysis starts are coalesced',ai.includes('activeAnalyses=new Map()')&&ai.includes('if(activeAnalyses.has(key))return activeAnalyses.get(key)'));
