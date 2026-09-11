@@ -35,6 +35,10 @@ function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,
  add('Listening UI',R.features?.get?.('listening-ui')?.provider==='app-listening-ui'&&typeof R.listeningUI?.open==='function','listening UI');
  add('Atlas service',R.features?.get?.('atlas-service')?.provider==='app-atlas-service'&&typeof R.atlas?.summary==='function','atlas');
  add('Atlas UI',R.features?.get?.('atlas-ui')?.provider==='app-atlas-ui'&&typeof R.atlasUI?.render==='function','atlas UI');
+ add('Radyo zekâsı',R.features?.get?.('radio-intelligence')?.provider==='app-radio-intelligence'&&typeof R.radioIntelligence?.seasonFor==='function'&&typeof R.radioIntelligence?.transmitterRoutes==='function','recommendation + season + transmitter routes');
+ add('Radyo zekâsı UI',R.features?.get?.('radio-intelligence-ui')?.provider==='app-radio-intelligence-ui'&&typeof R.radioIntelligenceUI?.schedule==='function','intelligence UI');
+ add('Terim tooltipleri',R.features?.get?.('radio-tooltips')?.provider==='app-radio-tooltips'&&typeof R.radioTooltips?.show==='function','hover/focus/tap help');
+ add('UI modu',typeof R.uiMode?.current==='function'&&['mobile','desktop'].includes(R.uiMode.current()),R.uiMode?.current?.()||'');
  add('Shell Core',R.features?.get?.('shell-core')?.provider==='app-shell-core'&&typeof R.shellCore?.refresh==='function','shell');
  add('Home UI',R.features?.get?.('home-ui')?.provider==='app-home-ui'&&typeof R.homeUI?.render==='function','home');
  add('Now UI',R.features?.get?.('now-ui')?.provider==='app-now-ui'&&typeof R.nowUI?.render==='function','now');
@@ -56,10 +60,10 @@ function run(){const checks=[];const add=(name,ok,detail='')=>checks.push({name,
  const guideTargets=(R.guideEntries||[]).filter(x=>x.entry_type==='station_target'),outside=guideTargets.filter(x=>R.guideService?.receiverCompatible?.(x)===false);
  add('R-9012 rehber filtresi',!guideTargets.length||outside.length===0,`${guideTargets.length} hedef · ${outside.length} bant dışı`);
  const utcProbe={mode:'SW',band:'SW5',frequency:9700,valid_from:'2026-01-01',valid_to:'2026-12-31',time_ranges:[[60,120]],raw:{schedule:{start_minute:60,end_minute:120,days_iso:'1234567',source_timezone:'UTC'}}};
- add('A26 UTC dönüşümü',R.guideService?.activeAt?.(utcProbe,'2026-09-10','04:30')===true,'01:30 UTC → 04:30 Türkiye');
+ add('UTC dönüşümü',R.guideService?.activeAt?.(utcProbe,'2026-09-10','04:30')===true,'01:30 UTC → 04:30 Türkiye');
  const reminderProbe=R.userServices?.defaultReminderTime?.(utcProbe);
  add('Hatırlatıcı saat dönüşümü',reminderProbe==='04:00',`01:00 UTC → ${reminderProbe||'?'} Türkiye`);
- if(R.me&&Array.isArray(R.schedules)&&R.schedules.length){const a26=(R.schedules||[]).filter(x=>x.season==='A26').length;add('A26 çizelge yüklemesi',a26>=5000,`${a26.toLocaleString('tr-TR')} A26 kayıt`)}
+ if(R.me&&guideTargets.length&&R.radioIntelligence?.seasonStatus){const ss=R.radioIntelligence.seasonStatus();add('Aktif yayın sezonu',ss.ready&&ss.count>=500,`${ss.expected} · ${ss.count.toLocaleString('tr-TR')} kayıt${ss.nextReady?` · ${ss.next} hazır`:` · ${ss.next||'sonraki sezon'} bekleniyor`}`)}
  for(const f of ['app-core-bridge.js','audio-smart.js','app-insights.js','v21-guide.js','v22-mobile.js','app-shell.js','v24-achievements.js','v25-smart-listening.js','v26-radio-atlas.js','v30-ai-radio-assistant.js','v33-stability-hotfix.js','v34-current-programs.js','v35-audit-fixes.js','v35-runtime-bridge.js','v36-integrity-audit.js','v37-integrity-followup.js','v38-ux-shell.js','v38-listening-mode.js','v39-navigation-state.js','v40-radio-memory.js','v41-propagation-assistant.js','v42-ui-polish.js','v43-search-hotfix.js'])add(`Legacy yok: ${f}`,!document.querySelector(`script[src="${f}"],script[src="./${f}"]`),'retired');
  add('Direct app chain minimal',!!document.querySelector('script[src="core.js"],script[src="./core.js"]')&&!!document.querySelector('script[src="app-bootstrap.js"],script[src="./app-bootstrap.js"]')&&!document.querySelector('script[src="app-core-bridge.js"],script[src="./app-core-bridge.js"]'),'core → bootstrap');
  for(const name of ['home','now','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai','propagation'])add(`${name} view`,!!document.querySelector(`#tab-${name}`),`#tab-${name}`);
