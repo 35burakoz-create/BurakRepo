@@ -105,3 +105,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/septenary-areas-hardening-static-check.mjs
       - name: Octonary areas hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/octonary-areas-hardening-static-check.mjs
+      - name: Nonary areas hardening checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/nonary-areas-hardening-static-check.mjs
