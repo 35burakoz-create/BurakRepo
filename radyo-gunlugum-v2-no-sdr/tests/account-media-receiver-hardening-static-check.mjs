@@ -24,9 +24,11 @@ check('audio state clears stored path on reset',audio.includes("const audioPath=
 check('authenticated account switch resets audio state',audio.includes('changedAccount=!!x?.previousUserId&&x.previousUserId!==userId')&&audio.includes('if(changedAccount){cleanup();resetAudioState()'));
 
 check('record updates verify a returned owned row',records.includes(".update(payload).eq('id',id).eq('user_id',userId).select('id,audio_path').maybeSingle()")&&records.includes("if(!q.data)throw new Error('Kayıt bulunamadı veya bu hesaba ait değil.')"));
+check('record edits read canonical prior audio before mutation',records.includes('async function currentRecord')&&records.includes('before=await currentRecord(id,userId)'));
 check('record deletes verify a returned owned row',records.includes(".delete().eq('id',log.id).eq('user_id',userId).select('id,audio_path').maybeSingle()"));
 check('record audio cleanup is account-pinned',records.includes('if(!sameUser(userId))')&&records.includes('ses dosyası temizliği güvenli biçimde atlandı'));
-check('signed audio URLs reject foreign account paths',records.includes("if(!String(path).startsWith(`${userId}/`))throw new Error('Bu ses dosyası açık hesaba ait değil.')"));
+check('signed audio URLs reject foreign account paths',records.includes('if(!ownedAudioPath(path,userId))')&&records.includes("throw new Error('Bu ses dosyası açık hesaba ait değil.')"));
+check('record storage deletion rejects foreign account paths',records.includes('function ownedAudioPath')&&records.includes('if(!ownedAudioPath(path,userId))'));
 check('record events are not emitted into another account',records.includes("if(sameUser(userId))events?.emit?.('record:saved'")&&records.includes("if(sameUser(userId))events?.emit?.('record:deleted'"));
 
 check('guide rejects bands absent from receiver definition',guide.includes('if(bands&&Object.keys(bands).length&&!range)return false'));
@@ -61,32 +63,46 @@ check('guide pagination has an explicit non-silent ceiling',current.includes('MA
   check('stale audio upload does not populate the next account form',elements['#audioPath'].value==='');
 }
 
-// Functional record mutation checks: zero-row writes must not delete audio or emit success.
+// Functional record mutation checks: canonical reads pin cleanup and zero-row writes cannot emit success.
 {
-  let mutation={data:null,error:null},removed=[],signedCalls=0,emitted=[];
-  const chain=()=>({eq(){return this},select(){return this},maybeSingle:async()=>mutation});
+  let updateMutation={data:null,error:null},deleteMutation={data:null,error:null},removed=[],signedCalls=0,emitted=[];
+  const canonical=new Map([['1',{id:'1',audio_path:'u1/old.webm'}]]);
+  function query(result){
+    const filters={};
+    return{
+      eq(key,value){filters[key]=String(value);return this},
+      select(){return this},
+      async maybeSingle(){return typeof result==='function'?result(filters):result}
+    }
+  }
   const R={
     me:{id:'u1'},logs:[{id:'1',user_id:'u1',audio_path:'u1/old.webm'}],
     S:{
-      from(){return{update(){return chain()},delete(){return chain()},insert:async()=>({data:null,error:null})}},
+      from(){return{
+        select(){return query(filters=>({data:canonical.get(filters.id)||null,error:null}))},
+        update(){return query(()=>updateMutation)},
+        delete(){return query(()=>deleteMutation)},
+        insert:async()=>({data:null,error:null})
+      }},
       storage:{from(){return{remove:async paths=>{removed.push(...paths);return{error:null}},createSignedUrl:async()=>{signedCalls++;return{data:{signedUrl:'https://example.invalid'},error:null}}}}}
     },
     events:{emit:(name,payload)=>emitted.push([name,payload])},features:{register(){}},reportError(){}
   };
-  const sandbox={window:{R},Error,Promise,String,Object,Array,console};
+  const sandbox={window:{R},Error,Promise,String,Object,Array,Map,console};
   vm.createContext(sandbox);vm.runInContext(records,sandbox,{filename:'app-record-service.js'});
-  let updateRejected=false;try{await R.records.save({audio_path:'u1/new.webm'},{id:'missing',oldAudioPath:'u1/old.webm'})}catch{updateRejected=true}
-  check('zero-row record update is rejected',updateRejected);
-  check('zero-row record update cannot delete old audio',removed.length===0);
+  let updateRejected=false;try{await R.records.save({audio_path:'u1/new.webm'},{id:'missing',oldAudioPath:'u1/unrelated.webm'})}catch{updateRejected=true}
+  check('missing canonical record update is rejected before mutation',updateRejected);
+  check('missing record update cannot delete audio',removed.length===0);
   let deleteRejected=false;try{await R.records.remove('1')}catch{deleteRejected=true}
   check('zero-row record delete is rejected',deleteRejected);
   check('zero-row record delete cannot delete audio',removed.length===0);
   check('zero-row mutations emit no success event',emitted.length===0);
   let foreignRejected=false;try{await R.records.signedAudioUrl('u2/foreign.webm')}catch{foreignRejected=true}
   check('foreign audio path is rejected before signed URL call',foreignRejected&&signedCalls===0);
-  mutation={data:{id:'1',audio_path:'u1/new.webm'},error:null};
-  await R.records.save({audio_path:'u1/new.webm'},{id:'1',oldAudioPath:'u1/old.webm'});
-  check('verified record update cleans replaced audio',removed.includes('u1/old.webm'));
+  updateMutation={data:{id:'1',audio_path:'u1/new.webm'},error:null};
+  await R.records.save({audio_path:'u1/new.webm'},{id:'1',oldAudioPath:'u1/unrelated.webm'});
+  check('verified record update cleans canonical replaced audio',removed.includes('u1/old.webm'));
+  check('verified record update does not trust caller stale audio path',!removed.includes('u1/unrelated.webm'));
   check('verified record update emits success',emitted.some(([name])=>name==='record:saved'));
 }
 
