@@ -121,3 +121,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/log-visual-hardening-static-check.mjs
       - name: Menu page hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/menu-page-hardening-static-check.mjs
+      - name: Maximal audit hardening checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/maximal-audit-hardening-static-check.mjs
