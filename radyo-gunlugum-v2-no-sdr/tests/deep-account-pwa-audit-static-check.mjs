@@ -54,7 +54,7 @@ check('stale user settings never overwrite the active account',user.includes('if
 check('reminder checks abort after an account transition',user.includes('if(R.me?.id!==userId)return;const now=new Date()'));
 
 check('listening loads are keyed per account',listening.includes('loadFlights=new Map()')&&listening.includes('loadFlights.has(userId)'));
-check('listening pagination pins account identity',listening.includes('fetchAttempts(limit=1500,userId=R.me?.id)')&&listening.includes('fetchCalibrations(limit=MAX_CALIBRATIONS,userId=R.me?.id)'));
+check('listening pagination pins account identity',listening.includes('fetchAttempts(limit=MAX_ATTEMPTS,userId=R.me?.id)')&&listening.includes('fetchCalibrations(limit=MAX_CALIBRATIONS,userId=R.me?.id)')&&listening.includes(".eq('user_id',userId)"));
 check('listening state is cleared immediately on account change',listening.includes('if(x?.previousUserId&&x.previousUserId!==userId)clearState()'));
 check('late listening responses are ignored after account switch',listening.includes('if(R.me?.id!==userId)return state;state.calibrations='));
 check('same-tab listening session starts are coalesced',listening.includes('sessionStartFlights=new Map()')&&listening.includes('if(sessionStartFlights.has(userId))return sessionStartFlights.get(userId)'));
