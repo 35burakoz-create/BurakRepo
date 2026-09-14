@@ -89,3 +89,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/account-media-receiver-hardening-static-check.mjs
       - name: Cross-account integrity checks
         run: node radyo-gunlugum-v2-no-sdr/tests/cross-account-integrity-static-check.mjs
+      - name: Selected areas hardening checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/selected-areas-hardening-static-check.mjs
