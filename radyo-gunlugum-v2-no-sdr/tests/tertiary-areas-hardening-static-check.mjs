@@ -45,7 +45,7 @@ check('propagation reuses listening attempts only for the same account',propagat
 check('propagation has an explicit large-history safety ceiling',propagation.includes('MAX_PERSONAL_ATTEMPTS=50000')&&propagation.includes('veri sessizce kesilmedi'));
 check('malformed attempt timestamps no longer affect every hour',!propagation.includes('invalidAttemptBuckets')&&propagation.includes('if(Number.isNaN(d.getTime()))continue'));
 check('propagation signal averages only use personal 1-5 values',propagation.includes('signal>=1&&signal<=5'));
-check('propagation clears personal history on account transitions',propagation.includes("R.events?.on?.('auth:changed',()=>{resetPersonalHistory()})"));
+check('propagation clears personal history on account transitions',propagation.includes("R.events?.on?.('auth:changed',x=>{resetPersonalHistory()"));
 
 // Smart listening and calibration integrity.
 check('listening result writes are coalesced',listening.includes('recordFlights=new Map()')&&listening.includes('recordFlights.has(key)'));
@@ -66,7 +66,7 @@ check('listening UI locks calibration and session-end mutations',listeningUI.inc
     events:{emit(){}},features:{register(){}},
     S:{from(){return{update(patch){updates++;patches.push(patch);return this},eq(){return this},select(){return this},async maybeSingle(){return{data:{id:'l1'},error:null}}}}}
   };
-  const sandbox={window:{R},globalThis:null,Intl,Date,Math,Number,String,Array,Object,Set,Promise,console};
+  const sandbox={window:{R},globalThis:null,URL,Intl,Date,Math,Number,String,Array,Object,Set,Promise,console};
   sandbox.globalThis=sandbox;sandbox.RADIO_APP_CONFIG={timezone:'Europe/Istanbul',origin:{name:'Bozköy'},receiver:{model:'TECSUN R-9012'}};
   vm.createContext(sandbox);vm.runInContext(qsl,sandbox,{filename:'app-qsl-service.js'});
   check('leap-day validator accepts a real leap day',R.qslService.strictDate('2024-02-29')===true);
@@ -133,7 +133,7 @@ check('listening UI locks calibration and session-end mutations',listeningUI.inc
   check('propagation excludes malformed times from personal log buckets',personal.logs===2);
   check('propagation excludes corrupt signal values from personal average',personal.avg===4);
   const rows=await R.propagation.loadAttempts('u1');
-  check('propagation keeps the initiating account on every pagination request',queried.length===2&&queried.every(x=>x==='u1'));
+  check('propagation aborts before requesting another page after account switch',queried.length===1&&queried[0]==='u1');
   check('late propagation history is discarded after account switch',Array.isArray(rows)&&rows.length===0);
 }
 
