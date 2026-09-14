@@ -29,7 +29,7 @@ check('service worker accepts an explicit SKIP_WAITING command',sw.includes("eve
 check('PWA updater watches an already waiting worker',updates.includes('if(reg.waiting)')&&updates.includes('waitingWorker=reg.waiting'));
 check('PWA updater watches updatefound/installing lifecycle',updates.includes("addEventListener('updatefound'")&&updates.includes("worker.state==='installed'"));
 check('PWA updater asks waiting worker to activate only after user action',updates.includes("waitingWorker.postMessage({type:'SKIP_WAITING'})"));
-check('PWA updater reloads after controller transition',updates.includes("addEventListener('controllerchange'")&&updates.includes('if(refreshing){location.reload();return}'));
+check('PWA updater reloads after controller transition only when reload is still safe',updates.includes("addEventListener('controllerchange'")&&updates.includes('if(refreshing){const reason=reloadBlockedReason()')&&updates.includes('location.reload();return'));
 check('PWA updater keeps audio-loss guards',updates.includes('R.recordedBlob&&!audioPath')&&updates.includes('#recordStopBtn'));
 check('PWA update checks remain coalesced',updates.includes('if(checkFlight)return checkFlight'));
 
@@ -41,7 +41,6 @@ check('smoke test covers tooltip and mobile/desktop mode infrastructure',smoke.i
 check('diagnostic serializer has circular-reference protection',foundation.includes('const seen=new WeakSet()')&&foundation.includes("return'[Circular]'"));
 check('diagnostic serializer handles bigint values',foundation.includes("typeof item==='bigint'")&&foundation.includes('item.toString()'));
 
-// Execute the real foundation serializer against a circular non-Error rejection payload.
 {
   const storage=new Map();
   const document={
@@ -87,7 +86,7 @@ check('menu sync reports actual synchronization failures',menu.includes("R.repor
 check('menu sheets close when authenticated account identity changes',menu.includes('const userId=x?.user?.id||null,changedAccount=!!x?.previousUserId&&x.previousUserId!==userId')&&menu.includes('if(!x?.authenticated||changedAccount)'));
 check('quick log pins the account that opened the sheet',quickLog.includes('const userId=R.me?.id')&&quickLog.includes('user_id:userId'));
 check('quick log aborts stale-account actions before saving',quickLog.includes("if(R.me?.id!==userId){R.menuUI.close()")&&quickLog.includes('if(R.me?.id!==userId)return;'));
-check('quick log avoids reloading another account after an old save finishes',quickLog.includes('if(R.me?.id!==userId)return;if(navigator.onLine)await R.load?.()'));
+check('quick log separates a successful persistence from a failed refresh',quickLog.includes('persisted=true')&&quickLog.includes("R.reportError?.(error,'quick-log-refresh'")&&quickLog.includes('if(saving||persisted)return'));
 
 check('season engine still uses last-Sunday A/B boundaries',intelligence.includes('lastSunday(y,2)')&&intelligence.includes('lastSunday(y,9)'));
 check('transmitter intelligence refuses missing/invalid coordinates',intelligence.includes("if(!s||!validCoords(s.latitude,s.longitude))return null"));
