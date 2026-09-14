@@ -60,9 +60,9 @@ check('Radio Memory attempt pagination stops applying stale account rows',memory
 check('Radio Memory only uses cached attempts for the active account',memory.includes("attemptsUserId!==R.me?.id")&&memory.includes('R.listening?.state?.userId===userId'));
 check('Radio Memory resets account state immediately on auth change',memory.includes("R.events?.on?.('auth:changed',x=>{attempts=null;attemptsUserId=null")&&memory.includes('readState(userId):blankState()'));
 check('Radio Memory delegated menu click tolerates non-Element targets',memory.includes("e.target?.closest?.('[data-v38menu]')"));
-check('Radio Memory ignores invalid legacy hours in best-hour summary',memory.includes('Number.isFinite(h)&&h>=0&&h<=23'));
+check('Radio Memory ignores invalid legacy clock values in best-hour summary',memory.includes('function clockHour(value)')&&memory.includes('const h=clockHour(x.time);if(h!=null)'));
 
-check('smart analyzer delegated click tolerates non-Element targets',smart.includes("e.target?.closest?.('[data-smart-apply]')"));
+check('smart analyzer delegated click tolerates non-Element event targets',smart.includes("e.target?.closest?.('[data-smart-apply]')"));
 check('smart analyzer clears stale candidate state on account change',smart.includes("R.lastSmart=null")&&smart.includes("x.previousUserId!==x?.user?.id"));
 
 check('collection open is pinned to the account that requested it',collection.includes('async function open(){const userId=R.me?.id')&&collection.includes('if(R.me?.id!==userId)return null'));
