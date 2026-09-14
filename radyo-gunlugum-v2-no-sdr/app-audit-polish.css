@@ -115,3 +115,52 @@
     bottom:0!important;
   }
 }
+
+/* Ana Sayfa görsel denetimi: hiyerarşi, taşma, dokunma hedefleri ve radyo kadranı. */
+#v38Home .v42-home-hero{isolation:isolate}
+#v38Home .v42-home-top>div,#v38Home .v42-prop-card>div,#v38Home .v42-primary-head>*{min-width:0}
+#v38Home .v42-kicker{display:block;max-width:100%;line-height:1.45;overflow-wrap:anywhere}
+#v38Home .v42-primary-head{flex-wrap:wrap;row-gap:7px}
+#v38Home .v42-quality{max-width:100%;white-space:normal;line-height:1.25;text-align:right}
+#v38Home .v42-frequency{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#v38Home .v42-primary p,#v38Home .v42-prop-card b,#v38Home .v42-prop-card span{overflow-wrap:anywhere}
+#v38Home .v42-search-button,#v38Home .v42-link,#v38Home .v42-primary-actions .btn{min-height:44px}
+#v38Home .v42-link{display:inline-flex;align-items:center;justify-content:center;padding:0 8px;margin:-4px -8px -4px 0;border-radius:10px}
+#v38Home .v42-quality.q8,#v38Home .v42-quality.q9{background:#ecfdf5;border-color:#a7f3d0;color:#047857}
+#v38Home .v42-quality.q6,#v38Home .v42-quality.q7{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}
+#v38Home .v42-quality.q1,#v38Home .v42-quality.q2,#v38Home .v42-quality.q3,#v38Home .v42-quality.q4{background:#fff7ed;border-color:#fed7aa;color:#b45309}
+#v38Home .v42-week-bars,#v38Home .v42-week-day{min-width:0}
+#v38Home .v42-week-day>i>em[style*="height:0%"]{min-height:0!important;opacity:0}
+#v38Home .v42-week-day>b{font-variant-numeric:tabular-nums}
+
+@media(hover:hover) and (pointer:fine){
+  #v38Home .v42-link:hover{background:#eef2ff;color:#4338ca}
+}
+
+/* Gece görünümünde ana sayfadaki ikincil kartlar da koyu yüzeye uyum sağlar. */
+.night-mode #v38Home .v42-section .v42-empty-card,html.night #v38Home .v42-section .v42-empty-card{background:#172033;color:#f8fafc;border-color:#334155}
+.night-mode #v38Home .v42-section .v42-empty-card span,html.night #v38Home .v42-section .v42-empty-card span{color:#94a3b8}
+.night-mode #v38Home .v42-alt em,html.night #v38Home .v42-alt em{color:#c7d2fe}
+.night-mode #v38Home .v42-alt-band,html.night #v38Home .v42-alt-band{background:#252456;color:#c7d2fe}
+.night-mode #v38Home .v42-section-kicker,.night-mode #v38Home .v42-week-head small,html.night #v38Home .v42-section-kicker,html.night #v38Home .v42-week-head small{color:#a5b4fc}
+.night-mode #v38Home .v42-week-day>b,html.night #v38Home .v42-week-day>b{color:#cbd5e1}
+@media(hover:hover) and (pointer:fine){
+  .night-mode #v38Home .v42-link:hover,html.night #v38Home .v42-link:hover{background:#252456;color:#c7d2fe}
+}
+
+/* Küçük telefonda kadranı ezmek yerine tam satıra yay; arama eylemini simgeye indir. */
+@media(max-width:430px){
+  #v38Home .v42-home-top{align-items:flex-start!important}
+  #v38Home .v42-search-button{flex:0 0 44px;width:44px;padding:0!important;font-size:0}
+  #v38Home .v42-search-button span{font-size:20px!important;line-height:1}
+  #v38Home .v42-radio-console{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+  #v38Home .v42-console-id{display:flex;align-items:baseline;gap:6px;min-width:0;flex-wrap:wrap}
+  #v38Home .v42-console-id small{display:block!important;margin-left:auto;white-space:normal;text-align:right}
+  #v38Home .v42-radio-scale span{font-size:9.5px!important;letter-spacing:-.04em}
+  #v38Home .v42-console-live{grid-column:1/-1!important}
+}
+
+@media(max-width:360px){
+  #v38Home .v42-primary-actions .btn{flex-basis:100%}
+  #v38Home .v42-console-id small{width:100%;margin-left:0;text-align:left}
+}
