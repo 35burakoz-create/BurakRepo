@@ -102,7 +102,7 @@ check('offline form result never resets a different account form',offline.includ
 check('atlas has canonical coordinate range validator',atlas.includes('function validCoords(lat,lon)')&&atlas.includes('a>=-90&&a<=90')&&atlas.includes('b>=-180&&b<=180'));
 check('atlas manual origin rejects impossible coordinates',atlas.includes("if(!validCoords(lat,lon))throw new Error"));
 check('atlas haversine clamps floating point domain',atlas.includes('Math.min(1,Math.max(0,raw))'));
-check('atlas ignores non-finite legacy frequencies',atlas.includes('if(!Number.isFinite(f))continue'));
+check('atlas ignores invalid legacy frequencies',atlas.includes('function validFrequency(v)')&&atlas.includes('Number.isFinite(n)&&n>0')&&atlas.includes('if(!validFrequency(x.frequency))continue'));
 check('atlas destroys Leaflet instance before replacing map DOM',atlasUI.includes('function destroyMap()')&&atlasUI.includes('destroyMap();root.innerHTML='));
 check('atlas detects a replaced Leaflet host node',atlasUI.includes('if(map&&mapHost!==node)destroyMap()'));
 check('atlas invalidates map size after desktop resize',atlasUI.includes("window.addEventListener('resize',resizeMap")&&atlasUI.includes('map.invalidateSize?.({pan:false})'));
@@ -122,6 +122,7 @@ check('CSV export blocks duplicate desktop clicks',backup.includes('csv.disabled
   check('atlas validator accepts normal Turkey coordinate',R.atlas.validCoords(38.151,27.36)===true);
   check('atlas validator rejects latitude above 90',R.atlas.validCoords(95,27)===false);
   check('atlas validator rejects longitude above 180',R.atlas.validCoords(38,240)===false);
+  check('atlas frequency validator rejects non-finite and non-positive values',R.atlas.validFrequency('bad')===false&&R.atlas.validFrequency(0)===false&&R.atlas.validFrequency(9500)===true);
   const antipodal=R.atlas.distance([0,0],[0,180]);
   check('atlas antipodal distance remains finite',Number.isFinite(antipodal)&&antipodal>20000&&antipodal<20100);
 }
