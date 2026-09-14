@@ -53,7 +53,7 @@ check('backup audio pagination probes item 10001',backup.includes("audioListOpti
 {
   const makeNode=()=>({dataset:{},classList:{add(){},remove(){}},appendChild(){},append(){},addEventListener(){},setAttribute(){},remove(){}});
   const document={querySelector(){return null},createElement:makeNode,head:{appendChild(){}},documentElement:{classList:{add(){},remove(){}}},addEventListener(){},activeElement:null};
-  const R={logs:[
+  const R={me:{id:'u1'},logs:[
     {date:'2026-09-10',time:'10:00',band:'SW9',frequency:17650,station:'Test Station'},
     {date:'2026-09-11',time:'11:00',band:'SW9',frequency:17650,station:'Test Station'}
   ],guideEntries:[],events:{on(){}},norm:v=>String(v??'').toLocaleLowerCase('tr-TR')};
