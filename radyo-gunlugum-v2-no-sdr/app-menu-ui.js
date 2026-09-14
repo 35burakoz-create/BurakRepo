@@ -1,6 +1,6 @@
 (()=>{
 const R=window.R;if(!R||R.__menuUI381)return;R.__menuUI381=true;
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>R.esc?R.esc(v):String(v??'');
+const $=s=>document.querySelector?.(s)||null,$$=s=>typeof document.querySelectorAll==='function'?[...document.querySelectorAll(s)]:[],esc=v=>R.esc?R.esc(v):String(v??'');
 let returnFocus=null,lifecycle=0;const DIAG_OWNER_KEY='radio-diagnostics-owner-v1',syncFlights=new Map();
 function css(){if(document.querySelector?.('link[data-menu-css]')||typeof document.createElement!=='function')return;const l=document.createElement('link');l.rel='stylesheet';l.href='app-menu.css';l.dataset.menuCss='1';document.head?.appendChild?.(l)}css();
 function activeUserId(){return R.me?.id||null}
