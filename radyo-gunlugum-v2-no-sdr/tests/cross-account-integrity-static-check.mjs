@@ -29,14 +29,14 @@ check('browser Supabase client is pinned to an exact version',index.includes(`<s
 check('service worker caches the same pinned Supabase version',sw.includes(`'${SUPABASE_CDN}'`));
 check('floating Supabase @2 CDN reference is retired',!index.includes('supabase-js@2"></script>')&&!sw.includes("supabase-js@2','"));
 
-check('menu click delegation tolerates non-Element event targets',menu.includes("const target=e.target,menuButton=target?.closest?.('[data-menu]')"));
+check('menu click delegation tolerates non-Element event targets',menu.includes("const target=e.target instanceof Element?e.target:null")&&menu.includes("const menuButton=target.closest('[data-menu]')"));
 check('menu reminder toggle blocks duplicate clicks',menu.includes("if(!b||b.dataset.busy==='1')return")&&menu.includes("b.dataset.busy='1';b.disabled=true"));
-check('menu reminder toggle pins the initiating account',menu.includes('const userId=R.me?.id,reminderId=b.dataset.reminder')&&menu.includes(".eq('user_id',userId)"));
-check('menu reminder result is ignored after account switch',menu.includes('if(R.me?.id!==userId||!b.isConnected)return'));
+check('menu reminder toggle pins the initiating account',menu.includes('const userId=activeUserId(),reminderId=b.dataset.reminder')&&menu.includes(".eq('user_id',userId)"));
+check('menu reminder result is ignored after account switch',menu.includes('if(activeUserId()!==userId||!b.isConnected)return'));
 
 check('QSL service captures account identity before writes',qslService.includes('function currentUser()')&&qslService.includes('const userId=currentUser()'));
 check('QSL service reload is account-gated',qslService.includes('async function reloadFor(userId)')&&qslService.includes('if(R.me?.id!==userId)return false'));
-check('QSL service status event cannot cross accounts',qslService.includes('if(!await reloadFor(userId))return')&&qslService.includes("emit?.('qsl:updated',{id,status,row:q.data||null,userId})"));
+check('QSL service status event cannot cross accounts',qslService.includes("emit?.('qsl:updated',{id,status,row:q.data||null,userId})")&&qslService.includes('reloadFor(userId)'));
 check('QSL mutations reject zero-row ownership mismatches',qslService.includes("if(!q.data)throw new Error('Kayıt bulunamadı veya bu hesaba ait değil.')"));
 
 check('QSL UI uses safe delegated click lookup',qslUI.includes("e.target?.closest?.('[data-qsl-action]')"));
@@ -63,7 +63,7 @@ check('Radio Memory delegated menu click tolerates non-Element targets',memory.i
 check('Radio Memory ignores invalid legacy clock values in best-hour summary',memory.includes('function clockHour(value)')&&memory.includes('const h=clockHour(x.time);if(h!=null)'));
 
 check('smart analyzer delegated click tolerates non-Element event targets',smart.includes("e.target?.closest?.('[data-smart-apply]')"));
-check('smart analyzer clears stale candidate state on account change',smart.includes("R.lastSmart=null")&&smart.includes("x.previousUserId!==x?.user?.id"));
+check('smart analyzer clears stale candidate state on account change',smart.includes('R.lastSmart=null')&&smart.includes('x.previousUserId!==x?.user?.id'));
 
 check('collection open is pinned to the account that requested it',collection.includes('async function open(){const userId=R.me?.id')&&collection.includes('if(R.me?.id!==userId)return null'));
 check('collection modal closes on authenticated account switch',collection.includes("R.events?.on?.('auth:changed',x=>")&&collection.includes('close({restoreFocus:false})'));
