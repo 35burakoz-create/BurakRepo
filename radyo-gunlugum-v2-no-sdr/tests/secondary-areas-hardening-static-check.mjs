@@ -25,7 +25,7 @@ for(const [file,src] of [
 
 // Reminder, favorite and preferences races.
 check('favorite mutations are coalesced per account and guide row',user.includes('favoriteFlights=new Map()')&&user.includes('if(favoriteFlights.has(key))return favoriteFlights.get(key)'));
-check('favorite lookup will not reuse an explicitly foreign owner row',user.includes('x?.user_id==null||x.user_id===userId'));
+check('favorite lookup requires an exact active-account owner match',user.includes("x?.user_id===userId&&String(x.guide_entry_id)===String(id)"));
 check('reminder saves are coalesced',user.includes('reminderSaveFlights=new Map()')&&user.includes('if(reminderSaveFlights.has(key))return reminderSaveFlights.get(key)'));
 check('duplicate enabled reminders are rejected before another insert',user.includes("toast('Bu yayın için aynı hatırlatıcı zaten var.')"));
 check('reminder due calculation validates current date and wall clock',user.includes("/^\\d{4}-\\d{2}-\\d{2}$/.test(date)")&&user.includes('nowH<0||nowH>23')&&user.includes('nowM<0||nowM>59'));
