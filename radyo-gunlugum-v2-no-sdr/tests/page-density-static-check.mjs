@@ -16,7 +16,7 @@ check('analysis telemetry has recency and active-day context',js.includes("rail(
 check('map telemetry uses geocoded records',js.includes("rail('map','Dinleme coğrafyası'")&&js.includes('x.latitude')&&js.includes('x.longitude'));
 check('calendar telemetry follows selected month',js.includes("rail('calendar','Aylık dinleme ritmi'")&&js.includes("e.target?.id==='calendarMonth'"));
 check('QSL telemetry summarizes workflow',js.includes("rail('qsl','QSL takip masası'")&&js.includes("qsl_status==='received'"));
-check('guide telemetry uses A26 and current candidates',js.includes("rail('guide','Yayın rehberi'")&&js.includes("x.season==='A26'")&&js.includes("R.radioNowCandidates?.('ALL')"));
+check('guide telemetry follows calculated broadcast season and current candidates',js.includes("rail('guide','Yayın rehberi'")&&js.includes('R.radioIntelligence?.seasonFor?.(today())')&&js.includes("R.radioNowCandidates?.('ALL')"));
 check('telemetry updates only current supported route',js.includes("if(R.router?.current?.()===route)render(route)"));
 check('journal visual treatment exists',css.includes('#tab-log .form-card:before')&&css.includes('#tab-log .records-card:before'));
 check('audio visual treatment exists',css.includes('#tab-audio>.two-col>.card:after')&&css.includes('#tab-audio .timer'));
