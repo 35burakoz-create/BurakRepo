@@ -41,7 +41,7 @@ check('QSL mutations reject zero-row ownership mismatches',qslService.includes("
 
 check('QSL UI uses safe delegated click lookup',qslUI.includes("e.target?.closest?.('[data-qsl-action]')"));
 check('QSL UI pins async actions to the opening account',qslUI.includes('async function act(button){const userId=R.me?.id')&&qslUI.includes('if(R.me?.id!==userId)return'));
-check('QSL UI blocks duplicate mutations',qslUI.includes("if(button.dataset.busy==='1')return")&&qslUI.includes("button.dataset.busy='1'"));
+check('QSL UI blocks duplicate mutations',qslUI.includes('mutationFlights=new Map()')&&qslUI.includes('mutationFlights.has(key)')&&qslUI.includes('mutationFlights.set(key,flight)'));
 check('QSL contact suggestions ignore stale account completion',qslUI.includes('async function suggest(button,log){const userId=R.me?.id')&&qslUI.includes('if(R.me?.id!==userId)return;contactResults.set'));
 check('QSL contact cache clears on account change',qslUI.includes("R.events?.on?.('auth:changed',x=>{contactResults.clear()"));
 
