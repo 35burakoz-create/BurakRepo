@@ -159,3 +159,60 @@ html.night .app-log-advanced-grid,.night-mode .app-log-advanced-grid{border-colo
 @media(prefers-reduced-motion:reduce){
   #tab-log .record-card,#tab-log .record-top:after,#tab-log .record-card>details summary:after,.app-log-advanced>summary:after,#tab-log .inline-input{transition:none!important}
 }
+
+/* Görsel denetim turu: hiyerarşi, kapalı kartlar, yoğunluk ve küçük ekran ergonomisi. */
+#tab-log:not(.hidden){display:flex!important;flex-direction:column}
+#tab-log>.app-page-density-rail{display:none!important}
+#tab-log .v38-logbar{order:0}
+#tab-log #stats{order:1}
+#tab-log>.two-col{order:2}
+
+#tab-log .records-card>.section-head{align-items:center!important}
+#tab-log .records-card>.section-head .row-actions{display:inline-grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border:1px solid var(--log-line);border-radius:12px;background:var(--log-soft);flex:0 0 auto}
+#tab-log .records-card>.section-head .row-actions .btn{min-height:36px!important;padding:6px 10px!important;border-radius:9px!important;font-size:11px!important;box-shadow:none!important}
+#tab-log .records-card .filters:before{content:'KAYIT FİLTRELERİ';grid-column:1/-1;color:var(--log-muted);font-size:9.5px;font-weight:850;letter-spacing:.09em}
+#tab-log .records-card .filters input,#tab-log .records-card .filters select{min-height:44px;background:#fff}
+
+#tab-log #records{display:grid;gap:8px}
+#tab-log .record-card{margin:0!important}
+#tab-log .record-card:not(.v38-expanded) .app-log-notes,#tab-log .record-card:not(.v38-expanded) .app-log-confidence{display:none!important}
+#tab-log .record-card.v38-expanded .app-log-notes{display:block!important}
+#tab-log .record-card.v38-expanded .app-log-confidence{display:inline-flex!important;align-items:center}
+#tab-log .record-top:after{display:grid!important;place-items:center;width:32px;height:32px;border:1px solid #eef2f7;border-radius:10px;background:#f8fafc;font-size:20px!important;line-height:1}
+#tab-log .record-card.v38-expanded .record-top:after{background:#eef2ff;border-color:#c7d2fe;color:#4f46e5!important}
+#tab-log .record-body>b{display:block;margin-bottom:3px;color:#0f172a;font-size:12.5px;line-height:1.35}
+#tab-log .app-log-notes:before{content:'NOT';display:block;margin-bottom:4px;color:#6366f1;font-size:9px;font-weight:900;letter-spacing:.09em}
+#tab-log .app-log-confidence{padding:5px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#f8fafc;font-size:10.5px;font-weight:700;line-height:1.25}
+#tab-log .record-card.v38-expanded .record-actions{padding-top:2px;border-top:1px solid #eef2f7}
+
+html.night #tab-log .records-card>.section-head .row-actions,.night-mode #tab-log .records-card>.section-head .row-actions{background:#0f172a;border-color:#334155}
+html.night #tab-log .records-card .filters input,html.night #tab-log .records-card .filters select,.night-mode #tab-log .records-card .filters input,.night-mode #tab-log .records-card .filters select{background:#111827;color:#f8fafc;border-color:#334155}
+html.night #tab-log .record-top:after,.night-mode #tab-log .record-top:after{background:#172033;border-color:#334155;color:#94a3b8!important}
+html.night #tab-log .record-card.v38-expanded .record-top:after,.night-mode #tab-log .record-card.v38-expanded .record-top:after{background:#252456;border-color:#4f46e5;color:#c7d2fe!important}
+html.night #tab-log .record-body>b,.night-mode #tab-log .record-body>b{color:#f8fafc}
+html.night #tab-log .app-log-confidence,.night-mode #tab-log .app-log-confidence{background:#172033;border-color:#334155;color:#cbd5e1}
+html.night #tab-log .record-card.v38-expanded .record-actions,.night-mode #tab-log .record-card.v38-expanded .record-actions{border-top-color:#263246}
+
+@media(max-width:760px){
+  #tab-log .stats{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(138px,42vw);overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  #tab-log .stats::-webkit-scrollbar{display:none}
+  #tab-log .stat{scroll-snap-align:start;min-height:74px}
+}
+@media(max-width:560px){
+  #tab-log .records-card>.section-head{align-items:stretch!important}
+  #tab-log .records-card>.section-head .row-actions{width:100%}
+  #tab-log .records-card>.section-head .row-actions .btn{width:100%}
+  #tab-log #cancelEditBtn:not(.hidden){width:100%}
+  #tab-log #logForm>.row-actions{display:grid;grid-template-columns:1fr!important;align-items:stretch;width:100%}
+  #tab-log #logForm>.row-actions .btn{width:100%}
+  #tab-log #logForm>.row-actions #formMsg{width:100%;margin-top:0}
+  #tab-log .app-log-advanced-grid>.row-actions{align-items:stretch;flex-direction:column}
+  #tab-log .app-log-advanced-grid>.row-actions .btn{width:100%}
+}
+@media(max-width:380px){
+  #tab-log .stats{grid-auto-columns:minmax(132px,68vw)}
+}
+@media(hover:hover) and (pointer:fine){
+  #tab-log .record-card:not(.v38-expanded):hover{border-color:#cbd5e1!important;box-shadow:0 7px 20px rgba(15,23,42,.055)}
+  html.night #tab-log .record-card:not(.v38-expanded):hover,.night-mode #tab-log .record-card:not(.v38-expanded):hover{border-color:#475569!important;box-shadow:0 7px 20px rgba(0,0,0,.16)}
+}
