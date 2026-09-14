@@ -40,6 +40,16 @@ check('current night mode covers filters scores and empty state',css.includes('.
 check('narrow current header stacks actions safely',css.includes('@media(max-width:520px)')&&css.includes('#v38Now .v38-nowhead{flex-direction:column'));
 check('very narrow candidate actions can stack',css.includes('@media(max-width:360px)')&&css.includes('#v38Now .v38-itemactions .btn{flex:1 1 100%}'));
 check('current disclosure motion respects reduced-motion preference',css.includes('#v38Now .v38-item details summary:after{transition:none!important}'));
+check('current section does not clip card shadows or focus rings',css.includes('#v38Now .v38-section{overflow:visible}'));
+check('current frequency remains intact on one line',css.includes('#v38Now .v38-item .freq{overflow-wrap:normal!important;white-space:nowrap')&&css.includes('font-size:clamp(24px,3.3vw,29px)!important'));
+check('current candidate actions use readable balanced labels',css.includes('#v38Now .v38-itemactions .btn{flex:1 1 0;min-width:0;font-size:11.5px!important'));
+check('current quality microcopy inherits its state color',css.includes('color:currentColor!important;opacity:.82'));
+check('current grid does not stretch shorter cards',css.includes('#v38Now .v38-list{align-items:start!important}'));
+check('current more action has a distinct full-width treatment',css.includes('#v38Now [data-now-more]{width:100%;margin-top:2px;font-size:12px!important;background:#f8fafc!important;border-style:dashed!important}'));
+check('current night mode removes the light section gradient',css.includes('.night-mode #v38Now .v38-section,html.night #v38Now .v38-section{background:#111827!important;background-image:none!important}'));
+check('current night mode keeps frequency text bright',css.includes('.night-mode #v38Now .v38-item .freq,html.night #v38Now .v38-item .freq{color:#f8fafc!important}'));
+check('current night mode keeps disclosure text and divider readable',css.includes('.night-mode #v38Now .v38-item details,html.night #v38Now .v38-item details{border-color:#334155!important}')&&css.includes('.night-mode #v38Now .v38-item details summary,.night-mode #v38Now .v38-detail'));
+check('narrow current cards tighten section padding without crushing content',css.includes('@media(max-width:430px)')&&css.includes('#v38Now .v38-section{padding:14px!important}')&&css.includes('#v38Now .v38-item{padding:14px!important}'));
 
 class Element{
   constructor(fn=()=>null){this.fn=fn}
