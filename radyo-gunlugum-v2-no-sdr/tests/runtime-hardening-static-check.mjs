@@ -84,7 +84,7 @@ check('manual log coordinate validation enforces latitude and longitude ranges',
 
 check('menu sync reports pending rows instead of false success',menu.includes("if(pending>0)R.toast?.(`${pending} çevrimdışı kayıt hâlâ bekliyor"));
 check('menu sync reports actual synchronization failures',menu.includes("R.reportError?.(error,'menu-offline-sync'")&&menu.includes('Senkronizasyon tamamlanamadı'));
-check('menu sheets close when authenticated account identity changes',menu.includes('const changedAccount=!!x?.previousUserId&&x.previousUserId!==R.me?.id')&&menu.includes('if(!x?.authenticated||changedAccount)'));
+check('menu sheets close when authenticated account identity changes',menu.includes('const userId=x?.user?.id||null,changedAccount=!!x?.previousUserId&&x.previousUserId!==userId')&&menu.includes('if(!x?.authenticated||changedAccount)'));
 check('quick log pins the account that opened the sheet',quickLog.includes('const userId=R.me?.id')&&quickLog.includes('user_id:userId'));
 check('quick log aborts stale-account actions before saving',quickLog.includes("if(R.me?.id!==userId){R.menuUI.close()")&&quickLog.includes('if(R.me?.id!==userId)return;'));
 check('quick log avoids reloading another account after an old save finishes',quickLog.includes('if(R.me?.id!==userId)return;if(navigator.onLine)await R.load?.()'));
