@@ -13,14 +13,19 @@ function frequencyMatches(value,q){const f=Number(value),n=Number(String(q).repl
 function numericQuery(q){const raw=String(q||'').trim().replace(',','.');return /^\d+(?:\.\d+)?$/.test(raw)?Number(raw):NaN}
 function quickGroups(){return[{title:'Hızlı erişim',items:TOOLS.slice(0,6).map(([t,m,tab])=>({type:'Araç',title:t,meta:m,action:()=>openTool(tab)}))}]}
 function fromStoreMap(map,nq,labelFn,limit=6){if(!(map instanceof Map))return[];const out=[];for(const [key,rows] of map){if(!String(key).includes(nq))continue;const first=rows?.[0];if(!first)continue;out.push({key,label:labelFn(first,key)});if(out.length>=limit)break}return out}
+function uniqueBy(rows,keyFn){const seen=new Set(),out=[];for(const row of rows||[]){const key=keyFn(row);if(seen.has(key))continue;seen.add(key);out.push(row)}return out}
+function indexedMatches(docs,nq,{logLimit=120,guideLimit=120}={}){const logs=[],guides=[];if(!Array.isArray(docs)||!nq)return{logs,guides};for(const d of docs){if(!d?.text?.includes?.(nq))continue;if(d.kind==='log'&&logs.length<logLimit)logs.push(d.raw);else if(d.kind==='guide'&&guides.length<guideLimit)guides.push(d.raw);if(logs.length>=logLimit&&guides.length>=guideLimit)break}return{logs,guides}}
+function appendFrequencyMatches(target,rows,q,keyFn){const seen=new Set(target.map(keyFn));for(const x of rows){if(!frequencyMatches(x.frequency,q))continue;const key=keyFn(x);if(seen.has(key))continue;seen.add(key);target.push(x)}}
 function searchData(query){
  const q=String(query||'').trim(),nq=norm(q),logs=Array.isArray(R.logs)?R.logs:[],guides=Array.isArray(R.guideEntries)?R.guideEntries:[],store=R.store,numeric=Number.isFinite(numericQuery(q));
  if(!q)return{query:q,total:0,groups:quickGroups()};
- const docs=store?.search?.(q,120)||[];
- const logMatches=(docs.length?docs.filter(d=>d.kind==='log').map(d=>d.raw):logs.filter(x=>norm([stationOf(x),x.country,x.language,x.program,x.notes,x.transcript,x.smart_station,x.smart_program,x.band,x.frequency].join(' ')).includes(nq))).filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
- if(numeric)for(const x of logs)if(frequencyMatches(x.frequency,q)&&!logMatches.some(y=>y.id===x.id))logMatches.push(x);
- const guideMatches=(docs.length?docs.filter(d=>d.kind==='guide').map(d=>d.raw):guides.filter(x=>norm([x.station,x.country,x.language_content,x.frequency,x.content_hint,x.time_text,x.band,x.mode].join(' ')).includes(nq))).filter((x,i,a)=>a.findIndex(y=>String(y.id)===String(x.id))===i);
- if(numeric)for(const x of guides)if(frequencyMatches(x.frequency,q)&&!guideMatches.some(y=>String(y.id)===String(x.id)))guideMatches.push(x);
+ const indexed=indexedMatches(store?.index?.docs,nq);
+ const hasIndex=Array.isArray(store?.index?.docs);
+ const rawLogMatches=hasIndex?indexed.logs:logs.filter(x=>norm([stationOf(x),x.country,x.language,x.program,x.notes,x.transcript,x.smart_station,x.smart_program,x.band,x.frequency].join(' ')).includes(nq));
+ const rawGuideMatches=hasIndex?indexed.guides:guides.filter(x=>norm([x.station,x.country,x.language_content,x.frequency,x.content_hint,x.time_text,x.band,x.mode].join(' ')).includes(nq));
+ const logMatches=uniqueBy(rawLogMatches,x=>String(x?.id??''));
+ const guideMatches=uniqueBy(rawGuideMatches,x=>String(x?.id??''));
+ if(numeric){appendFrequencyMatches(logMatches,logs,q,x=>String(x?.id??''));appendFrequencyMatches(guideMatches,guides,q,x=>String(x?.id??''))}
  let stations=fromStoreMap(store?.index?.stations,nq,x=>stationOf(x));
  if(!stations.length)stations=[...new Map(logs.filter(x=>stationOf(x)&&norm(stationOf(x)).includes(nq)).map(x=>[norm(stationOf(x)),{key:norm(stationOf(x)),label:stationOf(x)}])).values()].slice(0,6);
  let countries=fromStoreMap(store?.index?.countries,nq,(x,key)=>String(x.country||'').split(/[/,;]/).map(v=>v.trim()).find(v=>norm(v)===key)||key);
