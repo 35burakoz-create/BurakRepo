@@ -76,8 +76,8 @@ check('collection ignores stale achievement events from another account',collect
     events:{on(){},emit(){}},features:{register(){}},norm:v=>String(v??'').toLocaleLowerCase('tr-TR'),
     S:{from(table){if(table==='radio_user_settings')return chain;return{select(){return this},eq(){return this},order(){return this},async range(from){const page=Array.from({length:1000},(_,i)=>({id:from+i,user_id:'u1'}));if(from===50000)return{data:rowOverflow?[{id:'overflow',user_id:'u1'}]:[],error:null};return{data:page,error:null}}}}}
   };
-  const node=()=>({querySelector(){return null},querySelectorAll(){return[]},children:[],style:{},appendChild(){},remove(){}});
-  const document={querySelector(){return null},querySelectorAll(){return[]},createElement:node,body:{append(){}},addEventListener(){},activeElement:null};
+  const node=()=>({dataset:{},querySelector(){return null},querySelectorAll(){return[]},children:[],style:{},appendChild(){},remove(){}});
+  const document={querySelector(){return null},querySelectorAll(){return[]},createElement:node,head:{appendChild(){}},body:{append(){}},addEventListener(){},activeElement:null};
   const sandbox={window:{R,Notification:class{},addEventListener(){}},document,navigator:{},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v))},globalThis:null,RADIO_APP_CONFIG:{timezone:'Europe/Istanbul',origin:{name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36}},Date,Intl,Math,Number,String,Array,Object,Map,Set,Promise,Error,console,Element:class{},HTMLElement:class{},alert(){},setTimeout(){return 0},setInterval(){return 0}};sandbox.globalThis=sandbox;
   vm.createContext(sandbox);vm.runInContext(users,sandbox,{filename:'app-user-services.js'});
   const first=await R.userServices.loadSettings(true,'u1');
@@ -112,7 +112,7 @@ check('collection ignores stale achievement events from another account',collect
     listeningOrigin:()=>({name:'Bozuk',lat:999,lon:999}),events:{on(){},emit(){}},features:{register(){}},router:{register(){},current(){return'home'}},
     S:{from(){return{select(){return this},eq(){return this},order(){return this},async range(from){if(from===50000)return{data:overflow?[{...page[0],id:'overflow'}]:[],error:null};return{data:page,error:null}}}}}
   };
-  const sandbox={window:{R},document,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>store.set(k,String(v))},globalThis:null,RADIO_APP_CONFIG:{timezone:'Europe/Istanbul',origin:{name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36}},fetch:async()=>({ok:false,status:500}),Date,Intl,Math,Number,String,Array,Object,Map,Set,Promise,Error,console,setTimeout(){return 0},setInterval(){return 0}};sandbox.globalThis=sandbox;
+  const sandbox={window:{R},document,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,String(v))},globalThis:null,RADIO_APP_CONFIG:{timezone:'Europe/Istanbul',origin:{name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36}},fetch:async()=>({ok:false,status:500}),Date,Intl,Math,Number,String,Array,Object,Map,Set,Promise,Error,console,setTimeout(){return 0},setInterval(){return 0}};sandbox.globalThis=sandbox;
   vm.createContext(sandbox);vm.runInContext(propagation,sandbox,{filename:'app-propagation.js'});
   check('propagation invalid origin falls back to configured coordinates',R.propagation.listeningOrigin().lat===38.151&&R.propagation.listeningOrigin().lon===27.36);
   check('zero-duration band profile is ignored',R.propagation.profileBase('SW1',600).label!=='İyi');
@@ -149,7 +149,7 @@ check('collection ignores stale achievement events from another account',collect
 
 // Functional fixed-timezone collection date rendering.
 {
-  const document={querySelector(){return null},createElement(){return{}},head:{appendChild(){}},body:{append(){}} ,addEventListener(){},activeElement:null};
+  const document={querySelector(){return null},createElement(){return{dataset:{}}},head:{appendChild(){}},body:{append(){}},addEventListener(){},activeElement:null};
   const R={events:{on(){},emit(){}},features:{register(){}}};
   const sandbox={window:{R},document,globalThis:null,RADIO_APP_CONFIG:{timezone:'Europe/Istanbul'},Date,Intl,Math,Number,String,Array,Object,Map,Set,Promise,console,HTMLElement:class{}};sandbox.globalThis=sandbox;
   vm.createContext(sandbox);vm.runInContext(collection,sandbox,{filename:'app-collection-ui.js'});
