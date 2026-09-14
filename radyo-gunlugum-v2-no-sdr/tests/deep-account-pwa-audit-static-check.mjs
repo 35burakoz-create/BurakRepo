@@ -73,7 +73,7 @@ check('PWA update checks are coalesced',updates.includes('if(checkFlight)return 
 check('PWA update banner clears device safe area',updatesCss.includes('calc(86px + env(safe-area-inset-bottom))'));
 
 check('analysis splits multi-value language fields',analysis.includes('const splitValues=')&&analysis.includes("count(logs,x=>splitValues(x.language))"));
-check('analysis ignores invalid legacy hours',analysis.includes('!Number.isInteger(hour)||hour<0||hour>23'));
+check('analysis ignores invalid legacy hours',analysis.includes('function validClockTime')&&analysis.includes('min>=0&&min<=59')&&analysis.includes('const hour=validClockTime(x.time)'));
 check('analysis counts normalized unique locations',analysis.includes("['Farklı konum',uniqueCount(logs,x=>x.location)]"));
 check('language service distinguishes ambiguous Arabic-script text safely',language.includes('Arapça ile Farsça güvenle ayrılamadı'));
 check('language service distinguishes ambiguous Cyrillic text safely',language.includes('Kiril yazısı kullanılıyor; dil güvenle ayrılamadı'));
