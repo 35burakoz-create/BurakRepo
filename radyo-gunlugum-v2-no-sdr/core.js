@@ -21,6 +21,6 @@ R.norm=(s='')=>String(s).toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\
 R.num=v=>v===''||v==null?null:Number(v);
 R.today=()=>new Date().toLocaleDateString('en-CA');
 R.local=()=>{const d=new Date(),x=new Date(d-d.getTimezoneOffset()*60000).toISOString();return{date:x.slice(0,10),time:x.slice(11,16),month:x.slice(0,7)}};
-R.freq=x=>`${Number(x?.frequency).toLocaleString('tr-TR',{maximumFractionDigits:3})} ${x?.band==='FM'?'MHz':'kHz'}`;
+R.freq=x=>{const n=Number(x?.frequency);if(!Number.isFinite(n)||n<=0)return'';return`${n.toLocaleString('tr-TR',{maximumFractionDigits:3})} ${x?.band==='FM'?'MHz':'kHz'}`};
 R.download=(name,text,type='text/plain;charset=utf-8')=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 R.fill=(id,value='')=>{const el=R.$('#'+id);if(el)el.value=value??''};
