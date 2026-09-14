@@ -95,3 +95,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/secondary-areas-hardening-static-check.mjs
       - name: Tertiary areas hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/tertiary-areas-hardening-static-check.mjs
+      - name: Quaternary areas hardening checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/quaternary-areas-hardening-static-check.mjs
