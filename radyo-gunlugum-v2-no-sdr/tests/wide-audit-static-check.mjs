@@ -32,7 +32,7 @@ check('dial calibrations are paged',listening.includes('fetchCalibrations')&&lis
 check('active listening session is queried independently',listening.includes('fetchActiveSession')&&listening.includes(".eq('status','active')")&&listening.includes("['active-session',active]"));
 check('listening session persists coordinates',listening.includes('latitude:location&&')&&listening.includes('longitude:location&&')&&listening.includes('coordinatesForSession'));
 check('QSL uses canonical timezone conversion',guide.includes('wallTimeToInstant,utcContext')&&qsl.includes('R.guideService?.wallTimeToInstant?.(date,time)'));
-check('menu uses canonical collection loader',menu.includes('R.userServices?.loadCollections?.()')&&!menu.includes("from('radio_favorites').select('*')")&&!menu.includes("from('radio_reminders').select('*')"));
+check('menu uses canonical collection loader',menu.includes('R.userServices?.loadCollections')&&menu.includes('loadCollections(false,userId)')&&!menu.includes("from('radio_favorites').select('*')")&&!menu.includes("from('radio_reminders').select('*')"));
 check('menu restores focus and reports reminder toggle failures',menu.includes('returnFocus')&&menu.includes('target?.isConnected')&&menu.includes('menu-reminder-toggle'));
 check('wide audit CSS is loaded and cached',shell.includes("css('app-audit-polish.css','appAuditPolishCss')")&&sw.includes("'./app-audit-polish.css'"));
 check('wide audit raises microcopy readability',css.includes('font-size:10.5px!important')&&css.includes('.app-radio-glossary-term p')&&css.includes('font-size:12px!important'));
