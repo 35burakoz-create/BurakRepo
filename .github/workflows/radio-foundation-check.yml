@@ -115,3 +115,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/now-page-hardening-static-check.mjs
       - name: Quick log hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/quick-log-hardening-static-check.mjs
+      - name: Journal hardening checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/log-page-hardening-static-check.mjs
