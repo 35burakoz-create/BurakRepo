@@ -69,11 +69,11 @@ check('fine pointer hover treatment is desktop-scoped',desktop.includes('@media 
 check('shell refreshes when UI mode context changes',shell.includes("window.addEventListener('app:uimode',()=>refresh())"));
 check('global search is not injected on signed-out screen',shell.includes("if(!top||!R.me||$('#appView')?.classList.contains('hidden')){old?.remove();return null}"));
 check('sign out removes both navigation shells and search',shell.includes('removeNavigation()')&&shell.includes("$('[data-v44search]')?.remove()"));
-check('shell click delegation tolerates non-Element targets',shell.includes('e.target instanceof Element?e.target:null'));
+check('shell click delegation tolerates non-Element event targets',shell.includes('e.target instanceof Element?e.target:null'));
 check('router updates both desktop and mobile active navigation',router.includes("#v38Dock [data-route],#appDesktopNav [data-route]")&&router.includes("setAttribute('aria-current','page')"));
 check('router ignores malformed encoded hashes instead of crashing',router.includes('try{h=decodeURIComponent(location.hash||\'\')}catch(error)')&&router.includes("R.reportError?.(error,'router-hash',{silent:true})"));
 check('router sync rejects stale unknown stored routes',router.includes("next=router.has(candidate)?candidate:'home'"));
-check('router click delegation tolerates non-Element targets',router.includes('e.target instanceof Element?e.target:null'));
+check('router click delegation tolerates non-Element event targets',router.includes('e.target instanceof Element?e.target:null'));
 
 check('shell traps Tab inside the top visible modal',shell.includes('function trapModalFocus(e)')&&shell.includes("if(e.key!=='Tab')return")&&shell.includes('visibleModal()'));
 check('modal focus trap wraps first and last controls',shell.includes('e.shiftKey&&active===first')&&shell.includes('active===last'));
@@ -107,7 +107,7 @@ check('atlas destroys Leaflet instance before replacing map DOM',atlasUI.include
 check('atlas detects a replaced Leaflet host node',atlasUI.includes('if(map&&mapHost!==node)destroyMap()'));
 check('atlas invalidates map size after desktop resize',atlasUI.includes("window.addEventListener('resize',resizeMap")&&atlasUI.includes('map.invalidateSize?.({pan:false})'));
 check('location map invalidates size after desktop resize',mapUI.includes("window.addEventListener('resize',resizeMap")&&mapUI.includes('map.invalidateSize?.({pan:false})'));
-check('both Leaflet views release maps on sign out',atlasUI.includes("if(!x?.authenticated)destroyMap()")&&mapUI.includes("if(!x?.authenticated)destroy()"));
+check('both Leaflet views release maps on sign out or authenticated account switch',atlasUI.includes('changedAccount=!!x?.previousUserId&&x.previousUserId!==userId')&&atlasUI.includes('if(!x?.authenticated||changedAccount)')&&atlasUI.includes('destroyMap()')&&mapUI.includes('changedAccount=!!x?.previousUserId&&x.previousUserId!==userId')&&mapUI.includes('if(!x?.authenticated||changedAccount)destroy()'));
 
 check('full backup pins the initiating account',backup.includes('const userId=activeUserId()')&&backup.includes('assertUser(userId)')&&backup.includes("fetchUserRows('radio_favorites','created_at',userId)"));
 check('backup pagination never rereads account identity mid-page',backup.includes(".eq('user_id',userId)")&&backup.includes('fetchAudioManifest(userId=activeUserId())'));
