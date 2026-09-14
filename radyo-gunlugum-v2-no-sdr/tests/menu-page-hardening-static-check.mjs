@@ -14,6 +14,7 @@ function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
 let syntax=true;try{new vm.Script(menu,{filename:'app-menu-ui.js'})}catch{syntax=false}
 check('menu module syntax',syntax);
 check('menu loads its dedicated stylesheet',menu.includes("l.href='app-menu.css'")&&menu.includes("data-menu-css"));
+check('menu stylesheet injection tolerates reduced DOMs',menu.includes("typeof document.createElement!=='function'")&&menu.includes('document.head?.appendChild?.(l)')&&menu.includes("document.querySelector?.(s)||null"));
 check('menu stylesheet is cached for installed PWA',sw.includes("'./app-menu.css'"));
 check('menu triggers expose dialog expanded state',menu.includes("setAttribute('aria-haspopup','dialog')")&&menu.includes("setAttribute('aria-expanded',opened?'true':'false')")&&menu.includes("setAttribute('aria-controls','v38Sheet')"));
 check('menu close clears trigger expanded state',menu.includes('function removeSheet()')&&menu.includes('menuTriggers(false)'));
@@ -29,7 +30,7 @@ check('installed app disables redundant install action',menu.includes('disabled:
 check('favorites and reminders pin the initiating account',menu.includes('const userId=activeUserId(),token=lifecycle')&&menu.includes('activeUserId()!==userId'));
 check('stale collection completion cannot reopen a closed menu',menu.includes("token!==lifecycle||!$('#v38Sheet')"));
 check('collection views use account-owned rows only',menu.includes("filter(x=>x?.user_id===userId)"));
-check('favorites avoid NaN frequency presentation',menu.includes('if(!Number.isFinite(n)||n<=0)return\'\'')&&menu.includes('frequencyText(x)'));
+check('favorites avoid NaN frequency presentation',menu.includes("if(!Number.isFinite(n)||n<=0)return''")&&menu.includes('frequencyText(x)'));
 check('reminder time renderer bounds hours and minutes',menu.includes('Number(m[1])<=23&&Number(m[2])<=59'));
 check('subviews include a real back action',menu.includes("backAction:'back:favorites'")&&menu.includes("backAction:'back:reminders'"));
 check('back action restores focus to originating menu row',menu.includes("focusAction:'favorites'")&&menu.includes("focusAction:'reminders'"));
@@ -93,7 +94,12 @@ const p1=api.syncNow(null),p2=api.syncNow(null);
 check('functional duplicate synchronization starts one provider call',syncCalls===1);
 syncResolve({synced:2,pending:0});
 await Promise.all([p1,p2]);
-check('functional synchronization flight clears after completion',api.syncFlights.size===0);
+let syncResolve2;
+R.syncOutbox=()=>{syncCalls++;return new Promise(r=>{syncResolve2=r})};
+const p3=api.syncNow(null);
+check('functional synchronization flight clears after completion',syncCalls===2);
+syncResolve2({synced:0,pending:0});
+await p3;
 classBody.add('night-mode');
 check('functional theme helper sees night mode',api.themeNight()===true);
 classBody.remove('night-mode');
