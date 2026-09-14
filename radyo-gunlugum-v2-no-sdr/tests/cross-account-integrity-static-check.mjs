@@ -36,7 +36,7 @@ check('menu reminder result is ignored after account switch',menu.includes('if(a
 
 check('QSL service captures account identity before writes',qslService.includes('function currentUser()')&&qslService.includes('const userId=currentUser()'));
 check('QSL service reload is account-gated',qslService.includes('async function reloadFor(userId)')&&qslService.includes('if(R.me?.id!==userId)return false'));
-check('QSL service status event cannot cross accounts',qslService.includes("emit?.('qsl:updated',{id,status,row:q.data||null,userId})")&&qslService.includes('reloadFor(userId)'));
+check('QSL service status event cannot cross accounts',qslService.includes('if(!await reloadFor(userId))return')&&qslService.includes("emit?.('qsl:updated',{id,status,row:q.data||null,userId})"));
 check('QSL mutations reject zero-row ownership mismatches',qslService.includes("if(!q.data)throw new Error('Kayıt bulunamadı veya bu hesaba ait değil.')"));
 
 check('QSL UI uses safe delegated click lookup',qslUI.includes("e.target?.closest?.('[data-qsl-action]')"));
