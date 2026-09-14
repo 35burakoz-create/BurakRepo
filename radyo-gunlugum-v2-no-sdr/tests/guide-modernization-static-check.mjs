@@ -16,7 +16,7 @@ check('guide service UI-free',service.includes("provider:'app-guide-service'")&&
 check('guide UI owns prefill and rendering',ui.includes('R.prefillGuide=prefill')&&ui.includes('R.renderGuide=render')&&ui.includes("R.router?.register?.('guide'")&&ui.includes("provider:'app-guide-ui'"));
 check('guide UI has identification flow',ui.includes('Bu yayın ne olabilir?')&&ui.includes('R.guideService?.identify?.')&&ui.includes('data-guide-prefill'));
 check('guide UI no core wrappers',!ui.includes('R.switch=')&&!ui.includes('R.load=')&&!ui.includes('R.show=')&&!ui.includes('R.renderAll=')&&!ui.includes('MutationObserver'));
-check('listening mystery can use guide score',listening.includes('R.scoreEntry?.(e)?.score'));
+check('listening mystery can use historical guide score',listening.includes('R.guideService?.scoreEntry?.(e,{date:log?.date,time:log?.time})?.score'));
 check('guide service defines compatibility score API',service.includes('R.scoreEntry=e=>scoreEntry(e)'));
 check('service loads before listening',boot.indexOf("'app-guide-service.js'")<boot.indexOf("'app-listening-service.js'"));
 
