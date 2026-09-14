@@ -109,3 +109,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/nonary-areas-hardening-static-check.mjs
       - name: Denary areas hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/denary-areas-hardening-static-check.mjs
+      - name: Home page hardening checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/home-page-hardening-static-check.mjs
