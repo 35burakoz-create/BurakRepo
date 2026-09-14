@@ -21,7 +21,7 @@ for(const [file,src] of [['app-home-ui.js',home],['app-now-ui.js',now],['app-pag
 
 check('home dashboard explicitly filters foreign account rows',home.includes('function ownedLogs()')&&home.includes('x.user_id===userId'));
 check('home candidate list rejects missing ids and invalid frequencies',home.includes('function validCandidate(e)')&&home.includes("String(id).trim()===''" )&&home.includes('!Number.isFinite(f)||f<=0'));
-check('home score has a finite fallback instead of NaN',home.includes('Number.isFinite(raw)?raw:50'));
+check('home malformed or missing scores are not fabricated',home.includes("if(raw===null||raw===undefined||raw==='')return null")&&home.includes('Number.isFinite(n)?Math.max(1,Math.min(99,Math.round(n))):null'));
 check('home signal display is restricted to personal 1-5 scale',home.includes('function signalValue(value)')&&home.includes('n>=1&&n<=5'));
 check('home rerenders immediately on account transition',home.includes("R.events?.on?.('auth:changed'"));
 check('now candidate list rejects malformed entries',now.includes('function validCandidate(e)')&&now.includes('rows.filter(validCandidate)'));
@@ -65,12 +65,12 @@ check('bootstrap concurrent run calls are coalesced',bootstrap.includes('if(runF
     currentPrograms:{receiverCompatible:e=>e.band!=='SW99'},
     events:{on(){}},router:{register(){},current(){return'home'}},features:{register(){}},clock:{today:()=> '2026-09-14'}
   };
-  const document={querySelector:s=>s==='#tab-home'?tab:s==='#v38Home'?rootEl:null,createElement:()=>({}),};
-  const sandbox={window:{R},document,globalThis:null,RADIO_APP_CONFIG:{receiver:{bands:{SW3:{min:5950,max:6200}}}},Intl,Date,Math,Number,String,Array,Object,Map,Set,JSON,localStorage:{getItem(){return null}},console};sandbox.globalThis=sandbox;
+  const document={hidden:false,querySelector:s=>s==='#tab-home'?tab:s==='#v38Home'?rootEl:null,createElement:()=>({}),addEventListener(){}};
+  const sandbox={window:{R},document,globalThis:null,RADIO_APP_CONFIG:{receiver:{bands:{SW3:{min:5950,max:6200}}}},Intl,Date,Math,Number,String,Array,Object,Map,Set,JSON,localStorage:{getItem(){return null}},console,setTimeout:()=>1,clearTimeout(){}};sandbox.globalThis=sandbox;
   vm.createContext(sandbox);vm.runInContext(home,sandbox,{filename:'app-home-ui.js'});
   check('functional home ownership filter excludes foreign row while keeping ownerless legacy row',R.homeUI.ownedLogs().length===2);
   check('functional home candidate filter leaves only valid receiver entry',R.homeUI.candidates('ALL').length===1&&R.homeUI.candidates('ALL')[0].id==='ok');
-  check('functional home malformed score falls back to 50',R.homeUI.score({probability_score:'bad'})===50);
+  check('functional home malformed score remains unknown instead of becoming 50',R.homeUI.score({probability_score:'bad'})===null);
   check('functional home signal helper rejects corrupt 99/5 value',R.homeUI.signalValue(99)===null&&R.homeUI.signalValue(5)===5);
   check('functional home date helper rejects impossible day',R.homeUI.validIsoDate('2026-02-30')===false&&R.homeUI.validIsoDate('2024-02-29')===true);
 }
