@@ -150,7 +150,7 @@ check('current guide loader has explicit pagination ceiling',current.includes('M
   const guideRow={id:'g1',entry_type:'station_target',station:'Radio Test Guide',country:'ROU',language_content:'Romence',mode:'SW',band:'SW9',frequency:17650,time_text:'10:00–11:00'};
   const docs=[...logs.map(x=>({kind:'log',id:x.id,text:'radio test 17650',raw:x})),{kind:'guide',id:'g1',text:'radio test guide 17650',raw:guideRow}];
   const R={
-    logs,guideEntries:[guideRow],norm:v=>String(v??'').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,''),
+    me:{id:'u1'},logs,guideEntries:[guideRow],norm:v=>String(v??'').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,''),
     store:{index:{docs,stations:new Map(),countries:new Map(),frequencies:new Map()}},router:{go(){}},edit(){},renderGuide(){}
   };
   const document={querySelector(){return null},createElement(){return{dataset:{},addEventListener(){},append(){},setAttribute(){},classList:{add(){},remove(){}}}},head:{appendChild(){}},addEventListener(){},documentElement:{classList:{add(){},remove(){}}}};
