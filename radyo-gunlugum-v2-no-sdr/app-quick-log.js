@@ -1,7 +1,7 @@
 (()=>{
 const R=window.R;if(!R||R.__quickLog385)return;R.__quickLog385=true;
 const $=s=>document.querySelector(s),C=globalThis.RADIO_APP_CONFIG||{},DEFAULT_ORIGIN={name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36};
-function css(){if(document.querySelector('link[data-quick-log-css]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='app-quick-log.css';l.dataset.quickLogCss='1';document.head.appendChild(l)}css();
+function css(){if(typeof document==='undefined'||!document.head||typeof document.createElement!=='function')return;if(document.querySelector('link[data-quick-log-css]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='app-quick-log.css';l.dataset.quickLogCss='1';document.head.appendChild(l)}css();
 function validCoords(lat,lon){lat=Number(lat);lon=Number(lon);return Number.isFinite(lat)&&lat>=-90&&lat<=90&&Number.isFinite(lon)&&lon>=-180&&lon<=180}
 function configuredOrigin(){const lat=Number(C.origin?.lat),lon=Number(C.origin?.lon);return validCoords(lat,lon)?{name:C.origin?.name||DEFAULT_ORIGIN.name,lat,lon}:{...DEFAULT_ORIGIN}}
 function origin(){const base=configuredOrigin(),o=R.listeningOrigin?.()||base;return validCoords(o?.lat,o?.lon)?{name:String(o?.name||base.name).trim()||base.name,lat:Number(o.lat),lon:Number(o.lon)}:base}
@@ -16,7 +16,7 @@ function currentSheet(sheet){return!!sheet?.isConnected&&$('#v38Sheet')===sheet}
 function setField(id,value=''){if(typeof R.fill==='function')return R.fill(id,value);const el=$('#'+id);if(el)el.value=value??''}
 function draftValues(sheet,signal){const band=sheet?.querySelector?.('#qBand')?.value||'',raw=sheet?.querySelector?.('#qFreq')?.value??'',validation=raw===''?null:validateQuickFrequency(band,raw),frequency=validation?.ok?validation.value:raw;return{band,frequency,station:sheet?.querySelector?.('#qStation')?.value||'',signal:normalizeSignal(signal),note:sheet?.querySelector?.('#qNote')?.value||''}}
 function applyDetailedDraft(draft){R.reset?.();setField('band',draft.band);setField('frequency',draft.frequency);setField('station',draft.station);setField('signal',draft.signal??'');setField('notes',draft.note);R.unit?.();return draft}
-function syncBandUi(sheet){const band=sheet?.querySelector?.('#qBand')?.value||'',unit=sheet?.querySelector?.('#qFreqUnit'),freq=sheet?.querySelector?.('#qFreq');if(unit)unit.textContent=unitFor(band);if(freq){freq.placeholder=band==='FM'?'Örn. 95,0':'Örn. 6000';freq.setAttribute?.('aria-describedby','qFreqHelp')}const help=sheet?.querySelector?.('#qFreqHelp');if(help)help.textContent=band==='FM'?'FM frekansını MHz olarak gir.':band.startsWith('SW')?'Kısa dalgada kHz kullan; 9,5 gibi MHz girişi de otomatik çevrilir.':'MW frekansını kHz olarak gir.'}
+function syncBandUi(sheet){const band=sheet?.querySelector?.('#qBand')?.value||'',unit=sheet?.querySelector?.('#qFreqUnit'),freq=sheet?.querySelector?.('#qFreq');if(unit)unit.textContent=unitFor(band);if(freq){freq.placeholder=band==='FM'?'Örn. 95.0':'Örn. 6000';freq.setAttribute?.('aria-describedby','qFreqHelp')}const help=sheet?.querySelector?.('#qFreqHelp');if(help)help.textContent=band==='FM'?'FM frekansını MHz olarak gir.':band.startsWith('SW')?'Kısa dalgada kHz kullan; 9.5 gibi MHz girişi de otomatik çevrilir.':'MW frekansını kHz olarak gir.'}
 async function open(){
   const userId=R.me?.id;if(!userId)return R.toast?.('Hızlı kayıt için giriş yapmalısın.');
   if(!R.menuUI?.sheet)return R.toast?.('Hızlı kayıt bölümü henüz hazır değil.');
