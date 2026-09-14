@@ -11,6 +11,7 @@ function originName(){return R.listeningOrigin?.()?.name||C.origin?.name||'Bozk�
 function band(e){return e?.mode==='SW'?(e.band||'SW'):(e?.mode||e?.band||'')}
 function unit(e){return e?.unit||((e?.mode||e?.band)==='FM'?'MHz':'kHz')}
 function validCandidate(e){const f=Number(e?.frequency),id=e?.id;if(!e||id===null||id===undefined||String(id).trim()===''||!Number.isFinite(f)||f<=0)return false;if(R.currentPrograms?.receiverCompatible?.(e)===false)return false;return true}
+function filterCandidates(rows){return(Array.isArray(rows)?rows:[]).filter(validCandidate)}
 function freq(e){const n=Number(e?.frequency);return `${Number.isFinite(n)&&n>0?n.toLocaleString('tr-TR',{maximumFractionDigits:3}):'—'} ${unit(e)}`}
 function lang(e){return String(e?.language_content||e?.language||'').split(/[;/,]/)[0].trim()}
 function score(e){const raw=Number(e?._score??e?._s?.score??e?.probability_score??50),n=Number.isFinite(raw)?raw:50;return Math.max(1,Math.min(99,Math.round(n)))}
@@ -18,7 +19,7 @@ function displayScore(e){const raw=e?._score??e?._s?.score??e?.probability_score
 function quality(n){return !Number.isFinite(n)?'Puan yok':n>=80?'Çok iyi':n>=65?'İyi':n>=50?'Orta':'Zayıf'}
 function candidates(m=mode()){
   if(typeof R.radioNowCandidates==='function'){
-    try{const result=R.radioNowCandidates(m),rows=Array.isArray(result)?result:[];return rows.filter(validCandidate)}catch(error){R.reportError?.(error,'now-candidates',{silent:true});return[]}
+    try{return filterCandidates(R.radioNowCandidates(m))}catch(error){R.reportError?.(error,'now-candidates',{silent:true});return[]}
   }
   try{const result=R.currentSuggestions?.()||[],rows=m==='ALL'?result:result.filter(x=>x.mode===m);return rows.filter(validCandidate)}catch(error){R.reportError?.(error,'now-candidates-fallback',{silent:true});return[]}
 }
