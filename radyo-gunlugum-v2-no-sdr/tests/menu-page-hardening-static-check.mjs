@@ -46,16 +46,25 @@ check('menu closes before external route transitions can leave stale overlay',me
 check('menu closes account-sensitive UI on account changes',menu.includes('changedAccount')&&menu.includes("if(!x?.authenticated||changedAccount)close({restoreFocus:false})"));
 check('menu delegated clicks reject non-Element targets',menu.includes('e.target instanceof Element?e.target:null'));
 check('escape closes the active menu',menu.includes("e.key==='Escape'&&$('#v38Sheet')")&&menu.includes('e.preventDefault();close()'));
-check('menu visual layer has two-column desktop groups',css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));
-check('menu visual layer keeps mobile single-column flow',css.includes('#v38Sheet .v38-menu-groups{display:grid;grid-template-columns:1fr'));
+check('menu group stack avoids paired accordion whitespace',css.includes('#v38Sheet .v38-menu-groups{display:grid;grid-template-columns:1fr'));
+check('desktop expanded menu rows use the available width',css.includes('html[data-ui-mode="desktop"] #v38Sheet .v38-menu-group[open] .v38-menu-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'));
+check('desktop menu is centered and fully rounded',css.includes('html[data-ui-mode="desktop"] #v38Sheet.v38-menu-sheet{top:50%;bottom:auto!important')&&css.includes('transform:translate(-50%,-50%)!important;border-radius:28px!important'));
+check('mobile menu is a true edge-to-edge bottom sheet',css.includes('#v38Sheet.v38-menu-sheet{left:0!important;right:0!important;bottom:0!important;width:100%!important;max-height:94dvh!important;transform:none!important;border-radius:26px 26px 0 0!important'));
+check('menu header stays reachable while content scrolls',css.includes('#v38Sheet.v38-menu-sheet .v38-sheethead{position:sticky;top:-16px'));
+check('menu search has a strong readable action surface',css.includes('#v38Sheet .v42-menu-search{width:100%;min-height:64px')&&css.includes('#v38Sheet .v42-menu-search b{font-size:14px')&&css.includes('font-size:12px!important'));
+check('menu row typography overrides older microcopy sizes',css.includes('#v38Sheet .v38-menu-row b{font-size:14px!important')&&css.includes('#v38Sheet .v38-menu-row small{display:block!important')&&css.includes('font-size:12px!important'));
 check('menu current route receives a distinct visual state',css.includes('.v38-menu-row.is-current')&&css.includes('background:#eef2ff'));
-check('menu header controls meet touch target sizing',css.includes('flex:0 0 44px;width:44px;height:44px'));
-check('menu footer stays reachable while long menu scrolls',css.includes('position:sticky;bottom:-16px'));
-check('menu reminder toggles meet touch target sizing',css.includes('min-width:72px;min-height:44px'));
+check('menu header controls meet touch target sizing',css.includes('flex:0 0 44px;width:44px!important;height:44px!important'));
+check('menu footer stays reachable while long menu scrolls',css.includes('position:sticky;bottom:0'));
+check('menu logout is visually distinguished as destructive',css.includes('--menu-danger:#b42318')&&css.includes('border-color:#fecaca!important'));
+check('menu reminder toggles meet touch target sizing',css.includes('min-width:78px;min-height:44px'));
+check('desktop favorite and reminder cards use two columns',css.includes('html[data-ui-mode="desktop"] #v38Sheet .v38-mini-list{grid-template-columns:repeat(2,minmax(0,1fr))'));
+check('disabled menu actions remove misleading chevron',css.includes('#v38Sheet .v38-menu-row:disabled .v38-menu-tail i{visibility:hidden}'));
 check('menu has explicit focus-visible treatment',css.includes('#v38Sheet button:focus-visible,#v38Sheet summary:focus-visible'));
 check('menu night mode covers sheet groups rows and subcards',css.includes('html.night #v38Sheet.v38-menu-sheet')&&css.includes('html.night #v38Sheet .v38-menu-row')&&css.includes('html.night #v38Sheet .v38-mini'));
+check('menu night mode covers reminder toggle states',css.includes('html.night #v38Sheet .v38-toggle')&&css.includes('html.night #v38Sheet .v38-toggle.on'));
 check('menu reduced-motion mode disables menu animation',css.includes('@media(prefers-reduced-motion:reduce)')&&css.includes('animation:none!important'));
-check('menu release has a fresh PWA generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260914-47'"));
+check('menu release has a fresh PWA generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260914-48'"));
 
 class FakeClassList{
   constructor(){this.values=new Set()}
