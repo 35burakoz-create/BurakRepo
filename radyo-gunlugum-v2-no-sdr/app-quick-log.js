@@ -1,6 +1,7 @@
 (()=>{
 const R=window.R;if(!R||R.__quickLog385)return;R.__quickLog385=true;
 const $=s=>document.querySelector(s),C=globalThis.RADIO_APP_CONFIG||{},DEFAULT_ORIGIN={name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36};
+function css(){if(document.querySelector('link[data-quick-log-css]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='app-quick-log.css';l.dataset.quickLogCss='1';document.head.appendChild(l)}css();
 function validCoords(lat,lon){lat=Number(lat);lon=Number(lon);return Number.isFinite(lat)&&lat>=-90&&lat<=90&&Number.isFinite(lon)&&lon>=-180&&lon<=180}
 function configuredOrigin(){const lat=Number(C.origin?.lat),lon=Number(C.origin?.lon);return validCoords(lat,lon)?{name:C.origin?.name||DEFAULT_ORIGIN.name,lat,lon}:{...DEFAULT_ORIGIN}}
 function origin(){const base=configuredOrigin(),o=R.listeningOrigin?.()||base;return validCoords(o?.lat,o?.lon)?{name:String(o?.name||base.name).trim()||base.name,lat:Number(o.lat),lon:Number(o.lon)}:base}
