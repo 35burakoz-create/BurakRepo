@@ -14,6 +14,7 @@ const collection=read('app-collection-ui.js');
 const propagation=read('app-propagation.js');
 const listening=read('app-listening-service.js');
 const listeningUI=read('app-listening-ui.js');
+const queueStart=listening.indexOf('function queue('),queueEnd=listening.indexOf('async function runStartSession',queueStart),queueSource=queueStart>=0&&queueEnd>queueStart?listening.slice(queueStart,queueEnd):'';
 
 for(const [file,src] of [
   ['app-qsl-service.js',qsl],['app-qsl-ui.js',qslUI],['app-achievements-service.js',achievements],
@@ -52,7 +53,7 @@ check('listening partial log failure is returned instead of throwing duplicate-p
 check('legacy session coordinates are range checked',listening.includes('lat>=-90&&lat<=90')&&listening.includes('lon>=-180&&lon<=180'));
 check('calibration frequency is checked against receiver limits',listening.includes("Gerçek frekans TECSUN R-9012’nin bu banttaki ayarlanabilir aralığının dışında."));
 check('calibration deletion verifies ownership result',listening.includes(".select('id').maybeSingle()")&&listening.includes('Kalibrasyon noktası bulunamadı veya bu hesaba ait değil.'));
-check('listening queue dedupe is Set based',listening.includes('tried=new Set(')&&listening.includes('seen=new Set()')&&!listening.includes('.filter((x,i,a)=>a.findIndex'));
+check('listening queue dedupe is Set based',queueSource.includes('tried=new Set(')&&queueSource.includes('seen=new Set()')&&!queueSource.includes('findIndex'));
 check('listening UI reports partial save explicitly',listeningUI.includes('saved?.logError')&&listeningUI.includes('st.textContent=saved.logError'));
 check('listening UI locks calibration and session-end mutations',listeningUI.includes('if(save.disabled)return;save.disabled=true')&&listeningUI.includes('if(button?.disabled)return;if(button)button.disabled=true'));
 
