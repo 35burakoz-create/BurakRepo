@@ -13,7 +13,8 @@ function unit(e){return e?.unit||((e?.mode||e?.band)==='FM'?'MHz':'kHz')}
 function validCandidate(e){const f=Number(e?.frequency),id=e?.id;if(!e||id===null||id===undefined||String(id).trim()===''||!Number.isFinite(f)||f<=0)return false;if(R.currentPrograms?.receiverCompatible?.(e)===false)return false;return true}
 function freq(e){const n=Number(e?.frequency);return `${Number.isFinite(n)&&n>0?n.toLocaleString('tr-TR',{maximumFractionDigits:3}):'—'} ${unit(e)}`}
 function lang(e){return String(e?.language_content||e?.language||'').split(/[;/,]/)[0].trim()}
-function score(e){const raw=e?._score??e?._s?.score??e?.probability_score;if(raw===null||raw===undefined||raw==='')return null;const n=Number(raw);return Number.isFinite(n)?Math.max(1,Math.min(99,Math.round(n))):null}
+function score(e){const raw=Number(e?._score??e?._s?.score??e?.probability_score??50),n=Number.isFinite(raw)?raw:50;return Math.max(1,Math.min(99,Math.round(n)))}
+function displayScore(e){const raw=e?._score??e?._s?.score??e?.probability_score;if(raw===null||raw===undefined||raw==='')return null;const n=Number(raw);return Number.isFinite(n)?Math.max(1,Math.min(99,Math.round(n))):null}
 function quality(n){return !Number.isFinite(n)?'Puan yok':n>=80?'Çok iyi':n>=65?'İyi':n>=50?'Orta':'Zayıf'}
 function candidates(m=mode()){
   if(typeof R.radioNowCandidates==='function'){
@@ -26,7 +27,7 @@ function guideReady(){return Array.isArray(R.guideEntries)&&R.guideEntries.lengt
 function spectrumSummary(all,filteredCount){const sw=all.filter(x=>x.mode==='SW').length,mw=all.filter(x=>x.mode==='MW').length,fm=all.filter(x=>x.mode==='FM').length;return `<div class="v42-now-summary" aria-label="Şu an uygun yayın özeti"><div class="active"><small>UYGUN</small><b>${filteredCount.toLocaleString('tr-TR')}</b><span>bu filtrede</span></div><div><small>SW</small><b>${sw.toLocaleString('tr-TR')}</b><span>kısa dalga</span></div><div><small>MW</small><b>${mw.toLocaleString('tr-TR')}</b><span>orta dalga</span></div><div><small>FM</small><b>${fm.toLocaleString('tr-TR')}</b><span>yerel FM</span></div></div>`}
 function cleanSource(value){return String(value||'').replace(/[\u0000-\u001f\u007f-\u009f]+/g,' ').replace(/\s+/g,' ').trim()}
 function item(e){
-  const s=score(e),time=windowText(e),q=s===null?'unknown':s>=80?'great':s>=65?'good':s>=50?'mid':'low';
+  const s=displayScore(e),time=windowText(e),q=s===null?'unknown':s>=80?'great':s>=65?'good':s>=50?'mid':'low';
   const scoreHtml=s===null?'<span class="v38-score" data-score-unknown aria-label="Puan bilgisi yok">—<span class="v42-quality-label">Puan yok</span></span>':`<span class="v38-score" aria-label="${s} / 99 puan, ${esc(quality(s))}">${s}/99<span class="v42-quality-label">${esc(quality(s))}</span></span>`;
   const detail=[];if(e.country)detail.push(`Ülke: <b>${esc(e.country)}</b>`);if(e.content_hint)detail.push(`İçerik: <b>${esc(e.content_hint)}</b>`);const source=cleanSource(e.source_doc);if(source)detail.push(`Kaynak: ${esc(source)}`);if(time)detail.push(`Yayın saati: ${esc(time)}`);
   const details=detail.length?`<details><summary>Ayrıntıları göster</summary><div class="v38-detail">${detail.join('<br>')}</div></details>`:'';
@@ -41,5 +42,5 @@ function enter(){render();scheduleMinuteRefresh()}
 document.addEventListener('click',e=>{if(!(e.target instanceof Element))return;const more=e.target.closest('[data-now-more]');if(more){visibleLimit+=30;render();return}const b=e.target.closest('[data-now-mode]');if(!b)return;const v=b.dataset.nowMode;if(!MODES.has(v))return;visibleLimit=30;R.nowMode=v;if(R.uiState)R.uiState.nowMode=v;render()},true);
 R.events?.on?.('store:updated',()=>scheduleRender());R.events?.on?.('guide:data-ready',()=>scheduleRender());R.events?.on?.('user:settings',()=>scheduleRender(0,{resetLimit:true}));R.events?.on?.('auth:changed',()=>scheduleRender(0,{resetLimit:true}));R.events?.on?.('route:changed',x=>{if(x?.to==='now')scheduleMinuteRefresh();else if(x?.from==='now')stopMinuteRefresh()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMinuteRefresh();else if(R.router?.current?.()==='now'){render();scheduleMinuteRefresh()}});
-R.nowUI={render,ensure,mode,windowText,candidates,score,quality,validCandidate,guideReady,emptyState,scheduleMinuteRefresh,stopMinuteRefresh,get visibleLimit(){return visibleLimit}};R.router?.register?.('now',{prepare:ensure,enter});R.features?.register?.('now-ui',{ready:true,provider:'app-now-ui'});ensure();
+R.nowUI={render,ensure,mode,windowText,candidates,score,displayScore,quality,validCandidate,guideReady,emptyState,scheduleMinuteRefresh,stopMinuteRefresh,get visibleLimit(){return visibleLimit}};R.router?.register?.('now',{prepare:ensure,enter});R.features?.register?.('now-ui',{ready:true,provider:'app-now-ui'});ensure();
 })();
