@@ -26,7 +26,8 @@ check('full glossary is searchable',js.includes('Radyo sözlüğü')&&js.include
 check('full glossary modal is accessible',js.includes("setAttribute('role','dialog')")&&js.includes("setAttribute('aria-modal','true')")&&js.includes("e.key==='Escape'")&&js.includes('modalReturn.focus'));
 check('technical terms receive subtle contextual help',js.includes('app-radio-term-help')&&css.includes('.app-radio-term-help'));
 check('custom tooltip replaces unreliable native title behavior',tips.includes("removeAttribute('title')")&&tips.includes("setAttribute('role','tooltip')")&&tips.includes('appRadioTermTooltip'));
-check('desktop hover and keyboard focus show term help',tips.includes("addEventListener('pointerover'")&&tips.includes("addEventListener('focusin'")&&tips.includes("setAttribute('aria-describedby',TIP_ID)"));
+check('desktop hover and keyboard focus show term help',tips.includes("addEventListener('pointerover'")&&tips.includes("addEventListener('focusin'")&&tips.includes('describedByAdd(el)'));
+check('tooltip preserves unrelated aria descriptions',tips.includes('function describedByAdd')&&tips.includes('function describedByRemove')&&tips.includes("x!==TIP_ID"));
 check('touch and pen can pin term help without blocking default controls',tips.includes("e.pointerType!=='touch'&&e.pointerType!=='pen'")&&tips.includes('toggle(el)')&&tips.includes("{passive:true}"));
 check('term tooltip closes with escape and route change',tips.includes("e.key==='Escape'")&&tips.includes("R.events?.on?.('route:before'"));
 check('term tooltip stays inside viewport',tips.includes('Math.min(left,window.innerWidth-tr.width-pad)')&&tips.includes('window.innerHeight-tr.height-pad'));
