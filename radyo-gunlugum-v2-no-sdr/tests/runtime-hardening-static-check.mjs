@@ -85,7 +85,7 @@ check('menu sync reports pending rows instead of false success',menu.includes("i
 check('menu sync reports actual synchronization failures',menu.includes("R.reportError?.(error,'menu-offline-sync'")&&menu.includes('Senkronizasyon tamamlanamadı'));
 check('menu sheets close when authenticated account identity changes',menu.includes('const userId=x?.user?.id||null,changedAccount=!!x?.previousUserId&&x.previousUserId!==userId')&&menu.includes('if(!x?.authenticated||changedAccount)'));
 check('quick log pins the account that opened the sheet',quickLog.includes('const userId=R.me?.id')&&quickLog.includes('user_id:userId'));
-check('quick log aborts stale-account actions before saving',quickLog.includes("if(R.me?.id!==userId){R.menuUI.close()")&&quickLog.includes('if(R.me?.id!==userId)return;'));
+check('quick log aborts stale-account actions before saving',quickLog.includes("if(R.me?.id!==userId){if(currentSheet(s))R.menuUI.close()")&&quickLog.includes('if(R.me?.id!==userId)return;'));
 check('quick log separates a successful persistence from a failed refresh',quickLog.includes('persisted=true')&&quickLog.includes("R.reportError?.(error,'quick-log-refresh'")&&quickLog.includes('if(saving||persisted)return'));
 
 check('season engine still uses last-Sunday A/B boundaries',intelligence.includes('lastSunday(y,2)')&&intelligence.includes('lastSunday(y,9)'));
