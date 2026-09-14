@@ -40,7 +40,8 @@ check('calendar verifies actual Gregorian date existence',calendar.includes('x.g
 check('calendar aggregation no longer uses permissive startsWith date matching',!calendar.includes("x.date?.startsWith(value)"));
 check('calendar delegated clicks tolerate non-Element targets',calendar.includes('e.target instanceof Element?e.target:null'));
 check('analysis rejects signal values outside personal 1-5 scale',analysis.includes('Number.isFinite(v)&&v>=1&&v<=5'));
-check('analysis rejects legacy hours outside 0-23',analysis.includes('hour<0||hour>23'));
+check('analysis rejects malformed legacy clock values',analysis.includes('function validClockTime')&&analysis.includes('h>=0&&h<=23')&&analysis.includes('min>=0&&min<=59')&&analysis.includes('sec>=0&&sec<=59'));
+check('analysis is account and receiver-band scoped',analysis.includes('function ownedLogs()')&&analysis.includes('x?.user_id===userId')&&analysis.includes('allowed.has(String(x?.band||'));
 
 // Map and atlas lifecycle.
 check('map delayed renders carry an invalidation generation',mapUI.includes('renderGeneration')&&mapUI.includes('function scheduleRender'));
@@ -104,14 +105,28 @@ check('diagnostic isolation is executed from auth transition',menu.includes('iso
   check('calendar rejects impossible day 31 in April',R.calendarUI.validIsoDate('2026-04-31')===false);
 }
 
-// Functional analytics: corrupt signals must not change average.
+// Functional analytics: corrupt signals, bad clocks, foreign accounts and unsupported bands must not affect results.
 {
   const card={innerHTML:''};
-  const R={logs:[{signal_strength:1},{signal_strength:5},{signal_strength:99},{signal_strength:-3}],router:{register(){}},events:{on(){}},features:{register(){}}};
+  const R={
+    me:{id:'u1'},B:['MW'],
+    logs:[
+      {user_id:'u1',band:'MW',signal_strength:1,time:'01:15'},
+      {user_id:'u1',band:'MW',signal_strength:5,time:'02:30'},
+      {user_id:'u1',band:'MW',signal_strength:99,time:'03:10'},
+      {user_id:'u1',band:'MW',signal_strength:-3,time:'04:10'},
+      {user_id:'u1',band:'MW',signal_strength:4,time:'03:99'},
+      {user_id:'u1',band:'SW99',signal_strength:1,time:'05:10'},
+      {user_id:'u2',band:'MW',signal_strength:1,time:'06:10'}
+    ],
+    router:{register(){}},events:{on(){}},features:{register(){}}
+  };
   const document={querySelector:s=>s==='#analysisCards'?card:null};
   const sandbox={window:{R},document,Math,Number,String,Array,Object,Map,Set,Promise,console,setTimeout(){return 0}};
   vm.createContext(sandbox);vm.runInContext(analysis,sandbox,{filename:'app-analysis-ui.js'});R.analysisUI.render();
-  check('analytics average ignores corrupt signal values',card.innerHTML.includes('<b>3.0</b>'));
+  check('analytics average ignores corrupt, foreign and unsupported-band signal rows',card.innerHTML.includes('<b>3.3</b>'));
+  check('analytics clock validator rejects impossible minute values',R.analysisUI.validClockTime('03:99')===null);
+  check('analytics owned rows exclude foreign account and unsupported band',R.analysisUI.ownedLogs().length===5);
 }
 
 // Functional backup ownership and CSV neutralization.
