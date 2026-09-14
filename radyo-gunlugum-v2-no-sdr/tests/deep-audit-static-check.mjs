@@ -30,7 +30,7 @@ check('guide wall-clock formatter is reused',guide.includes('const wallFmt=new I
 check('propagation personal history is bucketed',propagation.includes('rebuildPersonalIndex')&&propagation.includes('personalLogBuckets')&&propagation.includes('personalAttemptBuckets'));
 check('propagation rankings reuse one solar context',propagation.includes('const near=')&&propagation.includes('solar=solarFor(d),currentPhase=phase(solar)')&&propagation.includes('{solar,phase:currentPhase}'));
 check('propagation reacts to fresh listening attempts',propagation.includes("R.events?.on?.('listening:data'"));
-check('journal renders records progressively',log.includes('const VISIBLE_STEP=100')&&log.includes('rows.slice(0,visibleCount)')&&log.includes('data-log-more'));
+check('journal renders records progressively',log.includes('visibleCount=100')&&log.includes('rows.slice(0,visibleCount)')&&log.includes('visibleCount+=100')&&log.includes('data-log-more'));
 check('listening map uses selected listening origin',map.includes('R.listeningOrigin?.()')&&map.includes("R.events?.on?.('user:settings'"));
 check('audio devices stop when leaving audio route',audio.includes("R.events?.on?.('route:before'")&&audio.includes("x?.from==='audio'")&&audio.includes('cleanup()'));
 check('audio preview URL is released on form reset',audio.includes("R.events?.on?.('form:reset',resetAudioState)")&&audio.includes('function resetAudioState(){')&&audio.includes('releasePreview()'));
