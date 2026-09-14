@@ -4,6 +4,7 @@ import vm from 'node:vm';
 
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const source=fs.readFileSync(path.join(root,'app-home-ui.js'),'utf8');
+const visual=fs.readFileSync(path.join(root,'app-audit-polish.css'),'utf8');
 const checks=[];
 function check(name,ok,detail=''){checks.push([name,!!ok,detail]);if(!ok)process.exitCode=1}
 
@@ -29,6 +30,20 @@ check('home alternate candidates expose descriptive accessible labels',source.in
 check('home week bars expose record-count accessible labels',source.includes('aria-label=\"${esc(`${x.date}: ${x.count} kayıt`)}\"'));
 check('home dial accessibility explains empty selection',source.includes('seçili yayın adayı yok'));
 check('home last record shows frequency unit',source.includes("const b=String(x?.band||'').trim(),u=b==='FM'?'MHz':'kHz'"));
+
+// Visual regressions that are easy to miss in markup-only tests.
+check('home visual fixes are scoped to the home surface',visual.includes('#v38Home .v42-home-hero')&&visual.includes('#v38Home .v42-primary-head'));
+check('zero listening bars have no CSS minimum-height artifact',visual.includes('.v42-week-day>i>em[style*="height:0%"]{min-height:0!important;opacity:0}'));
+check('home primary badges can wrap instead of colliding',visual.includes('#v38Home .v42-primary-head{flex-wrap:wrap'));
+check('home long location and date kicker can wrap safely',visual.includes('#v38Home .v42-kicker{display:block')&&visual.includes('overflow-wrap:anywhere'));
+check('home text links and primary actions have touch-size targets',visual.includes('#v38Home .v42-search-button,#v38Home .v42-link,#v38Home .v42-primary-actions .btn{min-height:44px}'));
+check('home quality badges visually distinguish strong and weak candidates',visual.includes('.v42-quality.q8')&&visual.includes('background:#ecfdf5')&&visual.includes('.v42-quality.q1')&&visual.includes('background:#fff7ed'));
+check('home night mode fixes alternate-score contrast',visual.includes('.night-mode #v38Home .v42-alt em')&&visual.includes('color:#c7d2fe'));
+check('home night mode keeps section empty states on dark surfaces',visual.includes('.night-mode #v38Home .v42-section .v42-empty-card')&&visual.includes('background:#172033'));
+check('narrow home radio console becomes a full-width single-column dial',visual.includes('#v38Home .v42-radio-console{grid-template-columns:minmax(0,1fr)!important'));
+check('narrow home dial labels keep a readable compact size',visual.includes('#v38Home .v42-radio-scale span{font-size:9.5px!important'));
+check('narrow home search action becomes a compact icon control',visual.includes('#v38Home .v42-search-button{flex:0 0 44px;width:44px')&&visual.includes('font-size:0'));
+check('very narrow home primary actions stack instead of crushing labels',visual.includes('@media(max-width:360px)')&&visual.includes('#v38Home .v42-primary-actions .btn{flex-basis:100%}'));
 
 const dom={
   tab:{id:'tab-home',className:'tab-view'},
