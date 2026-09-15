@@ -30,7 +30,7 @@ jobs:
             app-config.js core.js app-bootstrap.js app-ui-mode.js \
             v44-search-rebuild.js \
             app-foundation.js app-toast.js app-pwa-install.js app-runtime-core.js app-auth-service.js app-router-core.js app-ui-state.js app-auth-ui.js \
-            app-broadcast-locale.js app-station-intelligence.js app-current-programs.js app-guide-service.js app-language-service.js app-qsl-service.js app-record-service.js \
+            app-broadcast-locale.js app-station-intelligence.js app-station-streams.js app-current-programs.js app-guide-service.js app-language-service.js app-qsl-service.js app-record-service.js \
             app-record-integrity.js app-offline-service.js app-smart-analyzer.js \
             app-ai-service.js app-ai-ui.js app-achievements-service.js app-collection-ui.js \
             app-user-services.js app-listening-service.js app-atlas-service.js app-radio-intelligence.js \
@@ -125,3 +125,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/maximal-audit-hardening-static-check.mjs
       - name: Canonical station identity hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/station-identity-hardening-static-check.mjs
+      - name: Radio Browser integration checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/radio-browser-integration-static-check.mjs
