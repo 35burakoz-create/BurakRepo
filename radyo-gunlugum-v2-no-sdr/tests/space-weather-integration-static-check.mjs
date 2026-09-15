@@ -1,0 +1,82 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+
+const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
+const read=f=>fs.readFileSync(path.join(root,f),'utf8');
+const client=read('app-space-weather.js');
+const css=read('app-space-weather.css');
+const boot=read('app-bootstrap.js');
+const sw=read('sw.js');
+const edge=read('supabase/functions/space-weather/index.ts');
+const checks=[];
+function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
+
+let syntax=true;try{new vm.Script(client,{filename:'app-space-weather.js'})}catch{syntax=false}
+check('space weather client syntax',syntax);
+check('space weather loads after base propagation module',boot.indexOf("'app-propagation.js'")<boot.indexOf("'app-space-weather.js'"));
+check('PWA caches space weather client',sw.includes("'./app-space-weather.js'"));
+check('PWA caches space weather stylesheet',sw.includes("'./app-space-weather.css'"));
+check('client stylesheet is loaded lazily',client.includes("l.href='app-space-weather.css'"));
+check('client invokes authenticated Supabase edge function',client.includes("R.S.functions.invoke('space-weather'"));
+check('client does not call NOAA hosts directly',!client.includes('services.swpc.noaa.gov'));
+check('client validates Kp NOAA scales and F10.7 ranges',client.includes('finite(currentRaw.kp,0,9)')&&client.includes('finite(currentRaw.flux,40,500)')&&client.includes('finite(currentRaw.r,0,5)'));
+check('client accepts only observed estimated predicted forecast kinds',client.includes("['observed','estimated','predicted']"));
+check('client keeps a bounded 24 hour offline cache',client.includes('CACHE_TTL=24*60*60*1000'));
+check('client coalesces in-flight NOAA refreshes',client.includes('if(flight)return flight'));
+check('client pins refresh result to initiating account',client.includes("R.me?.id!==userId")&&client.includes('Hesap değiştiği için uzay havası yenilemesi durduruldu.'));
+check('client falls back to validated local NOAA cache',client.includes("source:'cache'")&&client.includes('readCache()'));
+check('forecast uses NOAA estimated and predicted Kp only',client.includes("['estimated','predicted'].includes(x.kind)"));
+check('future band score changes only by Kp adjustment delta',client.includes('kpAdjustment(kp)-kpAdjustment(currentKp)'));
+check('future band score remains clamped to 0 through 99',client.includes('Math.max(0,Math.min(99'));
+check('weather cards are overwritten from normalized edge data',client.includes('function applyCurrentWeather')&&client.includes('applyCurrentWeather(weather,data)'));
+check('manual refresh intercepts old direct refresh path',client.includes('stopImmediatePropagation()')&&client.includes('render(true)'));
+check('forecast copy clearly says NOAA forecast is not reception guarantee',client.includes('NOAA Kp tahmini alım garantisi değildir'));
+check('forecast copy distinguishes estimate and prediction',client.includes("'NOAA kestirimi'")&&client.includes("'NOAA tahmini'"));
+check('edge function uses official NOAA SWPC host',edge.includes("const BASE='https://services.swpc.noaa.gov'"));
+check('edge function reads current planetary Kp',edge.includes('/products/noaa-planetary-k-index.json'));
+check('edge function reads NOAA planetary Kp forecast',edge.includes('/products/noaa-planetary-k-index-forecast.json'));
+check('edge function reads NOAA R S G scales',edge.includes('/products/noaa-scales.json'));
+check('edge function reads NOAA F10.7 flux',edge.includes('/products/summary/10cm-flux.json'));
+check('edge function bounds upstream requests with abort timeout',edge.includes('AbortController')&&edge.includes('6000'));
+check('edge function normalizes timezone-less NOAA timestamps as UTC',edge.includes("`${raw}Z`")&&edge.includes('toISOString()'));
+check('edge function validates Kp and NOAA scale ranges',edge.includes('finite(row?.kp??row?.Kp,0,9)')&&edge.includes('finite(value,0,5)'));
+check('edge function limits forecast horizon',edge.includes('now+96*3600000'));
+check('edge function keeps a five minute edge cache',edge.includes('CACHE_MS=5*60*1000'));
+check('edge function serves stale edge cache on NOAA outage',edge.includes("cache:'stale-edge'"));
+check('edge function is POST only',edge.includes("req.method!=='POST'"));
+check('space weather visual layer covers freshness states',css.includes('.v41-noaa-badge.live')&&css.includes('.v41-noaa-badge.degraded')&&css.includes('.v41-noaa-badge.stale'));
+check('space weather visual layer covers night mode',css.includes('html.night .v41-noaa-trust'));
+check('space weather visual layer is mobile aware',css.includes('@media(max-width:560px)'));
+check('space weather visual layer respects reduced motion',css.includes('prefers-reduced-motion:reduce'));
+
+class ElementStub{closest(){return null}}
+const document={querySelector(){return null},querySelectorAll(){return[]},createElement(){return{dataset:{},className:'',textContent:'',setAttribute(){},append(){},appendChild(){},querySelector(){return null},querySelectorAll(){return[]}}},head:{appendChild(){}},addEventListener(){}};
+const now=Date.parse('2026-09-15T08:00:00Z');
+const payload={generatedAt:'2026-09-15T08:00:00Z',current:{kp:2,kpTime:'2026-09-15T07:30:00Z',kpKind:'estimated',r:0,s:0,g:0,scalesTime:'2026-09-15T07:30:00Z',flux:145,fluxTime:'2026-09-15T00:00:00Z'},forecast:[{time:'2026-09-15T08:30:00Z',kp:3,kind:'observed'},{time:'2026-09-15T09:00:00Z',kp:4,kind:'estimated'},{time:'2026-09-15T12:00:00Z',kp:6,kind:'predicted',noaaScale:'G2'},{time:'2026-09-16T12:00:00Z',kp:9,kind:'predicted'}]};
+let invokes=0,registered=null;
+const R={me:{id:'u1'},S:{functions:{async invoke(){invokes++;return{data:payload,error:null}}}},events:{on(){},emit(){}},features:{register(){}},reportError(){},esc:v=>String(v??''),propagation:{rankings:()=>[{band:'SW5',score:80},{band:'SW8',score:70}]},renderPropagation:async()=>{},router:{current:()=> 'home',register(name,adapter){if(name==='propagation')registered=adapter}}};
+const localStorage={getItem(){return null},setItem(){}};
+const context={window:{R},document,Element:ElementStub,localStorage,RADIO_APP_CONFIG:{timezone:'Europe/Istanbul'},console,Intl,Number,String,Array,Object,Map,Set,Math,Date,URL,Promise,setTimeout,clearTimeout,setInterval:()=>1,clearInterval(){}};
+vm.runInNewContext(client,context,{filename:'app-space-weather.js'});
+const api=R.spaceWeather;
+check('functional space weather API is exposed',!!api&&typeof api.refresh==='function'&&typeof api.forecastWindow==='function');
+const normalized=api.normalizePayload(payload,'edge');
+check('functional payload normalization keeps valid current values',normalized.current.kp===2&&normalized.current.flux===145&&normalized.current.r===0);
+const invalid=api.normalizePayload({generatedAt:'bad',current:{kp:99},forecast:[{time:'bad',kp:-1,kind:'predicted'}]},'edge');
+check('functional invalid NOAA payload is rejected',invalid===null);
+const windowRows=api.forecastWindow(normalized,{hours:12,now});
+check('functional forecast window excludes observed and far-future rows',windowRows.length===2&&windowRows[0].kind==='estimated'&&windowRows[1].kind==='predicted');
+check('functional quiet Kp receives positive adjustment',api.kpAdjustment(2)===5);
+check('functional storm Kp receives strong negative adjustment',api.kpAdjustment(6)===-20);
+const ranked=api.adjustedRankings(new Date(now),6,2);
+check('functional forecast score applies only Kp delta',ranked[0].band==='SW5'&&ranked[0].score===55&&ranked[0].kpDelta===-25);
+const refreshed=await api.refresh({force:true});
+check('functional edge refresh returns normalized NOAA data',refreshed.provider==='NOAA SWPC'&&refreshed.current.kp===2);
+check('functional forced refresh performs one edge invocation',invokes===1);
+check('functional propagation route is wrapped by enhanced renderer',typeof registered?.enter==='function'&&R.renderPropagation===api.render);
+
+for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
+const failed=checks.filter(([,ok])=>!ok);
+console.log(`\n${checks.length-failed.length}/${checks.length} space-weather integration checks passed.`);
+if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
