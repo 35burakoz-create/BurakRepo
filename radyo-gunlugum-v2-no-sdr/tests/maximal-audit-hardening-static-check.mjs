@@ -37,7 +37,7 @@ check('telemetry receiver band count comes from configured receiver',density.inc
 check('audio recovery reuses canonical timezone conversion for legacy wall time',audio.includes('R.guideService?.wallTimeToInstant?.(date,time)'));
 check('audio recovery explicitly excludes foreign-account log candidates',audio.includes("if(x?.user_id&&x.user_id!==userId)continue"));
 check('audio recovery modal has an accessible labelled title',audio.includes("aria-labelledby','appAudioModalTitle'")&&audio.includes('id="appAudioModalTitle"'));
-check('PWA generation follows current Radio Browser release',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-51'"));
+check('PWA generation follows current transmitter intelligence release',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52'"));
 
 check('migration removes duplicate AI foreign keys',migration.includes('drop constraint if exists radio_ai_analyses_log_id_fkey')&&migration.includes('drop constraint if exists radio_ai_analyses_same_user_log_fkey'));
 check('migration removes duplicate session-attempt foreign keys',migration.includes('drop constraint if exists radio_session_attempts_session_id_fkey')&&migration.includes('drop constraint if exists radio_session_attempts_same_user_session_fkey'));
