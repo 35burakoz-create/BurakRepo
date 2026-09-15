@@ -1,5 +1,6 @@
 (()=>{
 const R=window.R;if(!R||R.__mwGuideUI)return;R.__mwGuideUI=true;
+if(!document.querySelector('link[data-mw-guide-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='app-mw-guide.css';l.dataset.mwGuideCss='1';document.head.appendChild(l)}
 const $=s=>document.querySelector(s),esc=v=>R.esc?R.esc(v):String(v??'');let classFilter='ALL',renderTimer=null;
 const FILTERS=[['ALL','Tümü'],['local','Yerel'],['regional','Bölgesel'],['dx','Gece DX'],['far','Çok uzak']];
 function active(){return R.router?.current?.()==='guide'&&$('#guideBand')?.value==='MW'}
