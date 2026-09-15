@@ -24,7 +24,7 @@ check('home candidate list rejects missing ids and invalid frequencies',home.inc
 check('home malformed or missing scores are not fabricated',home.includes("if(raw===null||raw===undefined||raw==='')return null")&&home.includes('Number.isFinite(n)?Math.max(1,Math.min(99,Math.round(n))):null'));
 check('home signal display is restricted to personal 1-5 scale',home.includes('function signalValue(value)')&&home.includes('n>=1&&n<=5'));
 check('home rerenders immediately on account transition',home.includes("R.events?.on?.('auth:changed'"));
-check('now candidate list rejects malformed entries',now.includes('function validCandidate(e)')&&now.includes('rows.filter(validCandidate)'));
+check('now candidate list rejects malformed entries',now.includes('function validCandidate(e)')&&now.includes('return(Array.isArray(rows)?rows:[]).filter(validCandidate)'));
 check('now score has a finite fallback instead of NaN',now.includes('Number.isFinite(raw)?raw:50'));
 check('now list exposes progressive results beyond 30 candidates',now.includes('let visibleLimit=30')&&now.includes('data-now-more')&&now.includes('visibleLimit+=30'));
 check('now delegated clicks tolerate non-Element targets',now.includes('if(!(e.target instanceof Element))return'));
