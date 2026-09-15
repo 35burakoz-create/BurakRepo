@@ -28,6 +28,7 @@ check('canonical history indexes support future personal models',foundationSql.i
 check('normalization repair uses POSIX whitespace class',repairSql.includes("'[[:space:]]+'")&&!repairSql.includes("E'\\s+'"));
 check('normalization repair rebuilds identities from source guide rows',repairSql.includes('delete from public.canonical_stations')&&repairSql.includes("'normalization','whitespace_repair'")&&repairSql.includes('update public.guide_entries g'));
 check('client station catalog is bounded and paged',station.includes('PAGE_SIZE=1000,MAX_ROWS=10000')&&station.includes('for(let from=0;from<MAX_ROWS;from+=PAGE_SIZE)')&&station.includes(".range(MAX_ROWS,MAX_ROWS)"));
+check('client requests server-normalized canonical keys',station.includes('canonical_name,normalized_name,status')&&station.includes('alias,normalized_alias'));
 check('client resolves canonical id before name fallback',station.includes('value?.canonical_station_id||value?.canonicalStationId')&&station.includes('canonicalIdForName'));
 check('client refuses ambiguous alias resolution',station.includes('ids?.size===1'));
 check('client keeps original guide station alias when canonicalizing display',station.includes("row._source_station=current")&&station.includes('replaceStation:true'));
@@ -38,7 +39,7 @@ check('identity readiness is announced to the app',station.includes("'station:id
 const handlers=new Map();
 const events={on(name,fn){if(!handlers.has(name))handlers.set(name,[]);handlers.get(name).push(fn)},emit(){}};
 const rows={
-  canonical_stations:[{id:'c1',canonical_name:'BBC World Service',status:'active',merged_into_id:null,metadata:{},updated_at:'2026-09-15T00:00:00Z'}],
+  canonical_stations:[{id:'c1',canonical_name:'BBC World Service',normalized_name:'bbcworldservice',status:'active',merged_into_id:null,metadata:{},updated_at:'2026-09-15T00:00:00Z'}],
   station_aliases:[{id:'a1',canonical_station_id:'c1',alias:'BBC WS',normalized_alias:'bbcws',source:'test',confidence:90,metadata:{}}]
 };
 function query(table){let current=rows[table]||[];return{select(){return this},order(){return this},range(from,to){return Promise.resolve({data:current.slice(from,to+1),error:null})}}}
@@ -58,7 +59,8 @@ vm.runInNewContext(station,context,{filename:'app-station-intelligence.js'});
 const api=R.stationIntelligence;
 check('functional station service is exposed',!!api&&typeof api.ensureData==='function'&&typeof api.displayName==='function');
 check('functional whitespace cleaner removes control characters',api.cleanName(' BBC\r\n  World\tService ')==='BBC World Service');
-check('functional client key normalizes accents and punctuation',api.key('RÁDIO-Test 1')==='radiotest1');
+check('functional client key preserves accented letters like PostgreSQL',api.key('RÁDIO-Test 1')==='rádiotest1');
+check('functional client key uses database-style lowercase I instead of Turkish locale folding',api.key('RADIO I')==='radioi');
 await api.ensureData();
 check('functional canonical rows load for active account',api.loaded===true&&api.stations.length===1&&api.aliases.length===1);
 check('functional alias resolves to exactly one canonical station',api.canonicalIdForName('BBC WS')==='c1');
