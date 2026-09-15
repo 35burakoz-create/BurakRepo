@@ -11,11 +11,15 @@ const CORS={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'au
 
 type Json=Record<string,unknown>;
 type SiteRow={provider:string,source_key:string,season:string|null,country_code:string,site_code:string|null,site_name:string,latitude:number,longitude:number,confidence:number,source_url:string,active:boolean,metadata:Record<string,unknown>,updated_at:string};
+class HttpError extends Error{status:number;constructor(message:string,status=400){super(message);this.status=status}}
 
 function reply(body:unknown,status=200){return new Response(JSON.stringify(body),{status,headers:{...CORS,'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}})}
 function clean(v:unknown){return String(v??'').replace(/[\r\n\t]+/g,' ').replace(/\s+/g,' ').trim()}
 function finite(v:unknown,min=-Infinity,max=Infinity){const n=Number(v);return Number.isFinite(n)&&n>=min&&n<=max?n:null}
 function iso(v:unknown){const t=Date.parse(String(v??''));return Number.isFinite(t)?new Date(t).toISOString():null}
+function uuidLike(v:unknown){return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(clean(v))}
+function jwtPayload(req:Request){try{const auth=req.headers.get('authorization')||'',token=auth.match(/^Bearer\s+(.+)$/i)?.[1]||'',part=token.split('.')[1];if(!part)return null;let b64=part.replace(/-/g,'+').replace(/_/g,'/');while(b64.length%4)b64+='=';return JSON.parse(atob(b64)) as Json}catch{return null}}
+function requireAuthenticated(req:Request){const payload=jwtPayload(req);if(payload?.role!=='authenticated'||!uuidLike(payload?.sub))throw new HttpError('Bu işlem için oturum açmalısın.',401);return String(payload.sub)}
 
 async function rest(path:string,init:RequestInit={}){
   if(!SUPABASE_URL||!SERVICE_KEY)throw new Error('Supabase hizmet anahtarı kullanılamıyor.');
@@ -56,5 +60,5 @@ async function refresh(force=false){
 Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS')return new Response('ok',{headers:CORS});
   if(req.method!=='POST')return reply({error:'Yalnızca POST desteklenir.'},405);
-  try{const body=await req.json().catch(()=>({})) as Json;const action=clean(body.action)||'refresh';if(action==='status')return reply({provider:'EiBi',count:await counts(),lastUpdatedAt:await lastRefresh()});if(action==='refresh')return reply(await refresh(body.force===true));return reply({error:'Desteklenmeyen verici sahası işlemi.'},400)}catch(error){console.error('[transmitter-sites]',error);return reply({error:error instanceof Error?error.message:'Verici sahası verisi yenilenemedi.'},502)}
+  try{requireAuthenticated(req);const body=await req.json().catch(()=>({})) as Json;const action=clean(body.action)||'refresh';if(action==='status')return reply({provider:'EiBi',count:await counts(),lastUpdatedAt:await lastRefresh()});if(action==='refresh')return reply(await refresh(body.force===true));return reply({error:'Desteklenmeyen verici sahası işlemi.'},400)}catch(error){console.error('[transmitter-sites]',error);const status=error instanceof HttpError?error.status:502;return reply({error:error instanceof Error?error.message:'Verici sahası verisi yenilenemedi.'},status)}
 });
