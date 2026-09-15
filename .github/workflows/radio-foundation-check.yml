@@ -36,7 +36,7 @@ jobs:
             app-user-services.js app-listening-service.js app-atlas-service.js app-radio-intelligence.js \
             app-shell-core.js app-menu-ui.js app-quick-log.js app-home-ui.js app-now-ui.js app-log-ui.js app-log-form-ui.js \
             app-audio-ui.js app-guide-ui.js app-analysis-ui.js app-map-ui.js app-calendar-ui.js app-qsl-ui.js \
-            app-listening-ui.js app-modal-accessibility.js app-atlas-ui.js app-radio-intelligence-ui.js app-propagation.js app-memory.js app-page-density.js app-radio-glossary.js app-radio-tooltips.js \
+            app-listening-ui.js app-modal-accessibility.js app-atlas-ui.js app-radio-intelligence-ui.js app-propagation.js app-space-weather.js app-memory.js app-page-density.js app-radio-glossary.js app-radio-tooltips.js \
             app-audio-safety.js app-backup.js app-pwa-updates.js app-smoke.js; do
             echo "Checking $f"
             node --check "$APP/$f"
@@ -127,3 +127,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/station-identity-hardening-static-check.mjs
       - name: Radio Browser integration checks
         run: node radyo-gunlugum-v2-no-sdr/tests/radio-browser-integration-static-check.mjs
+      - name: NOAA space weather integration checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/space-weather-integration-static-check.mjs
