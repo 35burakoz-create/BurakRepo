@@ -55,7 +55,7 @@ check('disabled menu action hides misleading chevron',css.includes(':disabled .v
 check('menu has focus-visible treatment',css.includes('focus-visible'));
 check('night mode covers menu sheet and rows',css.includes('html.night #v38Sheet.v38-menu-sheet')&&css.includes('html.night #v38Sheet .v38-menu-row'));
 check('reduced motion disables menu animation',css.includes('prefers-reduced-motion:reduce')&&css.includes('animation:none'));
-check('menu release follows maximal-audit PWA generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260914-49'"));
+check('menu release follows current PWA generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-50'"));
 
 class FakeClassList{
   constructor(){this.values=new Set()}
