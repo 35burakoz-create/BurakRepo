@@ -29,8 +29,12 @@ assert(stylesLink>=0&&baseLink>stylesLink&&earlyTokens>baseLink,'canonical token
 assert(!/^\s*:root\s*\{/m.test(styles),'styles.css must not own a root token namespace after phase 2A');
 assert(!/^\s*:root\s*\{/m.test(base),'app-base.css must not own a root token namespace after phase 2A');
 assert(!/html\.night\{[^}]*--ds-/s.test(base),'app-base dark mode must not redefine DS theme tokens');
-assert(/theme variables are owned by app-design-tokens\.css/i.test(styles),'legacy stylesheet must document canonical token ownership');
-assert(/theme variables are owned by app-design-tokens\.css/i.test(base),'base stylesheet must document canonical token ownership');
+assert(/app-design-tokens\.css/i.test(styles),'legacy stylesheet must document canonical token ownership');
+assert(/app-design-tokens\.css/i.test(base),'base stylesheet must document canonical token ownership');
+assert(!/var\(--(?:bg|paper|ink|muted|accent|accent2|line|danger|gold|soft|good|shadow)\)/.test(styles),'styles.css must not consume legacy short-name aliases after phase 2D');
+assert(styles.includes('var(--app-legacy-ink)')&&styles.includes('var(--app-legacy-line)')&&styles.includes('var(--app-legacy-accent)'),'styles.css must consume canonical legacy-preservation tokens directly');
+assert(!base.includes('var(--ds-'),'app-base.css must not consume DS compatibility aliases after phase 2D');
+assert(base.includes('var(--app-bg)')&&base.includes('var(--app-surface)')&&base.includes('var(--app-primary)')&&base.includes('var(--app-radius-md)'),'app-base.css must consume canonical app tokens directly');
 assert(!/:root\s*\{[^}]*--ux-/s.test(ux),'v38 must not own UX root tokens after phase 2B');
 assert(!/\.night-mode\s*\{[^}]*--ux-/s.test(ux),'v38 dark mode must not redefine UX tokens after phase 2B');
 assert(/consumes canonical app-design-tokens\.css variables directly/i.test(ux),'v38 must document direct canonical token consumption');
@@ -107,6 +111,7 @@ assert(sw.includes("const DESIGN_TOKEN_FOUNDATION='20260916-20';"),'service work
 assert(sw.includes("const DESIGN_TOKEN_PHASE2A='20260916-21';"),'service worker must carry the phase 2A marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2B='20260916-22';"),'service worker must carry the phase 2B marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2C='20260916-23';"),'service worker must carry the phase 2C marker');
+assert(sw.includes("const DESIGN_TOKEN_PHASE2D='20260916-24';"),'service worker must carry the phase 2D marker');
 assert(sw.includes("'./app-ui-integrity.css'"),'UI integrity CSS must be available to the offline cache');
 assert(sw.includes("'./app-design-tokens.css'"),'canonical design tokens must be available to the offline cache');
 
