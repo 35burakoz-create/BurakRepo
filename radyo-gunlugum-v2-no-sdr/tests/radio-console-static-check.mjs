@@ -28,13 +28,16 @@ check('service worker carries station-detail accessibility signature',sw.include
 check('service worker carries favorites discovery signature',sw.includes("FAVORITES_DISCOVERY='20260916-7'"));
 check('service worker carries personal favorite scoring signature',sw.includes("PERSONAL_FAVORITE_SCORING='20260916-8'"));
 check('service worker carries favorite event-scope signature',sw.includes("FAVORITE_EVENT_SCOPES='20260916-9'"));
+check('service worker carries real-tonight planner signature',sw.includes("MW_REAL_TONIGHT_PLANNER='20260916-13'"));
 for(const asset of ['app-radio-console-service.js','app-radio-console.css','app-radio-console-polish.css','app-favorites-ui.js','app-favorites-ui.css','app-station-detail-ui.js','app-mw-guide-ui.js','app-mw-guide.css'])check(`service worker caches ${asset}`,sw.includes(`'./${asset}'`));
 check('radio console service loads additive polish and favorites styles',service.includes("loadConsoleCss('app-radio-console.css','radio-console-css')")&&service.includes("loadConsoleCss('app-radio-console-polish.css','radio-console-polish-css')")&&service.includes("loadConsoleCss('app-favorites-ui.css','favorites-ui-css')"));
 check('radio console service loads shared favorites behavior module',service.includes("loadConsoleScript('app-favorites-ui.js','favorites-ui-script')"));
 check('MW service uses authenticated ranking RPC and bounded p_limit',service.includes("R.S.rpc('radio_mw_now_candidates',{p_limit:n})")&&service.includes('Math.min(500'));
+check('MW service keeps a distinct authenticated tonight RPC and cache',service.includes("R.S.rpc('radio_mw_tonight_candidates',{p_limit:n})")&&service.includes('function tonightRows()')&&service.includes("R.events?.emit?.('radio-console:mw-tonight-ready'"));
 check('MW service scopes cache to active authenticated user',service.includes('cacheUser!==uid')&&service.includes('if(userId()!==uid)return[]'));
 check('MW service preserves nullable score and geometry instead of Number(null) zero coercion',service.includes('const finiteOrNull=value=>')&&service.includes('score=finiteOrNull(row.score)')&&service.includes('distance=finiteOrNull(row.distance_km)')&&service.includes('bearing=finiteOrNull(row.bearing_deg)'));
 check('MW service exposes structured astronomical and target intelligence from RPC explanation',service.includes("period==='night'?'Gece yayılımı'")&&service.includes("lower(x).startsWith('hedef ')")&&service.includes('solar_elevation'));
+check('MW service recognizes explicit astronomical-night planner explanations',service.includes("lower(x).startsWith('astronomik gece ')")&&service.includes("lower(x).startsWith('gece penceresi ')"));
 check('MW service exposes active listening origin instead of forcing Bozköy in detail consumers',service.includes('R.listeningOrigin?.()?.name')&&service.includes('function originName()'));
 check('user service owns favorite collection signature and semantic change event',userServices.includes('function favoriteCollectionSignature')&&userServices.includes("R.events?.emit?.('favorites:changed'")&&userServices.includes("source:force?'reload':'load'"));
 check('favorite collection event is emitted only after authenticated collection replacement',userServices.indexOf('R.favorites=result.favorites')<userServices.indexOf("R.events?.emit?.('favorites:changed'")&&userServices.includes('signature!==previousFavoriteSignature'));
@@ -63,8 +66,9 @@ check('MW guide uses astronomical propagation status rather than equating Gece D
 check('MW guide visually distinguishes day and night intelligence chips',mwCss.includes('.mw-guide-tags span.night')&&mwCss.includes('.mw-guide-tags span.day'));
 check('MW guide gives very narrow screens a full-width identity column and horizontal score footer',mwCss.includes('@media(max-width:420px)')&&mwCss.includes('.mw-guide-card{grid-template-columns:1fr')&&mwCss.includes('.mw-guide-side{display:flex'));
 check('MW guide favorite filter remains orthogonal to reception class filtering',guide.includes('favoriteOnly=false')&&guide.includes("favoriteScope='all'")&&guide.includes('function classFiltered()')&&guide.includes('function favoriteScopeMatch'));
-check('MW guide exposes all, live-now and night-DX favorite quick scopes',guide.includes("['all','Tüm favoriler']")&&guide.includes("['active','Şu an yayında']")&&guide.includes("['night','Bu gece denenebilir']")&&guide.includes("scope==='active'")&&guide.includes("scope==='night'"));
-check('night favorite scope is explicitly Gece DX only and does not promise guaranteed reception',guide.includes("classKey?.(row?.reception_class)==='dx'")&&guide.includes('yayın saatini veya kesin alımı garanti etmez'));
+check('MW guide exposes all, live-now and real-tonight favorite quick scopes',guide.includes("['all','Tüm favoriler']")&&guide.includes("['active','Şu an yayında']")&&guide.includes("['night','Bu gece denenebilir']")&&guide.includes("scope==='active'")&&guide.includes("scope==='night'"));
+check('night favorite scope is schedule-backed and does not promise guaranteed reception',guide.includes("if(scope==='night')return!!row?.scheduled_tonight")&&guide.includes('R.radioConsole?.tonightRows?.()')&&guide.includes('astronomik gece kesişir; alımı garanti etmez.')&&!guide.includes("scope==='night')return classKey==='dx"));
+check('Gece DX remains a separate reception-class filter from tonight schedule eligibility',guide.includes("['dx','Gece DX']")&&guide.includes('classFilter'));
 check('MW guide favorite filter shows scope counts and accessible pressed state',guide.includes("function favoriteCount(scope='all')")&&guide.includes('data-mw-favorites')&&guide.includes('data-mw-favorite-scope')&&guide.includes('aria-pressed'));
 check('MW guide cards expose favorite marker and direct favorite toggle',guide.includes('mw-guide-favorite-mark')&&guide.includes('data-mw-favorite')&&favoriteCss.includes('.mw-guide-favorite-toggle.active'));
 check('MW guide keyboard navigation is scoped to the active filter group',guide.includes("closest?.('[data-mw-filter-group]')")&&guide.includes('data-mw-filter-control')&&mwCss.includes('.mw-guide-favorite-scopes button:focus-visible'));
@@ -91,6 +95,7 @@ vm.createContext(serviceSandbox);
 vm.runInContext(service,serviceSandbox,{filename:'app-radio-console-service.js'});
 const nullableRow=serviceR.radioConsole.normalizeRow({frequency:600,score:null,distance_km:null,bearing_deg:null,personal_adjustment:null,station:'Test MW',country:'TUR',transmitter_site_name:'Test Saha'});
 check('runtime MW normalization keeps null score distance and bearing nullable',nullableRow.score===null&&nullableRow.distance_km===null&&nullableRow.bearing_deg===null&&nullableRow.personal_adjustment===0);
+check('runtime MW normalization keeps current and tonight state separate',nullableRow.active_now===false&&nullableRow.scheduled_tonight===false);
 check('runtime MW geometry confidence does not upgrade named null-coordinate site to verified',serviceR.radioConsole.intelligence(nullableRow).geometry.key==='named');
 check('runtime radio console injects base polish and favorites style links',serviceAssets.some(x=>x.href==='app-radio-console.css')&&serviceAssets.some(x=>x.href==='app-radio-console-polish.css')&&serviceAssets.some(x=>x.href==='app-favorites-ui.css'));
 check('runtime radio console injects favorites behavior script',serviceAssets.some(x=>x.src==='app-favorites-ui.js'));
@@ -100,26 +105,29 @@ const guideRows=[
   {schedule_id:'a',frequency:600,score:null,distance_km:null,reception_class:'Gece DX',station:'A',transmitter_site_name:'Saha A',active_now:false},
   {schedule_id:'b',frequency:700,score:72,distance_km:900,reception_class:'Bölgesel',station:'B',active_now:true}
 ];
+const tonightRows=[
+  {schedule_id:'b',frequency:700,score:78,distance_km:900,reception_class:'Bölgesel',station:'B',active_now:true,scheduled_tonight:true,tonight_start_at:'2026-09-16T19:00:00Z',tonight_end_at:'2026-09-16T20:00:00Z',night_window_source:'astronomik',timezone:'Europe/Istanbul'}
+];
 const guideR={
   me:{id:'u1'},favorites:[{user_id:'u1',guide_entry_id:'ga'},{user_id:'u1',guide_entry_id:'gb'}],
   router:{current:()=> 'home'},
-  radioConsole:{rows:()=>guideRows,classKey:value=>value==='Gece DX'?'dx':value==='Bölgesel'?'regional':'unknown',guideMatch:row=>({id:row.schedule_id==='a'?'ga':'gb'})},
+  radioConsole:{rows:()=>guideRows,tonightRows:()=>tonightRows,classKey:value=>value==='Gece DX'?'dx':value==='Bölgesel'?'regional':'unknown',guideMatch:row=>({id:row.schedule_id==='a'?'ga':'gb'})},
   events:{on(){}},features:{register(){}}
 };
 const guideDocument={querySelector(selector){if(selector==='link[data-mw-guide-css]')return null;return null},querySelectorAll(){return[]},createElement(){return{dataset:{}}},head:{appendChild(node){guideLinks.push(node)}},addEventListener(){}};
-const guideSandbox={window:{R:guideR},R:guideR,document:guideDocument,Element:class{},globalThis:null,Number,String,Array,Object,Map,Set,Math,Date,Error,console,clearTimeout(){},setTimeout(){return 1},requestAnimationFrame(){}};
+const guideSandbox={window:{R:guideR},R:guideR,document:guideDocument,Element:class{},globalThis:null,Number,String,Array,Object,Map,Set,Math,Date,Intl,Error,console,clearTimeout(){},setTimeout(){return 1},requestAnimationFrame(){}};
 guideSandbox.globalThis=guideSandbox;
 vm.createContext(guideSandbox);
 vm.runInContext(guide,guideSandbox,{filename:'app-mw-guide-ui.js'});
 check('runtime MW guide keeps null score in unknown class',guideR.mwGuideUI.scoreClass(null)==='unknown'&&guideR.mwGuideUI.scoreLabel(null)==='Puan yok');
 const guideCounts=guideR.mwGuideUI.filterCounts();
-check('runtime MW guide class counts reflect unfiltered rows',guideCounts.ALL===2&&guideCounts.dx===1&&guideCounts.regional===1);
+check('runtime MW guide class counts reflect current unfiltered rows',guideCounts.ALL===2&&guideCounts.dx===1&&guideCounts.regional===1);
 check('runtime MW guide favorite count follows active user favorites',guideR.mwGuideUI.favoriteCount()===2);
 guideR.mwGuideUI.favoriteOnly=true;
-check('runtime MW guide favorite-only filter keeps all owned favorites',guideR.mwGuideUI.filtered().length===2);
+check('runtime MW guide favorite-only filter keeps all owned current favorites',guideR.mwGuideUI.filtered().length===2);
 check('runtime MW guide live favorite scope keeps only currently active favorite',guideR.mwGuideUI.favoriteCount('active')===1&&guideR.mwGuideUI.favoriteScopeMatch(guideRows[1],'active')===true&&guideR.mwGuideUI.favoriteScopeMatch(guideRows[0],'active')===false);
 guideR.mwGuideUI.favoriteScope='night';
-check('runtime MW guide night scope keeps only Gece DX favorite',guideR.mwGuideUI.filtered().length===1&&guideR.mwGuideUI.filtered()[0].schedule_id==='a'&&guideR.mwGuideUI.favoriteCount('night')===1);
+check('runtime MW guide night scope uses real scheduled favorite independent of Gece DX class',guideR.mwGuideUI.filtered().length===1&&guideR.mwGuideUI.filtered()[0].schedule_id==='b'&&guideR.mwGuideUI.filtered()[0].reception_class==='Bölgesel'&&guideR.mwGuideUI.favoriteCount('night')===1&&guideR.mwGuideUI.favoriteScopeMatch(guideRows[0],'night')===false);
 guideR.mwGuideUI.favoriteScope='active';
 check('runtime MW guide active scope keeps only live favorite',guideR.mwGuideUI.filtered().length===1&&guideR.mwGuideUI.filtered()[0].schedule_id==='b');
 check('runtime MW guide injects its stylesheet',guideLinks.some(x=>x.href==='app-mw-guide.css'));
