@@ -13,7 +13,7 @@ try{new vm.Script(now,{filename:'app-now-ui.js'})}catch(error){syntax=false;synt
 check('now module syntax',syntax,syntaxDetail);
 
 check('current view fallback label uses configured timezone',now.includes("TZ=C.timezone||'Europe/Istanbul'")&&now.includes('timeZone:TZ'));
-check('displayed score does not invent fifty points',now.includes('function displayScore(e)')&&now.includes("if(raw===null||raw===undefined||raw==='')return null")&&now.includes('const s=displayScore(e)'));
+check('displayed score preserves missing evidence as unknown instead of inventing a numeric value',now.includes('function finiteNumber(value)')&&now.includes('function displayScore(e)')&&now.includes('const n=finiteNumber(e.score)')&&now.includes('return n===null?null:'));
 check('unknown displayed score is labeled explicitly',now.includes('data-score-unknown')&&now.includes('Puan yok'));
 check('canonical empty candidate set does not fall through to legacy suggestions',now.includes("if(typeof R.radioNowCandidates==='function')")&&now.includes("return(Array.isArray(rows)?rows:[]).filter(validCandidate)"));
 check('legacy suggestion fallback remains available only without canonical provider',now.includes('R.currentSuggestions?.()||[]'));
@@ -98,8 +98,12 @@ R.radioNowCandidates=()=>[validRow,{id:'bad-zero',mode:'SW',band:'SW3',frequency
 check('current candidate validation keeps only usable receiver rows',N.candidates('ALL').length===1&&N.candidates('ALL')[0].id==='g1');
 check('display score preserves a real score',N.displayScore({_score:82})===82);
 check('display score rejects missing and malformed evidence',N.displayScore({})===null&&N.displayScore({probability_score:'bad'})===null);
+check('display score preserves null MW RPC score as unknown instead of zero',N.displayScore({_radioConsole:true,score:null})===null);
 check('display score clamps excessive explicit values safely',N.displayScore({_score:120})===99);
 check('quality labels unknown evidence without pretending weakness',N.quality(null)==='Puan yok');
+R.radioConsole={intelligence:()=>({propagation:{period:'day',solar_elevation:null},target:{text:'',bonus:0},personal:{adjustment:0}})};
+const nullDistanceChips=N.mwReasonChips({_radioConsole:true,distance_km:null,transmitter_site_name:'Test Saha'});
+check('MW reason chips keep null distance as unverified geometry instead of zero kilometres',nullDistanceChips[1]?.bonus==='koordinat yok');
 
 R.guideEntries=[];R.radioNowCandidates=()=>[];N.render();
 check('guide-loading state is rendered while guide data is unavailable',rootEl.innerHTML.includes('Yayın rehberi hazırlanıyor')&&!rootEl.innerHTML.includes('Şu anda dinlemeye uygun bir yayın adayı yok.'));
