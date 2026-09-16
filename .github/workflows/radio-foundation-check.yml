@@ -133,7 +133,9 @@ jobs:
       - name: Menu page hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/menu-page-hardening-static-check.mjs
       - name: Maximal audit hardening checks
-        run: node radyo-gunlugum-v2-no-sdr/tests/maximal-audit-hardening-static-check.mjs
+        run: |
+          node radyo-gunlugum-v2-no-sdr/tests/maximal-audit-hardening-static-check.mjs
+          node radyo-gunlugum-v2-no-sdr/tests/ui-integrity-audit-static-check.mjs
       - name: Canonical station identity hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/station-identity-hardening-static-check.mjs
       - name: Radio Browser integration checks
