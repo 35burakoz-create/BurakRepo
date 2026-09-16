@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   decodeEiBiBytes,
+  detectEiBiEncoding,
   parseEiBiCsvLine,
   parseEiBiCsvBytes,
   recoverLegacyMisdecodedLine,
@@ -17,7 +18,7 @@ const check=(name,fn)=>{
   catch(error){checks.push([name,false,error]);process.exitCode=1;}
 };
 
-const known=new Set(['HR','AR','BU','GR','RU','SV','UK','PO','D','P','S','VN']);
+const known=new Set(['HR','AR','BU','GR','RU','SV','UK','PO','D','P','S','VN','-CW']);
 function win1252Bytes(text){
   const out=[];
   for(const ch of text){
@@ -30,7 +31,15 @@ function win1252Bytes(text){
 
 check('Windows-1252 byte decode preserves Portuguese accents',()=>{
   const line='690;0000-2400;;B;Rádio Clube do Pará;P;B;be;1;;';
+  assert.equal(detectEiBiEncoding(win1252Bytes(line)),'windows-1252');
   assert.equal(decodeEiBiBytes(win1252Bytes(line)),line);
+});
+
+check('future UTF-8 source is detected instead of forced through Windows-1252',()=>{
+  const line='5000;0000-0100;;VTN;Radio Đáp Lời Sông Núi;VN;SEA;x;1;;';
+  const bytes=new TextEncoder().encode(line);
+  assert.equal(detectEiBiEncoding(bytes),'utf-8');
+  assert.equal(decodeEiBiBytes(bytes),line);
 });
 
 check('byte parser skips header and parses exact 11-field row',()=>{
@@ -103,9 +112,31 @@ check('unknown recovered language code is rejected when README dictionary is sup
   assert.equal(parsed.reason,'unknown_language_code');
 });
 
-check('README language dictionary extractor recognizes official code lines',()=>{
-  const codes=extractLanguageCodes('   HR    Croatian/Hrvatski\n   D     German\n   P     Portuguese\n');
-  assert.deepEqual([...codes],['HR','D','P']);
+check('README extractor scopes itself to the real language section and includes special codes',()=>{
+  const readme=[
+    'D) Codes used.',
+    '   I)   Language codes.',
+    '   II)  Country codes.',
+    '   III) Target-area codes.',
+    '   I) Language codes.',
+    '   -CW   Morse Station',
+    '   HR    Croatian/Hrvatski',
+    '   D     German',
+    '   P     Portuguese',
+    '   II) Country codes.',
+    '   HNG   Hungary',
+    '   USA   United States'
+  ].join('\n');
+  const codes=extractLanguageCodes(readme);
+  assert.deepEqual([...codes],['-CW','HR','D','P']);
+  assert.equal(codes.has('HNG'),false);
+  assert.equal(codes.has('USA'),false);
+});
+
+check('persistence 97 is rejected because README defines 90 plus only valid base codes',()=>{
+  const parsed=parseEiBiCsvLine('5000;0000-0100;;USA;Utility test;E;NAm;x;97;;',{languageCodes:new Set(['E'])});
+  assert.equal(parsed.status,'qa');
+  assert.equal(parsed.reason,'persistence_code');
 });
 
 check('legacy recovery refuses arbitrary malformed Unicode without hidden delimiter evidence',()=>{
