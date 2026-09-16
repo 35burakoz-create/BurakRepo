@@ -1,0 +1,254 @@
+/* Ortak radyo yüzey dili — Şu An ekranındaki konsol estetiğini ilk dalgada Ana Sayfa, Günlük ve Rehber'e taşır. */
+:root{
+  --app-radio-bg:var(--radio-bg,#07111b);
+  --app-radio-panel:var(--radio-panel,#0d1a25);
+  --app-radio-panel-2:var(--radio-panel-2,#101f2b);
+  --app-radio-line:var(--radio-line,#223545);
+  --app-radio-text:var(--radio-text,#f4f2ec);
+  --app-radio-muted:var(--radio-muted,#91a0ad);
+  --app-radio-amber:var(--radio-amber,#f4b94f);
+  --app-radio-amber-soft:var(--radio-amber-soft,#3a2a12);
+  --app-radio-green:var(--radio-green,#5ed99a);
+  --app-radio-green-soft:var(--radio-green-soft,#112d24);
+  --app-radio-danger:var(--radio-danger,#ff8276);
+  --app-radio-shadow:var(--radio-shadow,0 20px 70px rgba(0,0,0,.28));
+}
+
+/* Aynı aileyi bağlayan ortak davranışlar. */
+#tab-home .v42-home,
+#tab-log,
+#tab-guide{color:var(--app-radio-text)}
+#tab-home :is(button,a):focus-visible,
+#tab-log :is(button,input,select,textarea,summary):focus-visible,
+#tab-guide :is(button,input,select,textarea,summary):focus-visible{
+  outline:3px solid rgba(244,185,79,.34)!important;
+  outline-offset:2px!important;
+}
+#tab-home .btn,#tab-log .btn,#tab-guide .btn{min-height:44px}
+#tab-home .btn.primary,#tab-log .btn.primary,#tab-guide .btn.primary{
+  background:linear-gradient(180deg,#d89a36,#a96f1b)!important;
+  border-color:#dfaa51!important;color:#111820!important;
+  box-shadow:0 8px 22px rgba(244,185,79,.13)!important;
+}
+#tab-home .btn.ghost,#tab-log .btn.ghost,#tab-guide .btn.ghost{
+  background:#0b1822!important;border-color:#2a4051!important;color:#dce5ea!important;
+}
+
+/* Ana Sayfa — mevcut bilgi mimarisini koru, renk ve yüzey dilini Şu An ile birleştir. */
+#tab-home .v42-home-hero{
+  background:radial-gradient(circle at 86% 0,rgba(49,91,119,.24),transparent 35%),linear-gradient(180deg,#07111b 0,#08151f 100%)!important;
+  border:1px solid #1a2c3b!important;color:var(--app-radio-text)!important;
+  box-shadow:var(--app-radio-shadow)!important;
+}
+#tab-home .v42-home-hero:after{background:radial-gradient(circle,rgba(244,185,79,.11),transparent 70%)!important}
+#tab-home .v42-kicker{color:#d5a951!important}
+#tab-home .v42-home-top p{color:var(--app-radio-muted)!important}
+#tab-home .v42-search-button{
+  border-color:#2b4051!important;background:#0d1b27!important;color:#eef3f6!important;
+}
+#tab-home .v42-primary{
+  background:linear-gradient(145deg,#0c1822,#0d1d28)!important;color:var(--app-radio-text)!important;
+  border:1px solid #2b4050!important;box-shadow:none!important;
+}
+#tab-home .v42-band{
+  background:var(--app-radio-amber-soft)!important;color:#ffd27f!important;border:1px solid #815719!important;
+}
+#tab-home .v42-quality{
+  background:#101d28!important;color:#b8c3cb!important;border-color:#304455!important;
+}
+#tab-home .v42-frequency{
+  color:#ffd27f!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;
+  font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(244,185,79,.14);
+}
+#tab-home .v42-primary p{color:var(--app-radio-muted)!important}
+#tab-home .v42-freq-ruler{opacity:.7;background:repeating-linear-gradient(90deg,var(--app-radio-amber) 0 1px,transparent 1px 11px)!important}
+#tab-home .v42-prop-card{
+  border-color:#294052!important;background:#0b1822!important;color:var(--app-radio-text)!important;
+}
+#tab-home .v42-prop-card:hover{background:#10222f!important;border-color:#506576!important}
+#tab-home .v42-prop-icon{background:var(--app-radio-amber-soft)!important;color:#ffd27f!important}
+#tab-home .v42-prop-card small,#tab-home .v42-prop-card span{color:var(--app-radio-muted)!important}
+#tab-home .v42-prop-card i{color:var(--app-radio-amber)!important}
+#tab-home .v42-radio-console{
+  border-color:#223849!important;background:#08151f!important;color:var(--app-radio-text)!important;
+}
+#tab-home .v42-console-id span,#tab-home .v42-console-live small{color:var(--app-radio-muted)!important}
+#tab-home .v42-console-id b,#tab-home .v42-radio-scale .active{color:#ffd27f!important}
+#tab-home .v42-live-dot{background:var(--app-radio-green)!important;box-shadow:0 0 13px rgba(94,217,154,.58)!important}
+#tab-home .v42-radio-needle{background:var(--app-radio-amber)!important;box-shadow:0 0 14px rgba(244,185,79,.72)!important}
+#tab-home .v42-section{
+  background:#0b1822!important;border-color:#263a49!important;color:var(--app-radio-text)!important;
+  box-shadow:none!important;
+}
+#tab-home .v42-section-head p{color:var(--app-radio-muted)!important}
+#tab-home .v42-section-kicker,#tab-home .v42-link{color:var(--app-radio-amber)!important}
+#tab-home .v42-alt{
+  border-color:#293d4c!important;background:#0d1a25!important;color:var(--app-radio-text)!important;
+}
+#tab-home .v42-alt:hover{border-color:#506576!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
+#tab-home .v42-alt-band{background:var(--app-radio-amber-soft)!important;color:#ffd27f!important}
+#tab-home .v42-alt div small{color:var(--app-radio-muted)!important}
+#tab-home .v42-alt em{color:var(--app-radio-green)!important}
+#tab-home .v42-dashboard>div{
+  background:#0a1721!important;border-color:#263b4a!important;color:var(--app-radio-text)!important;
+}
+#tab-home .v42-dashboard span,#tab-home .v42-last small,#tab-home .v42-last span{color:var(--app-radio-muted)!important}
+#tab-home .v42-last{
+  border-color:#293d4c!important;background:#0d1a25!important;color:var(--app-radio-text)!important;
+}
+#tab-home .v42-last i{color:var(--app-radio-amber)!important}
+#tab-home .v42-empty-card{
+  border-color:#355063!important;background:#091720!important;color:#dbe4e9!important;
+}
+#tab-home .v42-empty-card span{color:var(--app-radio-muted)!important}
+#tab-home .v42-week{border-color:#263a49!important;background:#091720!important;color:var(--app-radio-text)!important}
+#tab-home .v42-week-head small,#tab-home .v42-week-head span,#tab-home .v42-week-day span{color:var(--app-radio-muted)!important}
+#tab-home .v42-week-day i{background:#122531!important;border-color:#2a4051!important}
+#tab-home .v42-week-day em{background:linear-gradient(180deg,#ffd27f,#b67720)!important}
+
+/* Ortak saha göstergesi — yalnız ilk dalgadaki klasik sekmeler. */
+#tab-log>.app-page-density-rail,
+#tab-guide>.app-page-density-rail{
+  --density-accent:var(--app-radio-amber)!important;
+  border-color:#223849!important;
+  background:radial-gradient(circle at 88% 0,rgba(49,91,119,.18),transparent 34%),linear-gradient(145deg,#08151f,#0a1822)!important;
+  box-shadow:0 16px 46px rgba(0,0,0,.2)!important;
+  color:var(--app-radio-text)!important;
+}
+#tab-log>.app-page-density-rail:before,#tab-guide>.app-page-density-rail:before{opacity:.25!important}
+#tab-log>.app-page-density-rail:after,#tab-guide>.app-page-density-rail:after{opacity:.8!important}
+#tab-log .app-density-ident,#tab-guide .app-density-ident{
+  background:linear-gradient(145deg,#0a1620,#0d202c)!important;border:1px solid #294052!important;
+}
+#tab-log .app-density-ident small,#tab-guide .app-density-ident small{color:#ffd27f!important}
+#tab-log .app-density-ident span,#tab-guide .app-density-ident span{color:var(--app-radio-muted)!important}
+#tab-log .app-density-led i,#tab-guide .app-density-led i{background:#344754!important}
+#tab-log .app-density-led i.on,#tab-guide .app-density-led i.on{background:var(--app-radio-amber)!important;box-shadow:0 0 10px rgba(244,185,79,.55)!important}
+#tab-log .app-density-metric,#tab-guide .app-density-metric{
+  border-color:#263b4a!important;background:#0a1721!important;
+}
+#tab-log .app-density-metric small,#tab-log .app-density-metric span,
+#tab-guide .app-density-metric small,#tab-guide .app-density-metric span{color:var(--app-radio-muted)!important}
+#tab-log .app-density-metric b,#tab-guide .app-density-metric b{color:var(--app-radio-text)!important;font-variant-numeric:tabular-nums}
+#tab-log .app-density-mix>span,#tab-log .app-density-mix em,
+#tab-guide .app-density-mix>span,#tab-guide .app-density-mix em{color:var(--app-radio-muted)!important}
+
+/* Günlük — saha defteri yerine koyu alıcı kayıt konsolu. */
+#tab-log{--log-line:#2b4050;--log-soft:#0a1721;--log-muted:var(--app-radio-muted);--log-accent:var(--app-radio-amber);--log-accent-soft:var(--app-radio-amber-soft);--log-danger:var(--app-radio-danger)}
+#tab-log .form-card,#tab-log .records-card{
+  background:linear-gradient(180deg,#0a1721,#0b1822)!important;border-color:#263a49!important;color:var(--app-radio-text)!important;
+}
+#tab-log .form-card:before,#tab-log .records-card:before{background:linear-gradient(180deg,var(--app-radio-amber),#8b5c18 62%,transparent)!important}
+#tab-log .section-head{border-color:#223849!important}
+#tab-log .section-head h2,#tab-log .v38-logbar h2{color:var(--app-radio-text)!important}
+#tab-log .hint,#tab-log .v38-logbar p{color:var(--app-radio-muted)!important}
+#tab-log .stat{
+  background:#0b1822!important;border-color:#293d4c!important;color:var(--app-radio-text)!important;
+}
+#tab-log .stat b{color:#ffd27f!important}
+#tab-log .stat small{color:var(--app-radio-muted)!important}
+#tab-log .app-log-filter-count{background:var(--app-radio-amber)!important;color:#111820!important}
+#tab-log .records-card .filters{
+  background:#08151f!important;border-color:#2a4051!important;
+}
+#tab-log input,#tab-log select,#tab-log textarea{
+  background:#0d1a25!important;border-color:#2a4051!important;color:#eef3f6!important;
+  box-shadow:none!important;
+}
+#tab-log input::placeholder,#tab-log textarea::placeholder{color:#6f818f!important}
+#tab-log input:focus,#tab-log select:focus,#tab-log textarea:focus{border-color:#9d6a20!important;box-shadow:0 0 0 3px rgba(244,185,79,.12)!important}
+#tab-log label{color:#cbd4db!important}
+#tab-log .inline-input>span{background:#101f2b!important;color:#cbd4db!important;border-color:#2a4051!important}
+#tab-log .inline-input:focus-within{box-shadow:0 0 0 4px rgba(244,185,79,.11)!important}
+#tab-log .inline-input:focus-within input,#tab-log .inline-input:focus-within>span{border-color:#9d6a20!important}
+#tab-log .suggestion-strip{
+  background:#101d28!important;border-color:#2b4051!important;color:#bec9d0!important;
+}
+#tab-log .suggestion-strip:before{background:var(--app-radio-amber)!important}
+#tab-log .record-card{
+  background:#0d1a25!important;border-color:#293d4c!important;color:var(--app-radio-text)!important;
+}
+#tab-log .record-card:hover{border-color:#506576!important}
+#tab-log .record-card.v38-expanded{
+  background:linear-gradient(180deg,#0d1a25,#0c1d28)!important;border-color:#8b5d1d!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.2)!important;
+}
+#tab-log .record-title{color:var(--app-radio-text)!important}
+#tab-log .record-meta{color:var(--app-radio-muted)!important}
+#tab-log .record-meta span+span:before{color:#4a5d6b!important}
+#tab-log .badge.muted{background:#17242e!important;color:#aab8c2!important;border-color:#425664!important}
+#tab-log .app-log-audio-badge{background:#10283a!important;color:#9bc9ff!important}
+#tab-log .record-body{background:#091720!important;color:#d4dde2!important}
+#tab-log .record-card>details{background:#091720!important;border-color:#263b4a!important}
+#tab-log .record-card>details summary{color:#cbd4db!important}
+#tab-log .record-card>details summary:after,#tab-log .record-top:after{color:var(--app-radio-amber)!important}
+#tab-log .app-log-transcript{color:#d2dbe1!important}
+#tab-log .app-log-notes{background:#111f29!important;border-left-color:var(--app-radio-amber)!important;color:#cbd4db!important}
+#tab-log .record-actions .danger{background:#2a151d!important;border-color:#7f2a2a!important;color:#ffc2bb!important}
+#tab-log .app-log-more,#tab-log .app-log-empty{
+  background:#091720!important;border-color:#355063!important;color:#dce5ea!important;
+}
+#tab-log .app-log-empty>span{background:var(--app-radio-amber-soft)!important;color:#ffd27f!important}
+#tab-log .app-log-empty p{color:var(--app-radio-muted)!important}
+#tab-log .app-log-advanced{background:#091720!important;border-color:#334754!important}
+#tab-log .app-log-advanced>summary{color:#dbe4e9!important}
+#tab-log .app-log-advanced>summary:after{color:var(--app-radio-amber)!important}
+#tab-log .app-log-advanced-grid{border-color:#263b4a!important}
+#tab-log .qsl-fieldset{border-color:#334754!important;background:#091720!important}
+#tab-log .qsl-fieldset legend{color:#ffd27f!important}
+
+/* Rehber — yayın satırlarını aynı cihaz ekranına taşı. MW özel kartları kendi güçlü katmanını korur. */
+#tab-guide>.card{
+  background:linear-gradient(180deg,#08151f,#091821)!important;border-color:#203646!important;color:#eef3f6!important;
+  box-shadow:0 16px 50px rgba(0,0,0,.2)!important;
+}
+#tab-guide .section-head{border-bottom:1px solid #203443;padding-bottom:12px}
+#tab-guide .section-head h2{color:var(--app-radio-text)!important;letter-spacing:-.03em}
+#tab-guide .hint{color:var(--app-radio-muted)!important}
+#tab-guide .guide-filters{
+  padding:10px;border:1px solid #263b4a;border-radius:16px;background:#0a1721;
+}
+#tab-guide .guide-filters input,#tab-guide .guide-filters select,
+#tab-guide .app-guide-identify-grid input,#tab-guide .app-guide-identify-grid select,#tab-guide #appGuideSource{
+  background:#0d1a25!important;border-color:#2a4051!important;color:#eaf0f3!important;
+}
+#tab-guide .guide-filters input::placeholder{color:#6f818f!important}
+#tab-guide .guide-filters input:focus,#tab-guide .guide-filters select:focus{
+  border-color:#9d6a20!important;box-shadow:0 0 0 3px rgba(244,185,79,.12)!important;
+}
+#tab-guide .app-guide-identify,#tab-guide .app-guide-hit,#tab-guide .guide-item{
+  background:#0c1923!important;border-color:#294052!important;color:#eef3f6!important;
+}
+#tab-guide .app-guide-identify{background-image:linear-gradient(90deg,rgba(244,185,79,.025) 1px,transparent 1px),linear-gradient(rgba(244,185,79,.018) 1px,transparent 1px)!important}
+#tab-guide .guide-item:before{background:linear-gradient(var(--app-radio-amber),#8b5d1d)!important}
+#tab-guide .guide-item:after{background:repeating-linear-gradient(90deg,var(--app-radio-amber) 0 1px,transparent 1px 8px)!important}
+#tab-guide .guide-item:hover,#tab-guide .app-guide-hit:hover{border-color:#506576!important}
+#tab-guide .guide-item strong,#tab-guide .app-guide-hit b{color:#f3f5f3!important}
+#tab-guide .guide-item .freq,#tab-guide .app-guide-hit .freq,
+#tab-guide [data-guide-frequency]{color:#ffd27f!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important}
+#tab-guide .app-guide-hit small,#tab-guide .app-guide-why,#tab-guide .app-guide-status{color:var(--app-radio-muted)!important}
+#tab-guide .app-guide-score{background:var(--app-radio-amber-soft)!important;color:#ffd27f!important;border:1px solid #74511f!important}
+#tab-guide .app-guide-score.active{background:var(--app-radio-green-soft)!important;color:#78dfa8!important;border-color:#265c46!important}
+#tab-guide .app-guide-active-toggle{color:#d5dde2!important}
+#tab-guide .app-guide-active-toggle input{accent-color:var(--app-radio-amber)}
+#tab-guide .radio-empty{background:#091720!important;border-color:#355063!important;color:var(--app-radio-muted)!important}
+
+/* İlk dalga bilinçli olarak Harita/QSL gibi özel yüzeyleri kapsamıyor. */
+@media(max-width:760px){
+  #tab-home .v42-home-hero,#tab-home .v42-section,#tab-log .form-card,#tab-log .records-card,#tab-guide>.card{border-radius:20px!important}
+  #tab-home .v42-primary{border-radius:18px!important}
+  #tab-log>.app-page-density-rail,#tab-guide>.app-page-density-rail{border-radius:18px!important}
+  #tab-log .record-card{padding:12px!important}
+  #tab-guide .guide-filters{padding:8px}
+}
+@media(max-width:480px){
+  #tab-home .v42-home-hero{padding:16px!important}
+  #tab-home .v42-frequency{font-size:34px!important}
+  #tab-home .v42-section{padding:14px!important}
+  #tab-log .v38-logactions{flex-wrap:wrap;justify-content:flex-end}
+  #tab-log .records-card .filters{grid-template-columns:1fr!important}
+  #tab-guide .guide-filters{grid-template-columns:1fr!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #tab-home *,#tab-log *,#tab-guide *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
