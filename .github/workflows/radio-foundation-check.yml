@@ -58,7 +58,9 @@ jobs:
       - name: Deep application audit checks
         run: node radyo-gunlugum-v2-no-sdr/tests/deep-audit-static-check.mjs
       - name: Page density regression checks
-        run: node radyo-gunlugum-v2-no-sdr/tests/page-density-static-check.mjs
+        run: |
+          node radyo-gunlugum-v2-no-sdr/tests/page-density-static-check.mjs
+          node radyo-gunlugum-v2-no-sdr/tests/radio-surface-harmony-static-check.mjs
       - name: Broadcast localization regression checks
         run: node radyo-gunlugum-v2-no-sdr/tests/broadcast-localization-static-check.mjs
       - name: Radio glossary regression checks
