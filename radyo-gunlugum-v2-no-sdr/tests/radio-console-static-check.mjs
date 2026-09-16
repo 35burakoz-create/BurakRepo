@@ -25,7 +25,7 @@ for(const asset of ['app-radio-console-service.js','app-radio-console.css','app-
 check('radio console service loads additive polish styles after its base surface',service.includes("loadConsoleCss('app-radio-console.css','radio-console-css')")&&service.includes("loadConsoleCss('app-radio-console-polish.css','radio-console-polish-css')"));
 check('MW service uses authenticated ranking RPC and bounded p_limit',service.includes("R.S.rpc('radio_mw_now_candidates',{p_limit:n})")&&service.includes('Math.min(500'));
 check('MW service scopes cache to active authenticated user',service.includes('cacheUser!==uid')&&service.includes('if(userId()!==uid)return[]'));
-check('MW service keeps unknown geometry nullable rather than inventing data',service.includes('distance_km:Number.isFinite(distance)?distance:null')&&service.includes('bearing_deg:Number.isFinite(bearing)?bearing:null'));
+check('MW service preserves nullable score and geometry instead of Number(null) zero coercion',service.includes('const finiteOrNull=value=>')&&service.includes('score=finiteOrNull(row.score)')&&service.includes('distance=finiteOrNull(row.distance_km)')&&service.includes('bearing=finiteOrNull(row.bearing_deg)'));
 check('MW service exposes structured astronomical and target intelligence from RPC explanation',service.includes("period==='night'?'Gece yayılımı'")&&service.includes("lower(x).startsWith('hedef ')")&&service.includes('solar_elevation'));
 check('MW service exposes active listening origin instead of forcing Bozköy in detail consumers',service.includes('R.listeningOrigin?.()?.name')&&service.includes('function originName()'));
 check('current screen uses real radio console rows and 0–100 RPC scores',now.includes('R.radioConsole?.rows?.()')&&now.includes("e?._radioConsole?'100':'99'"));
@@ -48,10 +48,24 @@ check('station detail derives personal summary from owned runtime logs, not hard
 check('station detail path uses active listening location rather than a hardcoded origin label',detail.includes('function originName()')&&detail.includes('${esc(origin)}')&&!detail.includes('<small class="origin-label">Bozköy</small>'));
 check('station detail surfaces propagation and geometry confidence',detail.includes('<dt>Yayılım</dt>')&&detail.includes('<dt>Konum güveni</dt>')&&detail.includes('solar_elevation'));
 check('station detail leads with four quick radio metrics before deep sections',detail.includes('function quickSummary(row,intel)')&&detail.includes('radio-detail-summary')&&detail.indexOf('signal-path')<detail.indexOf('<h3>Yayın</h3>'));
+check('station detail guards nullable distance score bearing and power before display',detail.includes('function finiteNumber(value)')&&detail.includes('score=finiteNumber(row.score)')&&detail.includes('distance=finiteNumber(row.distance_km)')&&detail.includes('power=finiteNumber(row.power_kw)'));
 check('mobile detail score stays in document flow instead of overlapping long station names',polishCss.includes('.radio-detail-score{position:static!important')&&polishCss.includes('.radio-detail-hero-main{padding-right:0!important}'));
 check('candidate polish uses compact flex cards and readable status metadata on mobile',polishCss.includes('.radio-candidate-card{position:relative;display:flex')&&polishCss.includes('.radio-candidate-status.on')&&polishCss.includes('@media(max-width:480px)'));
 check('visual system contains amber radio frequency hierarchy and dark console surface',css.includes('--radio-amber:#f4b94f')&&css.includes('.radio-frequency')&&css.includes('.radio-console-screen'));
 check('MW guide styles preserve compact mobile cards',mwCss.includes('.mw-guide-card')&&mwCss.includes('@media(max-width:540px)'));
+
+const serviceLinks=[];
+const serviceR={events:{on(){},emit(){}},features:{register(){}}};
+const serviceDocument={querySelector(){return null},createElement(){return{dataset:{}}},head:{appendChild(node){serviceLinks.push(node)}}};
+const serviceSandbox={window:{R:serviceR},R:serviceR,document:serviceDocument,globalThis:null,Number,String,Array,Object,Map,Set,Math,Date,Error,console};
+serviceSandbox.globalThis=serviceSandbox;
+vm.createContext(serviceSandbox);
+vm.runInContext(service,serviceSandbox,{filename:'app-radio-console-service.js'});
+const nullableRow=serviceR.radioConsole.normalizeRow({frequency:600,score:null,distance_km:null,bearing_deg:null,personal_adjustment:null,station:'Test MW',country:'TUR',transmitter_site_name:'Test Saha'});
+check('runtime MW normalization keeps null score distance and bearing nullable',nullableRow.score===null&&nullableRow.distance_km===null&&nullableRow.bearing_deg===null&&nullableRow.personal_adjustment===0);
+check('runtime MW geometry confidence does not upgrade named null-coordinate site to verified',serviceR.radioConsole.intelligence(nullableRow).geometry.key==='named');
+check('runtime radio console injects both base and polish style links',serviceLinks.some(x=>x.href==='app-radio-console.css')&&serviceLinks.some(x=>x.href==='app-radio-console-polish.css'));
+
 for(const [name,ok,detailText] of checks)console.log(`${ok?'✓':'✗'} ${name}${detailText?` — ${detailText}`:''}`);
 const failed=checks.filter(([,ok])=>!ok);
 console.log(`\n${checks.length-failed.length}/${checks.length} radio-console checks passed.`);
