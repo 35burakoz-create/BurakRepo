@@ -39,7 +39,7 @@ function reasonParts(e){if(e?._radioConsole)return R.radioConsole?.reasons?.(e)|
 function signed(n){const v=finiteNumber(n);return v!==null&&v!==0?`${v>0?'+':''}${v}`:''}
 function signedLocale(n){const v=finiteNumber(n);if(v===null)return'';const text=v.toLocaleString('tr-TR',{maximumFractionDigits:1});return`${v>0?'+':''}${text}`}
 function contributionTone(n){const v=finiteNumber(n);return v===null||v===0?'muted':v>0?'positive':'negative'}
-function chipColor(tone){return tone==='positive'?'var(--radio-green)':tone==='negative'?'var(--radio-danger)':tone==='day'||tone==='favorite'?'var(--radio-amber)':tone==='night'||tone==='distance'?'var(--radio-blue)':'var(--radio-muted)'}
+function chipColor(tone){return tone==='positive'?'var(--app-radio-green)':tone==='negative'?'var(--app-radio-danger)':tone==='day'||tone==='favorite'?'var(--app-radio-amber)':tone==='night'||tone==='distance'?'var(--app-radio-blue)':'var(--app-radio-muted)'}
 function mwReasonChips(e,view=null){const intel=intelligenceFor(e,view),p=intel.propagation||{},solar=finiteNumber(p.solar_elevation),distance=finiteNumber(e?.distance_km),tb=finiteNumber(intel.target?.bonus)??0,pa=finiteNumber(intel.personal?.adjustment)??0,fb=finiteNumber(intel.favorite?.bonus)??0,targetKnown=Boolean(intel.target?.text),favoriteActive=!!intel.favorite?.active;return[
   {label:p.period==='night'?'Gece':p.period==='day'?'Gündüz':'Yayılım',bonus:solar!==null?`${signedLocale(solar)}°`:'•',tone:p.period==='night'?'night':p.period==='day'?'day':'muted'},
   {label:'Mesafe',bonus:distance!==null?`${Math.round(distance).toLocaleString('tr-TR')} km`:e?.transmitter_site_name?'koordinat yok':'belirsiz',tone:distance!==null?'distance':'muted'},
