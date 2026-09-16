@@ -9,7 +9,7 @@ body{padding-bottom:0!important}
 /* Büyük günlüklar ilk yüklemede parça parça çizilir. */
 .v38-log-more{display:flex;justify-content:center;padding:14px 0 4px}
 .v38-log-more .btn{min-width:min(280px,100%)}
-.v38-log-more .btn span{color:var(--ds-muted,#64748b);font-weight:600}
+.v38-log-more .btn span{color:var(--app-muted,#64748b);font-weight:600}
 
 /* Kaydedilmemiş taslak bildirimi gece görünümünde de okunaklıdır. */
 #v39DraftBanner{border:1px solid #c7d2fe!important;background:#eef2ff!important;color:#3730a3!important}

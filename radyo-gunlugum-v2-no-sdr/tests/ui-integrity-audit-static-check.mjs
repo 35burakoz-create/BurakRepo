@@ -86,24 +86,28 @@ for(const token of [
   '--app-shadow-soft:0 14px 36px rgba(15,23,42,.07)',
   '--app-layer-modal:20000',
   '--app-layer-toast:30000',
-  '--app-radio-amber:#f4b94f'
+  '--app-radio-amber:#f4b94f',
+  '--app-legacy-ink:#20251f',
+  '--app-legacy-line:#cbc6b7'
 ])assert(tokens.includes(token),`canonical token missing: ${token}`);
 assert(tokens.includes('--app-font-sans:system-ui'),'font stack must explicitly use an offline-safe system family');
 assert(tokens.includes('body{font-family:var(--app-font-sans)!important}'),'runtime typography must consume the canonical system font token');
-for(const alias of [
-  '--ds-bg:var(--app-bg)',
-  '--ds-primary:var(--app-primary)',
-  '--ux-bg:var(--app-bg)',
-  '--ux-ink:var(--app-text-strong)',
-  '--ux-accent:var(--app-accent)',
-  '--ux-shadow:var(--app-shadow-soft)',
-  '--bg:var(--app-legacy-bg)',
-  '--accent:var(--app-legacy-accent)'
-])assert(tokens.includes(alias),`compatibility alias missing: ${alias}`);
 assert(tokens.includes('html.night,.night-mode{'),'canonical token layer must define one shared dark-mode source');
 assert(tokens.includes('--app-bg:#0b1120'),'dark mode must define the canonical background');
-assert(tokens.includes('--app-text-strong:#f8fafc'),'dark mode must preserve the former UX strong-text value');
-assert(tokens.includes('--ds-bg:var(--app-bg)')&&tokens.includes('--ux-bg:var(--app-bg)'),'remaining compatibility families must resolve through canonical variables');
+assert(tokens.includes('--app-text-strong:#f8fafc'),'dark mode must preserve the established strong-text value');
+
+const runtimeFiles=fs.readdirSync(root).filter(name=>/\.(?:css|js|html)$/i.test(name));
+const retiredDefinition=/(?:^|[;{]\s*)--(?:ds|ux)-[\w-]+\s*:|(?:^|[;{]\s*)--(?:bg|paper|ink|muted|accent|accent2|line|danger|gold|soft|good|shadow)\s*:/m;
+const retiredConsumer=/var\(--(?:ds|ux)-[\w-]+|var\(--(?:bg|paper|ink|muted|accent|accent2|line|danger|gold|soft|good|shadow)\)/;
+const retiredViolations=[];
+for(const name of runtimeFiles){
+  const source=read(name);
+  if(retiredDefinition.test(source))retiredViolations.push(`${name}:defines`);
+  if(retiredConsumer.test(source))retiredViolations.push(`${name}:consumes`);
+}
+assert.equal(retiredViolations.length,0,`retired design-token compatibility aliases remain after phase 2G: ${retiredViolations.join(', ')}`);
+assert(!tokens.includes('--ds-')&&!tokens.includes('--ux-'),'canonical token source must not expose DS or UX compatibility families after phase 2G');
+assert(!/(?:^|\n)\s*--(?:bg|paper|ink|muted|accent|accent2|line|danger|gold|soft|good|shadow)\s*:/m.test(tokens),'canonical token source must not expose short-name compatibility aliases after phase 2G');
 
 assert(memory.includes('BROWSE_PAGE_SIZE=60'),'memory browsing must use bounded progressive pages');
 assert(memory.includes('function resetBrowseVisible()'),'memory pagination must expose an explicit reset path');
@@ -127,6 +131,7 @@ assert(sw.includes("const DESIGN_TOKEN_PHASE2C='20260916-23';"),'service worker 
 assert(sw.includes("const DESIGN_TOKEN_PHASE2D='20260916-24';"),'service worker must carry the phase 2D marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2E='20260916-25';"),'service worker must carry the phase 2E marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2F='20260916-26';"),'service worker must carry the phase 2F marker');
+assert(sw.includes("const DESIGN_TOKEN_PHASE2G='20260916-27';"),'service worker must carry the phase 2G marker');
 assert(sw.includes("'./app-ui-integrity.css'"),'UI integrity CSS must be available to the offline cache');
 assert(sw.includes("'./app-design-tokens.css'"),'canonical design tokens must be available to the offline cache');
 

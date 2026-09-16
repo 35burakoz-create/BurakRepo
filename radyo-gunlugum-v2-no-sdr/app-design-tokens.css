@@ -1,10 +1,10 @@
 /*
  * Radyo Günlüğüm — canonical design-token foundation.
  *
- * Bu dosya mevcut görsel dili yeniden tasarlamaz. Dağınık legacy / ds / ux /
- * radio değişkenlerini tek runtime kaynakta toplar. Eski değişken adları geçiş
- * süresince alias olarak korunur; feature CSS'leri aşamalı olarak --app-* adlarına
- * taşındıkça alias'lar kaldırılabilir.
+ * Bu dosya uygulamanın görsel tokenları için tek runtime kaynaktır. Eski DS, UX,
+ * kısa-ad ve radio alias köprüleri canonical --app-* tüketimine geçildikçe
+ * emekliye ayrılmıştır. --app-legacy-* değerleri ise eski kâğıt temasının görsel
+ * karakterini koruyan, doğrudan tüketilen canonical palet değerleridir.
  */
 :root{
   /* Typography */
@@ -19,6 +19,7 @@
   --app-text-strong:#0f172a;
   --app-muted:#64748b;
   --app-line:#e5e7eb;
+  --app-line-soft:#e2e8f0;
 
   /* Semantic actions */
   --app-primary:#4f46e5;
@@ -79,7 +80,7 @@
   --app-radio-radius:22px;
   --app-radio-shadow:0 20px 70px rgba(0,0,0,.28);
 
-  /* Legacy paper theme values are centralized for compatibility only. */
+  /* Legacy paper-theme values retained as canonical direct-consumption tokens. */
   --app-legacy-bg:#ece9df;
   --app-legacy-paper:#fffdf8;
   --app-legacy-ink:#20251f;
@@ -92,75 +93,9 @@
   --app-legacy-soft:#f4f1e8;
   --app-legacy-good:#dce8d7;
   --app-legacy-shadow:0 8px 28px rgba(35,40,31,.08);
-
-  /* DS compatibility aliases */
-  --ds-bg:var(--app-bg);
-  --ds-surface:var(--app-surface);
-  --ds-surface-2:var(--app-surface-soft);
-  --ds-surface-soft:var(--app-surface-soft);
-  --ds-text:var(--app-text);
-  --ds-muted:var(--app-muted);
-  --ds-line:var(--app-line);
-  --ds-primary:var(--app-primary);
-  --ds-primary-2:var(--app-primary-strong);
-  --ds-primary-dark:var(--app-primary-dark);
-  --ds-primary-soft:var(--app-primary-soft);
-  --ds-emerald:var(--app-success);
-  --ds-success:var(--app-success);
-  --ds-warning:var(--app-warning);
-  --ds-amber:var(--app-warning);
-  --ds-danger:var(--app-danger);
-  --ds-red:var(--app-danger);
-  --ds-radius-control:var(--app-radius-sm);
-  --ds-radius-card:var(--app-radius-md);
-  --ds-radius-panel:var(--app-radius-lg);
-  --ds-r-sm:var(--app-radius-sm);
-  --ds-r-md:var(--app-radius-md);
-  --ds-r-lg:var(--app-radius-lg);
-  --ds-r-xl:var(--app-radius-xl);
-  --ds-shadow-card:var(--app-shadow-card);
-  --ds-shadow:var(--app-shadow-card);
-  --ds-shadow-lg:var(--app-shadow-panel);
-  --ds-focus:var(--app-focus);
-  --ds-space-1:var(--app-space-1);
-  --ds-space-2:var(--app-space-2);
-  --ds-space-3:var(--app-space-3);
-  --ds-space-4:var(--app-space-4);
-  --ds-space-5:var(--app-space-5);
-  --ds-space-6:var(--app-space-6);
-  --ds-space-8:var(--app-space-8);
-
-  /* UX compatibility aliases */
-  --ux-bg:var(--app-bg);
-  --ux-surface:var(--app-surface);
-  --ux-ink:var(--app-text-strong);
-  --ux-muted:var(--app-muted);
-  --ux-line:var(--app-line);
-  --ux-accent:var(--app-accent);
-  --ux-accent2:var(--app-accent-2);
-  --ux-soft:var(--app-primary-soft);
-  --ux-green:var(--app-success);
-  --ux-amber:var(--app-warning);
-  --ux-red:var(--app-danger);
-  --ux-shadow:var(--app-shadow-soft);
-
-  /* Original styles.css compatibility aliases. */
-  --bg:var(--app-legacy-bg);
-  --paper:var(--app-legacy-paper);
-  --ink:var(--app-legacy-ink);
-  --muted:var(--app-legacy-muted);
-  --accent:var(--app-legacy-accent);
-  --accent2:var(--app-legacy-accent-2);
-  --line:var(--app-legacy-line);
-  --danger:var(--app-legacy-danger);
-  --gold:var(--app-legacy-gold);
-  --soft:var(--app-legacy-soft);
-  --good:var(--app-legacy-good);
-  --shadow:var(--app-legacy-shadow);
 }
 
-/* Canonical dark-mode values. Aliases are repeated on the themed element so
- * legacy consumers inherit the same theme rather than resolving stale roots. */
+/* Canonical dark-mode values. */
 html.night,.night-mode{
   --app-bg:#0b1120;
   --app-surface:#111827;
@@ -169,6 +104,7 @@ html.night,.night-mode{
   --app-text-strong:#f8fafc;
   --app-muted:#94a3b8;
   --app-line:#334155;
+  --app-line-soft:#334155;
   --app-primary:#6366f1;
   --app-primary-strong:#818cf8;
   --app-primary-dark:#a5b4fc;
@@ -180,37 +116,6 @@ html.night,.night-mode{
   --app-danger:#f87171;
   --app-shadow-card:0 7px 24px rgba(0,0,0,.16);
   --app-shadow-panel:0 28px 80px rgba(0,0,0,.34);
-
-  --ds-bg:var(--app-bg);
-  --ds-surface:var(--app-surface);
-  --ds-surface-2:var(--app-surface-soft);
-  --ds-surface-soft:var(--app-surface-soft);
-  --ds-text:var(--app-text);
-  --ds-muted:var(--app-muted);
-  --ds-line:var(--app-line);
-  --ds-primary:var(--app-primary);
-  --ds-primary-2:var(--app-primary-strong);
-  --ds-primary-dark:var(--app-primary-dark);
-  --ds-primary-soft:var(--app-primary-soft);
-  --ds-success:var(--app-success);
-  --ds-emerald:var(--app-success);
-  --ds-warning:var(--app-warning);
-  --ds-amber:var(--app-warning);
-  --ds-danger:var(--app-danger);
-  --ds-red:var(--app-danger);
-  --ds-shadow-card:var(--app-shadow-card);
-  --ds-shadow:var(--app-shadow-card);
-  --ds-shadow-lg:var(--app-shadow-panel);
-
-  --ux-bg:var(--app-bg);
-  --ux-surface:var(--app-surface);
-  --ux-ink:var(--app-text-strong);
-  --ux-muted:var(--app-muted);
-  --ux-line:var(--app-line);
-  --ux-soft:var(--app-primary-soft);
-  --ux-green:var(--app-success);
-  --ux-amber:var(--app-warning);
-  --ux-red:var(--app-danger);
 }
 
 /* Inter is not bundled; make the intentional offline-safe system stack explicit. */
