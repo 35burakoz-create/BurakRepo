@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const root=process.cwd();
+const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const tool=path.join(root,'tools/eibi-a26-normalize.mjs');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'eibi-normalize-'));
 const input=path.join(tmp,'sked-a26.csv');
@@ -60,7 +60,7 @@ fs.writeFileSync(badInput,Buffer.from(win1252(`${header}\r\n${row}\r\n${malforme
 const bad=spawnSync(process.execPath,[tool,'--input',badInput,'--readme',readme,'--out',badOut,'--qa',badQa],{encoding:'utf8'});
 assert.equal(bad.status,1);
 assert.match(bad.stderr,/quarantined 1 issue/);
-assert.equal(fs.readFileSync(badOut,'utf8'),''); // valid rows are withheld too: no partial promotion
+assert.equal(fs.readFileSync(badOut,'utf8'),'');
 const qaRow=JSON.parse(fs.readFileSync(badQa,'utf8').trim());
 assert.equal(qaRow.reason,'field_count');
 console.log('✓ EiBi normalizer fails closed and quarantines malformed rows');
