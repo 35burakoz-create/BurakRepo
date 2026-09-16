@@ -20,6 +20,7 @@ const modal=read('app-modal-accessibility.js');
 const guide=read('app-mw-guide-ui.js');
 const polish=read('app-radio-console-polish.css');
 const mwCss=read('app-mw-guide.css');
+const favoriteCss=read('app-favorites-ui.css');
 const sw=read('sw.js');
 
 check('bottom dock remains the base fixed navigation layer',/\.v38-dock\{[^}]*z-index:15000/.test(ux));
@@ -56,9 +57,12 @@ check('MW guide progressively renders long result sets in bounded pages',guide.i
 check('MW guide resets pagination when search frequency or class filters change',guide.includes('visibleLimit=PAGE_SIZE')&&guide.includes('{resetLimit:true}'));
 check('MW guide exposes list progress and a return-to-filters action',guide.includes('role="status" aria-live="polite"')&&guide.includes('data-mw-top')&&guide.includes('Filtrelere dön ↑'));
 check('MW class filters support arrow Home and End keyboard navigation',guide.includes("key==='ArrowRight'")&&guide.includes("key==='ArrowLeft'")&&guide.includes("key==='Home'")&&guide.includes("key==='End'"));
-check('MW guide filter group is labeled for assistive technology',guide.includes("bar.setAttribute('role','group')")&&guide.includes("bar.setAttribute('aria-label','MW alım sınıfı filtresi')"));
+check('MW guide filter group labels both reception class and favorites for assistive technology',guide.includes("bar.setAttribute('role','group')")&&guide.includes("bar.setAttribute('aria-label','MW alım sınıfı ve favori filtresi')"));
+check('MW favorites control exposes toggle semantics and participates in keyboard filter navigation',guide.includes('data-mw-favorites')&&guide.includes('data-mw-filter-control')&&guide.includes("aria-pressed=\"${favoriteOnly?'true':'false'}\""));
+check('MW favorite state has visible focus and active treatment',favoriteCss.includes('.mw-guide-favorite-toggle.active')&&favoriteCss.includes('.mw-guide-actions button:focus-visible'));
 check('MW guide pagination controls remain touch-friendly on small screens',mwCss.includes('.mw-guide-pagination')&&mwCss.includes('min-height:40px')&&mwCss.includes('data-mw-more'));
 check('service worker carries station-detail accessibility release marker',sw.includes("STATION_DETAIL_ACCESSIBILITY='20260916-6'"));
+check('service worker carries favorites discovery release marker',sw.includes("FAVORITES_DISCOVERY='20260916-7'"));
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
