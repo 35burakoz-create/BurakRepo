@@ -16,6 +16,7 @@
   --app-surface:#fff;
   --app-surface-soft:#f8fafc;
   --app-text:#111827;
+  --app-text-strong:#0f172a;
   --app-muted:#64748b;
   --app-line:#e5e7eb;
 
@@ -47,6 +48,7 @@
   --app-touch-min:44px;
 
   /* Elevation + focus */
+  --app-shadow-soft:0 14px 36px rgba(15,23,42,.07);
   --app-shadow-card:0 14px 40px rgba(15,23,42,.08);
   --app-shadow-panel:0 28px 80px rgba(15,23,42,.18);
   --app-focus:0 0 0 4px rgba(79,70,229,.11);
@@ -131,7 +133,7 @@
   /* UX compatibility aliases */
   --ux-bg:var(--app-bg);
   --ux-surface:var(--app-surface);
-  --ux-ink:#0f172a;
+  --ux-ink:var(--app-text-strong);
   --ux-muted:var(--app-muted);
   --ux-line:var(--app-line);
   --ux-accent:var(--app-accent);
@@ -140,7 +142,7 @@
   --ux-green:var(--app-success);
   --ux-amber:var(--app-warning);
   --ux-red:var(--app-danger);
-  --ux-shadow:0 14px 36px rgba(15,23,42,.07);
+  --ux-shadow:var(--app-shadow-soft);
 
   /* Radio compatibility aliases */
   --radio-bg:var(--app-radio-bg);
@@ -180,6 +182,7 @@ html.night,.night-mode{
   --app-surface:#111827;
   --app-surface-soft:#0f172a;
   --app-text:#f8fafc;
+  --app-text-strong:#f8fafc;
   --app-muted:#94a3b8;
   --app-line:#334155;
   --app-primary:#6366f1;
@@ -217,7 +220,7 @@ html.night,.night-mode{
 
   --ux-bg:var(--app-bg);
   --ux-surface:var(--app-surface);
-  --ux-ink:var(--app-text);
+  --ux-ink:var(--app-text-strong);
   --ux-muted:var(--app-muted);
   --ux-line:var(--app-line);
   --ux-soft:var(--app-primary-soft);
