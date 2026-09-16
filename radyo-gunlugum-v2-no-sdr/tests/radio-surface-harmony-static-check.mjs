@@ -6,6 +6,7 @@ const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const read=name=>fs.readFileSync(path.join(root,name),'utf8');
 const css=read('app-radio-surface-theme.css');
 const extended=read('app-radio-surface-extended.css');
+const overlays=read('app-radio-surface-overlays.css');
 const density=read('app-page-density.js');
 const sw=read('sw.js');
 const checks=[];
@@ -15,10 +16,11 @@ let syntax=true,syntaxDetail='';
 try{new vm.Script(density,{filename:'app-page-density.js'})}catch(error){syntax=false;syntaxDetail=error.message}
 check('page-density loader syntax remains valid',syntax,syntaxDetail);
 check('radio surface layers load after density and night layers in deterministic order',
-  density.includes("['app-page-density.css','pageDensityCss'],['app-page-density-night.css','pageDensityNightCss'],['app-radio-surface-theme.css','radioSurfaceThemeCss'],['app-radio-surface-extended.css','radioSurfaceExtendedCss']"));
-check('service worker caches both radio surface layers',sw.includes("'./app-radio-surface-theme.css'")&&sw.includes("'./app-radio-surface-extended.css'"));
+  density.includes("['app-page-density.css','pageDensityCss'],['app-page-density-night.css','pageDensityNightCss'],['app-radio-surface-theme.css','radioSurfaceThemeCss'],['app-radio-surface-extended.css','radioSurfaceExtendedCss'],['app-radio-surface-overlays.css','radioSurfaceOverlaysCss']"));
+check('service worker caches all radio surface layers',sw.includes("'./app-radio-surface-theme.css'")&&sw.includes("'./app-radio-surface-extended.css'")&&sw.includes("'./app-radio-surface-overlays.css'"));
 check('service worker carries first-wave harmony marker',sw.includes("RADIO_SURFACE_HARMONY='20260916-14'"));
 check('service worker carries second-wave release marker',sw.includes("RADIO_SURFACE_WAVE2='20260916-15'"));
+check('service worker carries overlay release marker',sw.includes("RADIO_SURFACE_OVERLAYS='20260916-16'"));
 
 for(const token of ['--app-radio-bg','--app-radio-panel','--app-radio-line','--app-radio-text','--app-radio-muted','--app-radio-amber','--app-radio-green']){
   check(`shared theme defines ${token}`,css.includes(token));
@@ -67,7 +69,24 @@ check('second-wave theme keeps primary touch targets at least 44px',
 check('second-wave theme has mobile adaptations',extended.includes('@media(max-width:760px)')&&extended.includes('@media(max-width:480px)'));
 check('second-wave theme respects reduced-motion preference',extended.includes('@media(prefers-reduced-motion:reduce)'));
 
-// The CSS injector should append all four layers in deterministic order.
+check('overlay wave themes menu as dark amber console drawer',
+  overlays.includes('#v38Sheet.v38-menu-sheet')&&overlays.includes('#v38Sheet .v42-menu-search')&&overlays.includes('#v38Sheet .v38-menu-row.is-current'));
+check('overlay wave keeps enabled reminder state semantically green',
+  overlays.includes('#v38Sheet .v38-toggle.on')&&overlays.includes('var(--app-radio-green-soft'));
+check('overlay wave themes quick log controls and signal selector',
+  overlays.includes('#v38Sheet.app-quick-sheet')&&overlays.includes('.app-quick-frequency')&&overlays.includes('.app-quick-signal button.active'));
+check('overlay wave themes global search with amber search hierarchy',
+  overlays.includes('.v44-sheet')&&overlays.includes('.v44-field:focus-within')&&overlays.includes('.v44-result-type'));
+check('overlay wave keeps station detail amber frequency and green live state',
+  overlays.includes('.radio-detail-sheet')&&overlays.includes('.radio-detail-hero .radio-frequency')&&overlays.includes('.radio-live.on'));
+check('overlay wave themes listening helper modal without rewriting its actions',
+  overlays.includes('.app-listen-modal')&&overlays.includes('.app-session-target')&&overlays.includes('.app-listen-form input'));
+check('overlay wave applies shared focus visibility',
+  overlays.includes('#v38Sheet :is(button,input,select,textarea,summary):focus-visible')&&overlays.includes('.v44-sheet :is(button,input,select,textarea):focus-visible')&&overlays.includes('.radio-detail-sheet :is(button,a,summary):focus-visible'));
+check('overlay wave has mobile adaptation and reduced-motion coverage',
+  overlays.includes('@media(max-width:760px)')&&overlays.includes('@media(prefers-reduced-motion:reduce)'));
+
+// The CSS injector should append all five layers in deterministic order.
 const links=[];
 const R={router:{current:()=> 'home'},events:{on(){}},features:{register(){}},me:{id:'u1'},logs:[]};
 const document={
@@ -81,7 +100,7 @@ sandbox.globalThis=sandbox;
 vm.createContext(sandbox);
 vm.runInContext(density,sandbox,{filename:'app-page-density.js'});
 check('runtime CSS injection preserves intended layer order',
-  links.map(x=>x.href).join('|')==='app-page-density.css|app-page-density-night.css|app-radio-surface-theme.css|app-radio-surface-extended.css',links.map(x=>x.href).join('|'));
+  links.map(x=>x.href).join('|')==='app-page-density.css|app-page-density-night.css|app-radio-surface-theme.css|app-radio-surface-extended.css|app-radio-surface-overlays.css',links.map(x=>x.href).join('|'));
 
 for(const [name,ok,detail] of checks)console.log(`${ok?'✓':'✗'} ${name}${detail?` — ${detail}`:''}`);
 const failed=checks.filter(([,ok])=>!ok);
