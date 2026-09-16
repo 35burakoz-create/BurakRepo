@@ -2,7 +2,7 @@
 const R=window.R;if(!R||R.__pageDensity385)return;R.__pageDensity385=true;
 const $=s=>document.querySelector(s),esc=v=>R.esc?R.esc(v):String(v??''),C=globalThis.RADIO_APP_CONFIG||{};
 const SUPPORTED=new Set(['log','audio','analysis','map','calendar','qsl','guide']);let timer=null;
-function loadCss(){for(const [href,key] of [['app-page-density.css','pageDensityCss'],['app-page-density-night.css','pageDensityNightCss'],['app-radio-surface-theme.css','radioSurfaceThemeCss']]){if(document.querySelector(`link[data-${key}]`))continue;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset[key]='1';document.head.appendChild(l)}}loadCss();
+function loadCss(){for(const [href,key] of [['app-page-density.css','pageDensityCss'],['app-page-density-night.css','pageDensityNightCss'],['app-radio-surface-theme.css','radioSurfaceThemeCss'],['app-radio-surface-extended.css','radioSurfaceExtendedCss']]){if(document.querySelector(`link[data-${key}]`))continue;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset[key]='1';document.head.appendChild(l)}}loadCss();
 function validIsoDate(value){const raw=String(value||'');if(!/^\d{4}-\d{2}-\d{2}$/.test(raw))return false;const d=new Date(`${raw}T12:00:00Z`);return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===raw}
 function validMonthKey(value){const raw=String(value||'');return /^\d{4}-(0[1-9]|1[0-2])$/.test(raw)}
 function validClock(value){return /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?$/.test(String(value||''))}
