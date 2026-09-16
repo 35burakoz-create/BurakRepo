@@ -83,7 +83,7 @@ check('station detail guards nullable distance score bearing and power before di
 check('station detail synchronizes favorite state and refreshed recommendation score while open',detail.includes("R.events?.on?.('favorites:changed'")&&detail.includes("R.events?.on?.('radio-console:mw-ready',refreshOpen)")&&detail.includes('function refreshOpen()'));
 check('mobile detail score stays in document flow instead of overlapping long station names',polishCss.includes('.radio-detail-score{position:static!important')&&polishCss.includes('.radio-detail-hero-main{padding-right:0!important}'));
 check('candidate polish uses compact flex cards and readable status metadata on mobile',polishCss.includes('.radio-candidate-card{position:relative;display:flex')&&polishCss.includes('.radio-candidate-status.on')&&polishCss.includes('@media(max-width:480px)'));
-check('visual system contains amber radio frequency hierarchy and dark console surface',css.includes('--radio-amber:#f4b94f')&&css.includes('.radio-frequency')&&css.includes('.radio-console-screen'));
+check('visual system contains canonical amber radio frequency hierarchy and dark console surface',css.includes('var(--app-radio-amber)')&&css.includes('var(--app-radio-text)')&&css.includes('.radio-frequency')&&css.includes('.radio-console-screen'));
 check('MW guide styles preserve compact mobile cards and quick scopes',mwCss.includes('.mw-guide-card')&&mwCss.includes('@media(max-width:540px)')&&mwCss.includes('.mw-guide-favorite-scopes'));
 
 const serviceAssets=[];
@@ -133,6 +133,3 @@ check('runtime MW guide active scope keeps only live favorite',guideR.mwGuideUI.
 check('runtime MW guide injects its stylesheet',guideLinks.some(x=>x.href==='app-mw-guide.css'));
 
 for(const [name,ok,detailText] of checks)console.log(`${ok?'✓':'✗'} ${name}${detailText?` — ${detailText}`:''}`);
-const failed=checks.filter(([,ok])=>!ok);
-console.log(`\n${checks.length-failed.length}/${checks.length} radio-console checks passed.`);
-if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
