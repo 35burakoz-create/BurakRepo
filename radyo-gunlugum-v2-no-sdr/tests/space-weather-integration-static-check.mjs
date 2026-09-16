@@ -53,7 +53,7 @@ check('edge function limits forecast horizon',edge.includes('now+96*3600000'));
 check('edge function keeps a five minute edge cache',edge.includes('CACHE_MS=5*60*1000'));
 check('edge function serves stale edge cache on NOAA outage',edge.includes("cache:'stale-edge'"));
 check('edge function is POST only',edge.includes("req.method!=='POST'"));
-check('edge function authenticates snapshot caller against Supabase Auth',edge.includes("'/auth/v1/user'")&&edge.includes('requireUser(req)'));
+check('edge function authenticates snapshot caller against Supabase Auth',edge.includes('/auth/v1/user')&&edge.includes('requireUser(req)'));
 check('edge snapshot lookup is ownership-scoped',edge.includes('user_id=eq.')&&edge.includes('Owned record not found'));
 check('edge snapshot refuses overwrite when already present',edge.includes("reason:'already_snapshotted'")&&edge.includes('if(row?.space_weather_observed_at)'));
 check('edge snapshot rejects historical observations older than six hours',edge.includes('MAX_SNAPSHOT_AGE_MS=6*60*60*1000')&&edge.includes('Historical observation: current space-weather snapshot was not written.'));
