@@ -28,7 +28,7 @@ check('favorite changes invalidate and reload MW recommendation scoring',service
 check('current recommendation hero exposes optional favorite score chip',now.includes("label:'Favorim'")&&now.includes("tone:'favorite'")&&now.includes('intel.favorite?.text'));
 check('MW guide exposes favorite score contribution without replacing the favorite toggle',guide.includes('intel.favorite?.bonus')&&guide.includes('♥ favori')&&guide.includes("klass:'favorite'")&&guide.includes('data-mw-favorite'));
 check('MW guide visually distinguishes favorite score contribution',guideCss.includes('.mw-guide-tags span.favorite'));
-check('station history ignores null signal values rather than coercing them to zero',detail.includes('logs.map(x=>finiteNumber(x.signal_strength)).filter(x=>x!==null)')&&!detail.includes('logs.map(x=>Number(x.signal_strength))'));
+check('station history ignores null and out-of-scale signal values instead of coercing them to zero',detail.includes('signal!==null&&signal>=1&&signal<=5')&&!detail.includes('logs.map(x=>Number(x.signal_strength))'));
 check('station history rejects missing or invalid clock values instead of treating them as midnight',detail.includes("time.match(/^([01]?\\d|2[0-3]):([0-5]\\d)/)")&&!detail.includes("Number(String(x.time||'').slice(0,2))"));
 check('station detail keeps room for favorite explanation in the reason list',detail.includes('.slice(0,7)'));
 check('service worker carries personal favorite scoring release marker',sw.includes("PERSONAL_FAVORITE_SCORING='20260916-8'"));
