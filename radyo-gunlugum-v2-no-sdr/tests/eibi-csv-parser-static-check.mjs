@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   decodeEiBiBytes,
   parseEiBiCsvLine,
@@ -7,6 +9,8 @@ import {
   extractLanguageCodes
 } from '../tools/eibi-csv-parser.mjs';
 
+const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
+const recoverySql=fs.readFileSync(path.join(root,'sql/20260916_recover_remaining_eibi_a26_language_codes.sql'),'utf8');
 const checks=[];
 const check=(name,fn)=>{
   try{fn();checks.push([name,true]);}
@@ -106,6 +110,36 @@ check('README language dictionary extractor recognizes official code lines',()=>
 
 check('legacy recovery refuses arbitrary malformed Unicode without hidden delimiter evidence',()=>{
   assert.equal(recoverLegacyMisdecodedLine('5000;0000-0100;;VTN;Radio Đáp Lời Sông Núi;VN;SEA;x;1;'),null);
+});
+
+check('A26 recovery migration requires exactly 52 deterministic rows',()=>{
+  assert.match(recoverySql,/v_expected integer := 52/);
+  assert.match(recoverySql,/expected %, found %/);
+  assert.match(recoverySql,/expected %, updated %/);
+});
+
+check('A26 recovery migration stays scoped to null EiBi A26 language fields',()=>{
+  assert.match(recoverySql,/s\.source='EiBi A26'/);
+  assert.match(recoverySql,/s\.language_code is null/);
+  assert.match(recoverySql,/s\.language is null/);
+});
+
+check('A26 recovery migration includes every verified recovered language code',()=>{
+  for(const code of ['D','AR','BU','GR','HR','PO','RU','SV','UK','P']){
+    assert.ok(recoverySql.includes(`,'${code}'`),`missing ${code}`);
+  }
+});
+
+check('A26 recovery migration syncs guide language and raw provenance',()=>{
+  assert.match(recoverySql,/update public\.guide_entries g/);
+  assert.match(recoverySql,/language_content=s\.language_code/);
+  assert.ok(recoverySql.includes("'{schedule,language_code}'"));
+});
+
+check('A26 recovery migration is replayable without an external HTTP dependency',()=>{
+  assert.ok(!recoverySql.includes('http_get('));
+  assert.ok(!recoverySql.includes('https://'));
+  assert.ok(!recoverySql.includes('http://'));
 });
 
 for(const [name,ok,error] of checks){
