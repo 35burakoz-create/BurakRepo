@@ -1,6 +1,7 @@
 -- HFCC A26 -> Tecsun R-9012 import hardening.
 -- Official source: https://new.hfcc.org/data/a26/
 -- The production database received the equivalent migrations on 2026-09-15.
+-- Follow-up coordinate-only transmitter linking is in 20260916_hfcc_coordinate_reference_linking.sql.
 -- This file is intentionally idempotent and does not run a rebuild automatically.
 -- Safe operator flow:
 --   select private.refresh_hfcc_a26_stage();
