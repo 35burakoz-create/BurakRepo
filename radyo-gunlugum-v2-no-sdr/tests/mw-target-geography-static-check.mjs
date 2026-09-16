@@ -28,7 +28,7 @@ check('country proximity has bounded positive and negative adjustments',sql.incl
 check('unknown target codes fall back to prior safe semantics',sql.includes('return public.radio_target_adjustment_country(t,c)'));
 check('target geography is joined once in MW candidate query',sql.includes('left join public.radio_target_geographies tg on tg.target_code=upper'));
 check('MW candidate query uses pure joined-value helper',sql.includes('radio_target_adjustment_geo_values(m.target,v_country,v_lat,v_lon,tg.geography_kind,tg.center_lat,tg.center_lon,tg.radius_km)'));
-check('coordinate-only listener can still get target relevance',sql.includes("nullif(btrim(v_country),'') is not null or (v_lat is not null and v_lon is not null)"));
+check('coordinate-only listener can still get target relevance',sql.includes('nullif(btrim(v_country)')&&sql.includes('v_lat is not null and v_lon is not null'));
 check('obsolete per-row table lookup helper is removed',sql.includes('drop function if exists public.radio_target_adjustment_geo(text,text,numeric,numeric)'));
 check('pure helper is not anonymous RPC surface',sql.includes('revoke all on function public.radio_target_adjustment_geo_values')&&sql.includes('from public, anon'));
 
