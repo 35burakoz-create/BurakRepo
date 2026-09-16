@@ -63,10 +63,10 @@ BEGIN
     RAISE EXCEPTION 'Authentication required';
   END IF;
 
-  SELECT latitude, longitude, timezone, country_code
+  SELECT loc.latitude, loc.longitude, loc.timezone, loc.country_code
   INTO v_lat, v_lon, v_tz, v_country
-  FROM public.radio_current_listening_location
-  WHERE user_id = v_uid;
+  FROM public.radio_current_listening_location AS loc
+  WHERE loc.user_id = v_uid;
 
   v_tz := coalesce(nullif(btrim(v_tz), ''), 'Europe/Istanbul');
   v_local_now := v_now AT TIME ZONE v_tz;
