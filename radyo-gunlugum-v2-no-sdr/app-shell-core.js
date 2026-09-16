@@ -2,7 +2,7 @@
 const R=window.R;if(!R||R.__shellCore383)return;R.__shellCore383=true;
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 function css(href,key){if(document.querySelector(`link[data-${key}]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset[key]='1';document.head.appendChild(l)}
-css('v38-ux-cleanup.css','appShellCss');css('v42-design-system.css','appShellDesignCss');css('app-visual-polish.css','appVisualPolishCss');css('app-deep-audit.css','appDeepAuditCss');css('app-audit-polish.css','appAuditPolishCss');css('app-desktop.css','appDesktopCss');css('app-ui-integrity.css','appUiIntegrityCss');css('app-design-tokens.css','appDesignTokensCss');
+css('v38-ux-cleanup.css','appShellCss');css('v42-design-system.css','appShellDesignCss');css('app-visual-polish.css','appVisualPolishCss');css('app-deep-audit.css','appDeepAuditCss');css('app-audit-polish.css','appAuditPolishCss');css('app-desktop.css','appDesktopCss');css('app-ui-integrity.css','appUiIntegrityCss');
 function mode(){return R.uiMode?.current?.()||document.documentElement.dataset.uiMode||'mobile'}
 function dockActive(route){$$('#v38Dock [data-route],#appDesktopNav [data-route]').forEach(b=>{const active=b.dataset.route===route;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')})}
 function removeNavigation(){$('#v38Dock')?.remove();$('#appDesktopNav')?.remove()}
