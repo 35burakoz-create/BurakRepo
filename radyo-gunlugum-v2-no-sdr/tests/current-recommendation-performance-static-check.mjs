@@ -8,7 +8,7 @@ const service=read('app-guide-service.js'),current=read('app-current-programs.js
 for(const[file,src]of[['app-guide-service.js',service],['app-current-programs.js',current],['app-now-ui.js',nowUi]]){let ok=true,detail='';try{new vm.Script(src,{filename:file})}catch(e){ok=false;detail=e.message}check(`syntax ${file}`,ok,detail)}
 check('guide service exposes current-candidate eligibility',service.includes('function nowCandidateEligible')&&service.includes('targetAdjustment'));
 check('zero-duration schedules are not all-day',service.includes('else if(start===end){inside=false}'));
-check('current UI preserves occurrence-aware time text',nowUi.includes('function windowText(e)')&&nowUi.includes('currentWindowText')&&nowUi.includes('windowText(e)'));
+check('current UI preserves occurrence-aware time text',nowUi.includes('function windowText(e')&&nowUi.includes('currentWindowText')&&nowUi.includes('windowText(e'));
 check('current UI labels recommendation quality without implying every broadcast is suitable',nowUi.includes("'Güçlü aday'")&&nowUi.includes("'Denenebilir'")&&nowUi.includes("'Zayıf aday'")&&nowUi.includes('radio-hero'));
 check('current programs filters unsuitable targets before scoring',current.includes("typeof svc?.nowCandidateEligible==='function'&&!svc.nowCandidateEligible(e)"));
 check('current programs computes ALL once and derives band subsets',current.includes("computeCandidates('ALL',n)")&&current.includes('rows=all.filter(x=>x.mode===which)'));
