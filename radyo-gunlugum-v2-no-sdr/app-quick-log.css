@@ -18,7 +18,7 @@
 .app-quick-frequency:focus-within{box-shadow:0 0 0 4px rgba(79,70,229,.12)}
 .app-quick-frequency input{border-radius:12px 0 0 12px!important;min-width:0;font-variant-numeric:tabular-nums;box-shadow:none!important}
 .app-quick-frequency input:focus{border-color:#a5b4fc!important}
-.app-quick-frequency>span{display:flex;align-items:center;justify-content:center;min-width:60px;padding:0 10px;border:1px solid var(--ds-line,#e5e7eb);border-left:0;border-radius:0 12px 12px 0;background:#f8fafc;color:#475569;font-size:12px;font-weight:800;transition:border-color .14s ease,background .14s ease,color .14s ease}
+.app-quick-frequency>span{display:flex;align-items:center;justify-content:center;min-width:60px;padding:0 10px;border:1px solid var(--app-line,#e5e7eb);border-left:0;border-radius:0 12px 12px 0;background:#f8fafc;color:#475569;font-size:12px;font-weight:800;transition:border-color .14s ease,background .14s ease,color .14s ease}
 .app-quick-frequency:focus-within>span{border-color:#a5b4fc;background:#eef2ff;color:#4338ca}
 .app-quick-help{display:block;margin-top:5px;color:#64748b;font-size:12px;font-weight:500;line-height:1.45}
 .app-quick-signal-group{margin:0;padding:0;border:0;min-width:0}
