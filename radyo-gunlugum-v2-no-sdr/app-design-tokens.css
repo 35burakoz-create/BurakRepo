@@ -1,0 +1,230 @@
+/*
+ * Radyo Günlüğüm — canonical design-token foundation.
+ *
+ * Bu dosya mevcut görsel dili yeniden tasarlamaz. Dağınık legacy / ds / ux /
+ * radio değişkenlerini tek runtime kaynakta toplar. Eski değişken adları geçiş
+ * süresince alias olarak korunur; feature CSS'leri aşamalı olarak --app-* adlarına
+ * taşındıkça alias'lar kaldırılabilir.
+ */
+:root{
+  /* Typography */
+  --app-font-sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --app-font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+
+  /* Core light surfaces */
+  --app-bg:#f7f8fc;
+  --app-surface:#fff;
+  --app-surface-soft:#f8fafc;
+  --app-text:#111827;
+  --app-muted:#64748b;
+  --app-line:#e5e7eb;
+
+  /* Semantic actions */
+  --app-primary:#4f46e5;
+  --app-primary-strong:#4338ca;
+  --app-primary-dark:#3730a3;
+  --app-primary-soft:#eef2ff;
+  --app-accent:#5b5cf0;
+  --app-accent-2:#7c3aed;
+  --app-success:#059669;
+  --app-success-soft:#ecfdf5;
+  --app-warning:#d97706;
+  --app-warning-soft:#fffbeb;
+  --app-danger:#dc2626;
+
+  /* Geometry */
+  --app-radius-sm:12px;
+  --app-radius-md:18px;
+  --app-radius-lg:24px;
+  --app-radius-xl:28px;
+  --app-space-1:4px;
+  --app-space-2:8px;
+  --app-space-3:12px;
+  --app-space-4:16px;
+  --app-space-5:20px;
+  --app-space-6:24px;
+  --app-space-8:32px;
+  --app-touch-min:44px;
+
+  /* Elevation + focus */
+  --app-shadow-card:0 14px 40px rgba(15,23,42,.08);
+  --app-shadow-panel:0 28px 80px rgba(15,23,42,.18);
+  --app-focus:0 0 0 4px rgba(79,70,229,.11);
+
+  /* Shared layer contract */
+  --app-layer-base:0;
+  --app-layer-sticky:100;
+  --app-layer-dock:15000;
+  --app-layer-overlay:19900;
+  --app-layer-modal:20000;
+  --app-layer-fullscreen:21000;
+  --app-layer-toast:30000;
+  --app-layer-fatal:40000;
+
+  /* Radio-console palette: intentionally dark and amber, but centrally owned. */
+  --app-radio-bg:#07111b;
+  --app-radio-panel:#0d1a25;
+  --app-radio-panel-2:#101f2b;
+  --app-radio-line:#223545;
+  --app-radio-text:#f4f2ec;
+  --app-radio-muted:#91a0ad;
+  --app-radio-amber:#f4b94f;
+  --app-radio-amber-soft:#3a2a12;
+  --app-radio-green:#5ed99a;
+  --app-radio-green-soft:#112d24;
+  --app-radio-blue:#7eb7ff;
+  --app-radio-danger:#ff8276;
+  --app-radio-radius:22px;
+  --app-radio-shadow:0 20px 70px rgba(0,0,0,.28);
+
+  /* Legacy paper theme values are centralized for compatibility only. */
+  --app-legacy-bg:#ece9df;
+  --app-legacy-paper:#fffdf8;
+  --app-legacy-ink:#20251f;
+  --app-legacy-muted:#6b6f65;
+  --app-legacy-accent:#374332;
+  --app-legacy-accent-2:#55634e;
+  --app-legacy-line:#cbc6b7;
+  --app-legacy-danger:#8a3f35;
+  --app-legacy-gold:#a37d38;
+  --app-legacy-soft:#f4f1e8;
+  --app-legacy-good:#dce8d7;
+  --app-legacy-shadow:0 8px 28px rgba(35,40,31,.08);
+
+  /* DS compatibility aliases */
+  --ds-bg:var(--app-bg);
+  --ds-surface:var(--app-surface);
+  --ds-surface-2:var(--app-surface-soft);
+  --ds-surface-soft:var(--app-surface-soft);
+  --ds-text:var(--app-text);
+  --ds-muted:var(--app-muted);
+  --ds-line:var(--app-line);
+  --ds-primary:var(--app-primary);
+  --ds-primary-2:var(--app-primary-strong);
+  --ds-primary-dark:var(--app-primary-dark);
+  --ds-primary-soft:var(--app-primary-soft);
+  --ds-emerald:var(--app-success);
+  --ds-success:var(--app-success);
+  --ds-warning:var(--app-warning);
+  --ds-amber:var(--app-warning);
+  --ds-danger:var(--app-danger);
+  --ds-red:var(--app-danger);
+  --ds-radius-control:var(--app-radius-sm);
+  --ds-radius-card:var(--app-radius-md);
+  --ds-radius-panel:var(--app-radius-lg);
+  --ds-r-sm:var(--app-radius-sm);
+  --ds-r-md:var(--app-radius-md);
+  --ds-r-lg:var(--app-radius-lg);
+  --ds-r-xl:var(--app-radius-xl);
+  --ds-shadow-card:var(--app-shadow-card);
+  --ds-shadow:var(--app-shadow-card);
+  --ds-shadow-lg:var(--app-shadow-panel);
+  --ds-focus:var(--app-focus);
+  --ds-space-1:var(--app-space-1);
+  --ds-space-2:var(--app-space-2);
+  --ds-space-3:var(--app-space-3);
+  --ds-space-4:var(--app-space-4);
+  --ds-space-5:var(--app-space-5);
+  --ds-space-6:var(--app-space-6);
+  --ds-space-8:var(--app-space-8);
+
+  /* UX compatibility aliases */
+  --ux-bg:var(--app-bg);
+  --ux-surface:var(--app-surface);
+  --ux-ink:#0f172a;
+  --ux-muted:var(--app-muted);
+  --ux-line:var(--app-line);
+  --ux-accent:var(--app-accent);
+  --ux-accent2:var(--app-accent-2);
+  --ux-soft:var(--app-primary-soft);
+  --ux-green:var(--app-success);
+  --ux-amber:var(--app-warning);
+  --ux-red:var(--app-danger);
+  --ux-shadow:0 14px 36px rgba(15,23,42,.07);
+
+  /* Radio compatibility aliases */
+  --radio-bg:var(--app-radio-bg);
+  --radio-panel:var(--app-radio-panel);
+  --radio-panel-2:var(--app-radio-panel-2);
+  --radio-line:var(--app-radio-line);
+  --radio-text:var(--app-radio-text);
+  --radio-muted:var(--app-radio-muted);
+  --radio-amber:var(--app-radio-amber);
+  --radio-amber-soft:var(--app-radio-amber-soft);
+  --radio-green:var(--app-radio-green);
+  --radio-green-soft:var(--app-radio-green-soft);
+  --radio-blue:var(--app-radio-blue);
+  --radio-danger:var(--app-radio-danger);
+  --radio-radius:var(--app-radio-radius);
+  --radio-shadow:var(--app-radio-shadow);
+
+  /* Original styles.css compatibility aliases. */
+  --bg:var(--app-legacy-bg);
+  --paper:var(--app-legacy-paper);
+  --ink:var(--app-legacy-ink);
+  --muted:var(--app-legacy-muted);
+  --accent:var(--app-legacy-accent);
+  --accent2:var(--app-legacy-accent-2);
+  --line:var(--app-legacy-line);
+  --danger:var(--app-legacy-danger);
+  --gold:var(--app-legacy-gold);
+  --soft:var(--app-legacy-soft);
+  --good:var(--app-legacy-good);
+  --shadow:var(--app-legacy-shadow);
+}
+
+/* Canonical dark-mode values. Aliases are repeated on the themed element so
+ * legacy consumers inherit the same theme rather than resolving stale roots. */
+html.night,.night-mode{
+  --app-bg:#0b1120;
+  --app-surface:#111827;
+  --app-surface-soft:#0f172a;
+  --app-text:#f8fafc;
+  --app-muted:#94a3b8;
+  --app-line:#334155;
+  --app-primary:#6366f1;
+  --app-primary-strong:#818cf8;
+  --app-primary-dark:#a5b4fc;
+  --app-primary-soft:#1e1b4b;
+  --app-success:#34d399;
+  --app-success-soft:#052e24;
+  --app-warning:#f59e0b;
+  --app-warning-soft:#451a03;
+  --app-danger:#f87171;
+  --app-shadow-card:0 7px 24px rgba(0,0,0,.16);
+  --app-shadow-panel:0 28px 80px rgba(0,0,0,.34);
+
+  --ds-bg:var(--app-bg);
+  --ds-surface:var(--app-surface);
+  --ds-surface-2:var(--app-surface-soft);
+  --ds-surface-soft:var(--app-surface-soft);
+  --ds-text:var(--app-text);
+  --ds-muted:var(--app-muted);
+  --ds-line:var(--app-line);
+  --ds-primary:var(--app-primary);
+  --ds-primary-2:var(--app-primary-strong);
+  --ds-primary-dark:var(--app-primary-dark);
+  --ds-primary-soft:var(--app-primary-soft);
+  --ds-success:var(--app-success);
+  --ds-emerald:var(--app-success);
+  --ds-warning:var(--app-warning);
+  --ds-amber:var(--app-warning);
+  --ds-danger:var(--app-danger);
+  --ds-red:var(--app-danger);
+  --ds-shadow-card:var(--app-shadow-card);
+  --ds-shadow:var(--app-shadow-card);
+  --ds-shadow-lg:var(--app-shadow-panel);
+
+  --ux-bg:var(--app-bg);
+  --ux-surface:var(--app-surface);
+  --ux-ink:var(--app-text);
+  --ux-muted:var(--app-muted);
+  --ux-line:var(--app-line);
+  --ux-soft:var(--app-primary-soft);
+  --ux-green:var(--app-success);
+  --ux-amber:var(--app-warning);
+  --ux-red:var(--app-danger);
+}
+
+/* Inter is not bundled; make the intentional offline-safe system stack explicit. */
+body{font-family:var(--app-font-sans)!important}
