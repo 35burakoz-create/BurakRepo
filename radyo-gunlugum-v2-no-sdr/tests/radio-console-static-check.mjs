@@ -18,7 +18,7 @@ function check(name,ok,detail=''){checks.push([name,!!ok,detail]);if(!ok)process
 for(const [name,src] of [['service',service],['now',now],['mw-guide',guide],['detail',detail]]){let ok=true,detailText='';try{new vm.Script(src,{filename:`${name}.js`})}catch(error){ok=false;detailText=error.message}check(`${name} module syntax`,ok,detailText)}
 check('bootstrap loads radio console service before current screen',bootstrap.indexOf("'app-radio-console-service.js'")>0&&bootstrap.indexOf("'app-radio-console-service.js'")<bootstrap.indexOf("'app-now-ui.js'"));
 check('bootstrap loads station detail and dedicated MW guide',bootstrap.includes("'app-station-detail-ui.js'")&&bootstrap.includes("'app-mw-guide-ui.js'"));
-check('PWA cache version advanced to radio console generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52'"));
+check('PWA cache version advanced to radio intelligence polish generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260916-53'"));
 for(const asset of ['app-radio-console-service.js','app-radio-console.css','app-station-detail-ui.js','app-mw-guide-ui.js','app-mw-guide.css'])check(`service worker caches ${asset}`,sw.includes(`'./${asset}'`));
 check('MW service uses authenticated ranking RPC and bounded p_limit',service.includes("R.S.rpc('radio_mw_now_candidates',{p_limit:n})")&&service.includes('Math.min(500'));
 check('MW service scopes cache to active authenticated user',service.includes('cacheUser!==uid')&&service.includes('if(userId()!==uid)return[]'));
