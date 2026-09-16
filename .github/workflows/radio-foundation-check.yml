@@ -120,6 +120,7 @@ jobs:
           node radyo-gunlugum-v2-no-sdr/tests/current-favorites-scope-static-check.mjs
           node radyo-gunlugum-v2-no-sdr/tests/mw-guide-match-index-static-check.mjs
           node radyo-gunlugum-v2-no-sdr/tests/mw-guide-render-snapshot-static-check.mjs
+          node radyo-gunlugum-v2-no-sdr/tests/mw-real-tonight-planner-static-check.mjs
       - name: Quick log hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/quick-log-hardening-static-check.mjs
       - name: Journal hardening checks
