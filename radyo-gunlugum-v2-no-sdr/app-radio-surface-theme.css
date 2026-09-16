@@ -1,18 +1,6 @@
 /* Ortak radyo yüzey dili — Şu An ekranındaki konsol estetiğini ilk dalgada Ana Sayfa, Günlük ve Rehber'e taşır. */
-:root{
-  --app-radio-bg:var(--radio-bg,#07111b);
-  --app-radio-panel:var(--radio-panel,#0d1a25);
-  --app-radio-panel-2:var(--radio-panel-2,#101f2b);
-  --app-radio-line:var(--radio-line,#223545);
-  --app-radio-text:var(--radio-text,#f4f2ec);
-  --app-radio-muted:var(--radio-muted,#91a0ad);
-  --app-radio-amber:var(--radio-amber,#f4b94f);
-  --app-radio-amber-soft:var(--radio-amber-soft,#3a2a12);
-  --app-radio-green:var(--radio-green,#5ed99a);
-  --app-radio-green-soft:var(--radio-green-soft,#112d24);
-  --app-radio-danger:var(--radio-danger,#ff8276);
-  --app-radio-shadow:var(--radio-shadow,0 20px 70px rgba(0,0,0,.28));
-}
+
+/* Radyo paleti app-design-tokens.css içinde tek kaynaktan yönetilir. */
 
 /* Aynı aileyi bağlayan ortak davranışlar. */
 #tab-home .v42-home,
