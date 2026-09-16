@@ -1,6 +1,7 @@
 (()=>{
 const R=window.R;if(!R||R.__radioConsoleService)return;R.__radioConsoleService=true;
-if(!document.querySelector('link[data-radio-console-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='app-radio-console.css';l.dataset.radioConsoleCss='1';document.head.appendChild(l)}
+function loadConsoleCss(href,key){if(document.querySelector(`link[data-${key}]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset[key.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]='1';document.head.appendChild(l)}
+loadConsoleCss('app-radio-console.css','radio-console-css');loadConsoleCss('app-radio-console-polish.css','radio-console-polish-css');
 const TTL=60000;let cacheUser=null,cacheRows=[],cacheAt=0,flight=null;
 const COUNTRY={HNG:'Macaristan',ALG:'Cezayir',TUR:'Türkiye',GRC:'Yunanistan',BUL:'Bulgaristan',ROU:'Romanya',IRN:'İran',IND:'Hindistan',CHN:'Çin',CYP:'Kıbrıs',KGZ:'Kırgızistan',TJK:'Tacikistan',KWT:'Kuveyt',OMA:'Umman',USA:'ABD',G:'Birleşik Krallık'};
 const clean=v=>String(v??'').replace(/[\u0000-\u001f\u007f-\u009f]+/g,' ').replace(/\s+/g,' ').trim();
