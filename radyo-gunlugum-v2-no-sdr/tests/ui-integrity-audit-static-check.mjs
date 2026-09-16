@@ -33,12 +33,14 @@ assert(/theme variables are owned by app-design-tokens\.css/i.test(styles),'lega
 assert(/theme variables are owned by app-design-tokens\.css/i.test(base),'base stylesheet must document canonical token ownership');
 assert(!/:root\s*\{[^}]*--ux-/s.test(ux),'v38 must not own UX root tokens after phase 2B');
 assert(!/\.night-mode\s*\{[^}]*--ux-/s.test(ux),'v38 dark mode must not redefine UX tokens after phase 2B');
-assert(/theme variables are owned by app-design-tokens\.css/i.test(ux),'v38 must document canonical token ownership');
+assert(/consumes canonical app-design-tokens\.css variables directly/i.test(ux),'v38 must document direct canonical token consumption');
+assert(!ux.includes('var(--ux-'),'v38 must not consume UX compatibility aliases after phase 2C');
+assert(ux.includes('var(--app-text-strong)')&&ux.includes('var(--app-shadow-soft)')&&ux.includes('var(--app-accent)'),'v38 must consume its canonical visual-equivalent app tokens');
 assert(!/:root\s*\{[^}]*--ds-/s.test(ds),'v42 must not own DS root tokens after phase 2B');
 assert(!/\.night-mode\s*\{[^}]*--ds-/s.test(ds),'v42 dark mode must not redefine DS tokens after phase 2B');
-assert(/theme variables are owned by app-design-tokens\.css/i.test(ds),'v42 must document canonical token ownership');
-assert(ux.includes('var(--ux-accent)')&&ux.includes('var(--ux-muted)'),'v38 must keep consuming compatibility aliases rather than hard-forking theme values');
-assert(ds.includes('var(--ds-bg)')&&ds.includes('var(--ds-primary)'),'v42 must keep consuming compatibility aliases rather than hard-forking theme values');
+assert(/consumes canonical app-design-tokens\.css variables directly/i.test(ds),'v42 must document direct canonical token consumption');
+assert(!ds.includes('var(--ds-'),'v42 must not consume DS compatibility aliases after phase 2C');
+assert(ds.includes('var(--app-bg)')&&ds.includes('var(--app-primary)')&&ds.includes('var(--app-shadow-panel)'),'v42 must consume canonical app tokens directly');
 
 assert(css.includes('@media (min-width:1280px) and (max-width:1399px)'),'desktop rail overlap band must have an explicit safe override');
 assert(/#appDesktopNav\{[\s\S]*position:sticky!important/.test(css),'desktop rail must fall back to sticky navigation in the overlap band');
@@ -54,6 +56,7 @@ for(const token of [
   '--app-bg:#f7f8fc',
   '--app-surface:#fff',
   '--app-text:#111827',
+  '--app-text-strong:#0f172a',
   '--app-primary:#4f46e5',
   '--app-success:#059669',
   '--app-warning:#d97706',
@@ -61,6 +64,7 @@ for(const token of [
   '--app-radius-lg:24px',
   '--app-space-4:16px',
   '--app-touch-min:44px',
+  '--app-shadow-soft:0 14px 36px rgba(15,23,42,.07)',
   '--app-layer-modal:20000',
   '--app-layer-toast:30000',
   '--app-radio-amber:#f4b94f'
@@ -71,7 +75,9 @@ for(const alias of [
   '--ds-bg:var(--app-bg)',
   '--ds-primary:var(--app-primary)',
   '--ux-bg:var(--app-bg)',
+  '--ux-ink:var(--app-text-strong)',
   '--ux-accent:var(--app-accent)',
+  '--ux-shadow:var(--app-shadow-soft)',
   '--radio-bg:var(--app-radio-bg)',
   '--radio-amber:var(--app-radio-amber)',
   '--bg:var(--app-legacy-bg)',
@@ -79,7 +85,8 @@ for(const alias of [
 ])assert(tokens.includes(alias),`compatibility alias missing: ${alias}`);
 assert(tokens.includes('html.night,.night-mode{'),'canonical token layer must define one shared dark-mode source');
 assert(tokens.includes('--app-bg:#0b1120'),'dark mode must define the canonical background');
-assert(tokens.includes('--ds-bg:var(--app-bg)')&&tokens.includes('--ux-bg:var(--app-bg)'),'dark-mode compatibility families must resolve through canonical variables');
+assert(tokens.includes('--app-text-strong:#f8fafc'),'dark mode must preserve the former UX strong-text value');
+assert(tokens.includes('--ds-bg:var(--app-bg)')&&tokens.includes('--ux-bg:var(--app-bg)'),'remaining compatibility families must resolve through canonical variables');
 
 assert(memory.includes('BROWSE_PAGE_SIZE=60'),'memory browsing must use bounded progressive pages');
 assert(memory.includes('function resetBrowseVisible()'),'memory pagination must expose an explicit reset path');
@@ -99,6 +106,7 @@ assert(sw.includes("const UI_INTEGRITY_PASS='20260916-19';"),'service worker mus
 assert(sw.includes("const DESIGN_TOKEN_FOUNDATION='20260916-20';"),'service worker must carry the design-token foundation marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2A='20260916-21';"),'service worker must carry the phase 2A marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2B='20260916-22';"),'service worker must carry the phase 2B marker');
+assert(sw.includes("const DESIGN_TOKEN_PHASE2C='20260916-23';"),'service worker must carry the phase 2C marker');
 assert(sw.includes("'./app-ui-integrity.css'"),'UI integrity CSS must be available to the offline cache');
 assert(sw.includes("'./app-design-tokens.css'"),'canonical design tokens must be available to the offline cache');
 
