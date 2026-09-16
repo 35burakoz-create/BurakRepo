@@ -99,11 +99,13 @@ assert(tokens.includes('--app-text-strong:#f8fafc'),'dark mode must preserve the
 const runtimeFiles=fs.readdirSync(root).filter(name=>/\.(?:css|js|html)$/i.test(name));
 const retiredDefinition=/(?:^|[;{]\s*)--(?:ds|ux)-[\w-]+\s*:|(?:^|[;{]\s*)--(?:bg|paper|ink|muted|accent|accent2|line|danger|gold|soft|good|shadow)\s*:/m;
 const retiredConsumer=/var\(--(?:ds|ux)-[\w-]+|var\(--(?:bg|paper|ink|muted|accent|accent2|line|danger|gold|soft|good|shadow)\)/;
+const retiredViolations=[];
 for(const name of runtimeFiles){
   const source=read(name);
-  assert(!retiredDefinition.test(source),`${name} must not define a retired design-token compatibility alias after phase 2G`);
-  assert(!retiredConsumer.test(source),`${name} must not consume a retired design-token compatibility alias after phase 2G`);
+  if(retiredDefinition.test(source))retiredViolations.push(`${name}:defines`);
+  if(retiredConsumer.test(source))retiredViolations.push(`${name}:consumes`);
 }
+assert.equal(retiredViolations.length,0,`retired design-token compatibility aliases remain after phase 2G: ${retiredViolations.join(', ')}`);
 assert(!tokens.includes('--ds-')&&!tokens.includes('--ux-'),'canonical token source must not expose DS or UX compatibility families after phase 2G');
 assert(!/(?:^|\n)\s*--(?:bg|paper|ink|muted|accent|accent2|line|danger|gold|soft|good|shadow)\s*:/m.test(tokens),'canonical token source must not expose short-name compatibility aliases after phase 2G');
 
