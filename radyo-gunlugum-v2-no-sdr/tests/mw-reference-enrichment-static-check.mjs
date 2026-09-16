@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const sql=fs.readFileSync(path.join(root,'sql/20260916_mw_country_relay_reference_labels.sql'),'utf8');
+const qualitySql=fs.readFileSync(path.join(root,'sql/20260916_mw_resolution_quality_guard_scope_fix.sql'),'utf8');
 const checks=[];
 const check=(name,ok)=>{checks.push([name,!!ok]);if(!ok)process.exitCode=1};
 
@@ -25,10 +26,13 @@ check('authenticated users retain read-only view access',sql.includes('grant sel
 check('reference join uses normalized EiBi key',sql.includes('ref.source_key=public.radio_eibi_transmitter_key(s.country,s.tx_site_code)'));
 check('country-only operation window cannot become active',sql.includes("when ref.operation_status<>'current_official'")&&sql.includes('then false'));
 check('regulatory plans are not treated as current operation proof',sql.includes('Regulatory plans are not proof of current operation'));
-check('unresolved coded MW rows are a hard quality failure',sql.includes("'mw_site_code_unresolved','error'"));
-check('country relay geocoding is a hard quality failure',sql.includes("'mw_country_relay_geocoded','error'")&&sql.includes("tx_site_code ~ '^/[A-Z]{1,3}$' and transmitter_site_id is not null"));
-check('country-only metadata precision is audited',sql.includes("'mw_country_relay_reference_precision','error'")&&sql.includes("source_key in ('CYP','KGZ','TJK','KWT')"));
-check('quality report keeps uncertainty visible as info',sql.includes("'mw_country_relay_rows','info'")&&sql.includes("'mw_known_ungeocoded_site_rows','info'")&&sql.includes("'mw_site_code_missing_rows','info'"));
+
+check('unresolved coded MW rows are a hard quality failure',qualitySql.includes("'mw_site_code_unresolved','error'"));
+check('geocode guard is scoped only to ambiguous relay countries',qualitySql.includes("'mw_ambiguous_country_relay_geocoded','error'")&&qualitySql.includes("radio_eibi_transmitter_key(s.country,s.tx_site_code) in ('CYP','KGZ','TJK','KWT')"));
+check('broad slash-country geocode ban is not the final rule',!qualitySql.includes("tx_site_code ~ '^/[A-Z]{1,3}$' and transmitter_site_id is not null"));
+check('default-site slash countries are explicitly preserved by scope rationale',qualitySql.includes('ARM/BES/MDA'));
+check('country-only metadata precision is audited',qualitySql.includes("'mw_country_relay_reference_precision','error'")&&qualitySql.includes("source_key in ('CYP','KGZ','TJK','KWT')"));
+check('quality report keeps uncertainty visible as info',qualitySql.includes("'mw_country_relay_rows','info'")&&qualitySql.includes("'mw_known_ungeocoded_site_rows','info'")&&qualitySql.includes("'mw_site_code_missing_rows','info'"));
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
