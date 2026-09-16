@@ -4,6 +4,9 @@ import assert from 'node:assert/strict';
 
 const root=path.resolve(import.meta.dirname,'..');
 const read=name=>fs.readFileSync(path.join(root,name),'utf8');
+const index=read('index.html');
+const styles=read('styles.css');
+const base=read('app-base.css');
 const shell=read('app-shell-core.js');
 const modal=read('app-modal-accessibility.js');
 const css=read('app-ui-integrity.css');
@@ -13,10 +16,20 @@ const sw=read('sw.js');
 
 assert(shell.includes("css('app-ui-integrity.css','appUiIntegrityCss')"),'shell must load the UI integrity layer');
 assert(shell.indexOf("css('app-ui-integrity.css','appUiIntegrityCss')")>shell.indexOf("css('app-desktop.css','appDesktopCss')"),'integrity CSS must load after desktop CSS');
-assert(shell.includes("css('app-design-tokens.css','appDesignTokensCss')"),'shell must load the canonical design-token layer');
+assert(shell.includes("css('app-design-tokens.css','appDesignTokensCss')"),'shell must reassert the canonical design-token layer after late legacy visual layers');
 assert(shell.indexOf("css('app-design-tokens.css','appDesignTokensCss')")>shell.indexOf("css('app-ui-integrity.css','appUiIntegrityCss')"),'canonical token bridge must load after legacy visual layers');
 assert(!shell.includes("document.addEventListener('keydown',trapModalFocus,true)"),'shell must not own a second global modal focus trap');
 assert(modal.includes("document.addEventListener('keydown',trap,true)"),'dedicated modal accessibility module must remain the global focus owner');
+
+const stylesLink=index.indexOf('href="styles.css"');
+const baseLink=index.indexOf('href="app-base.css"');
+const earlyTokens=index.indexOf('href="app-design-tokens.css" data-app-design-tokens-early="1"');
+assert(stylesLink>=0&&baseLink>stylesLink&&earlyTokens>baseLink,'canonical tokens must participate in the render-blocking initial paint after legacy/base rules');
+assert(!/^\s*:root\s*\{/m.test(styles),'styles.css must not own a root token namespace after phase 2A');
+assert(!/^\s*:root\s*\{/m.test(base),'app-base.css must not own a root token namespace after phase 2A');
+assert(!/html\.night\{[^}]*--ds-/s.test(base),'app-base dark mode must not redefine DS theme tokens');
+assert(styles.includes('Theme variables are owned by app-design-tokens.css'),'legacy stylesheet must document canonical token ownership');
+assert(base.includes('Theme variables are owned by app-design-tokens.css'),'base stylesheet must document canonical token ownership');
 
 assert(css.includes('@media (min-width:1280px) and (max-width:1399px)'),'desktop rail overlap band must have an explicit safe override');
 assert(/#appDesktopNav\{[\s\S]*position:sticky!important/.test(css),'desktop rail must fall back to sticky navigation in the overlap band');
@@ -75,6 +88,7 @@ for(const contract of [
 
 assert(sw.includes("const UI_INTEGRITY_PASS='20260916-19';"),'service worker must carry the UI integrity release marker');
 assert(sw.includes("const DESIGN_TOKEN_FOUNDATION='20260916-20';"),'service worker must carry the design-token foundation marker');
+assert(sw.includes("const DESIGN_TOKEN_PHASE2A='20260916-21';"),'service worker must carry the phase 2A marker');
 assert(sw.includes("'./app-ui-integrity.css'"),'UI integrity CSS must be available to the offline cache');
 assert(sw.includes("'./app-design-tokens.css'"),'canonical design tokens must be available to the offline cache');
 
