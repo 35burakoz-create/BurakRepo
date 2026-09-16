@@ -51,10 +51,10 @@ check('achievement fallback load reuses cache',achievements.includes("setTimeout
 check('home includes receiver band dial tied to current candidate',home.includes("const BAND_ORDER=['FM','MW','SW1'")&&home.includes('function dialPosition')&&home.includes('v42-radio-console')&&home.includes('v42-radio-needle'));
 check('home includes real seven day listening rhythm',home.includes('function weekActivity')&&home.includes('v42-week-bars')&&home.includes('SON 7 GÜN'));
 check('home primary candidate includes frequency ruler',home.includes('v42-freq-ruler'));
-check('now view includes live spectrum distribution summary',now.includes('function spectrumSummary')&&now.includes('v42-now-summary')&&now.includes('kısa dalga')&&now.includes('orta dalga'));
+check('now view uses radio console band navigation and ranked featured candidate',now.includes('radio-band-tabs')&&now.includes('radio-hero')&&now.includes('R.radioConsole?.rows?.()')&&now.includes('Şu An ne dinlenir?'));
 check('radio density styling includes analog dial scale',visualCss.includes('.v42-radio-dial')&&visualCss.includes('.v42-radio-needle')&&visualCss.includes('repeating-linear-gradient'));
 check('radio density styling remains responsive',visualCss.includes('@media(max-width:760px)')&&visualCss.includes('.v42-radio-console{grid-template-columns:auto minmax(0,1fr)'));
-check('now spectrum console has responsive styling',deepCss.includes('.v42-now-summary')&&deepCss.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));
+check('legacy now spectrum console responsive layer remains harmless when absent',deepCss.includes('.v42-now-summary')&&deepCss.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(x=>!x[1]);

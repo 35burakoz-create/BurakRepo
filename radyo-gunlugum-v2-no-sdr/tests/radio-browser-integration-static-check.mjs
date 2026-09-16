@@ -20,7 +20,7 @@ check('station stream client syntax',syntax);
 check('stream client loads after canonical station identity',boot.indexOf("'app-station-intelligence.js'")<boot.indexOf("'app-station-streams.js'"));
 check('stream client loads before guide data and UI consumers',boot.indexOf("'app-station-streams.js'")<boot.indexOf("'app-current-programs.js'")&&boot.indexOf("'app-station-streams.js'")<boot.indexOf("'app-guide-ui.js'"));
 check('PWA caches station stream client',sw.includes("'./app-station-streams.js'"));
-check('Radio Browser integration has a fresh PWA generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-51'"));
+check('Radio Browser integration has a fresh PWA generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52'"));
 check('stream cache schema is canonical-station keyed',migration.includes('create table if not exists public.station_streams')&&migration.includes('canonical_station_id uuid not null references public.canonical_stations'));
 check('stream cache keeps provider station UUID identity unique',migration.includes('unique (provider, provider_station_id)'));
 check('stream cache is authenticated read-only from browser',migration.includes('revoke all on public.station_streams from anon, authenticated')&&migration.includes('grant select on public.station_streams to authenticated')&&migration.includes('enable row level security'));

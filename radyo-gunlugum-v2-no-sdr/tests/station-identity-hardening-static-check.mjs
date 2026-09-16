@@ -17,7 +17,7 @@ let syntax=true;try{new vm.Script(station,{filename:'app-station-intelligence.js
 check('station intelligence module syntax',syntax);
 check('bootstrap loads station identity before current programs',bootstrap.indexOf("'app-station-intelligence.js'")>0&&bootstrap.indexOf("'app-station-intelligence.js'")<bootstrap.indexOf("'app-current-programs.js'"));
 check('PWA caches station identity module',sw.includes("'./app-station-intelligence.js'"));
-check('station identity release follows current PWA generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-51'"));
+check('station identity release follows current PWA generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52'"));
 check('canonical schema creates stations aliases and source provenance',foundationSql.includes('create table if not exists public.canonical_stations')&&foundationSql.includes('create table if not exists public.station_aliases')&&foundationSql.includes('create table if not exists public.station_source_links'));
 check('canonical catalog is authenticated read-only',foundationSql.includes('grant select on public.canonical_stations to authenticated')&&foundationSql.includes('revoke all on public.canonical_stations from anon, authenticated')&&foundationSql.includes('enable row level security'));
 check('guide and personal records receive canonical station foreign keys',foundationSql.includes('guide_entries_canonical_station_fkey')&&foundationSql.includes('radio_logs_canonical_station_fkey')&&foundationSql.includes('radio_session_attempts_canonical_station_fkey')&&foundationSql.includes('radio_dial_calibrations_canonical_station_fkey'));

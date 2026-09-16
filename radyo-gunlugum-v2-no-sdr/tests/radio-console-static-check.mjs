@@ -1,0 +1,40 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+
+const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
+const read=name=>fs.readFileSync(path.join(root,name),'utf8');
+const bootstrap=read('app-bootstrap.js');
+const config=read('app-config.js');
+const sw=read('sw.js');
+const service=read('app-radio-console-service.js');
+const now=read('app-now-ui.js');
+const guide=read('app-mw-guide-ui.js');
+const detail=read('app-station-detail-ui.js');
+const css=read('app-radio-console.css');
+const mwCss=read('app-mw-guide.css');
+const checks=[];
+function check(name,ok,detail=''){checks.push([name,!!ok,detail]);if(!ok)process.exitCode=1}
+for(const [name,src] of [['service',service],['now',now],['mw-guide',guide],['detail',detail]]){let ok=true,detailText='';try{new vm.Script(src,{filename:`${name}.js`})}catch(error){ok=false;detailText=error.message}check(`${name} module syntax`,ok,detailText)}
+check('bootstrap loads radio console service before current screen',bootstrap.indexOf("'app-radio-console-service.js'")>0&&bootstrap.indexOf("'app-radio-console-service.js'")<bootstrap.indexOf("'app-now-ui.js'"));
+check('bootstrap loads station detail and dedicated MW guide',bootstrap.includes("'app-station-detail-ui.js'")&&bootstrap.includes("'app-mw-guide-ui.js'"));
+check('PWA cache version advanced to radio console generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52'"));
+for(const asset of ['app-radio-console-service.js','app-radio-console.css','app-station-detail-ui.js','app-mw-guide-ui.js','app-mw-guide.css'])check(`service worker caches ${asset}`,sw.includes(`'./${asset}'`));
+check('MW service uses authenticated ranking RPC and bounded p_limit',service.includes("R.S.rpc('radio_mw_now_candidates',{p_limit:n})")&&service.includes('Math.min(500'));
+check('MW service scopes cache to active authenticated user',service.includes('cacheUser!==uid')&&service.includes('if(userId()!==uid)return[]'));
+check('MW service keeps unknown geometry nullable rather than inventing data',service.includes('distance_km:Number.isFinite(distance)?distance:null')&&service.includes('bearing_deg:Number.isFinite(bearing)?bearing:null'));
+check('current screen uses real radio console rows and 0–100 RPC scores',now.includes('R.radioConsole?.rows?.()')&&now.includes("e?._radioConsole?'100':'99'"));
+check('current screen exposes transmitter detail affordances',now.includes('data-station-detail')&&now.includes('Neden bu aday?')&&now.includes('MW bandı'));
+check('current screen explicitly labels ungeocoded known sites',now.includes('Saha biliniyor · koordinat doğrulanmadı'));
+check('dedicated MW guide renders one card per schedule/transmitter candidate',guide.includes('data-station-detail="${esc(row.schedule_id)}"')&&guide.includes('fiziksel verici adayı'));
+check('MW guide exposes requested reception filters',guide.includes("['local','Yerel']")&&guide.includes("['regional','Bölgesel']")&&guide.includes("['dx','Gece DX']")&&guide.includes("['far','Çok uzak']"));
+check('MW guide avoids fake direction or distance when coordinates are missing',guide.includes("row.transmitter_site_name?'Saha biliniyor · koordinat doğrulanmadı':'Verici konumu belirsiz'"));
+check('station detail is a modal dialog with escape/close support',detail.includes('role="dialog" aria-modal="true"')&&detail.includes("e.key==='Escape'")&&detail.includes('data-detail-close'));
+check('station detail leaves missing geometry explicit',detail.includes('Koordinat doğrulanmadı')&&detail.includes('mesafe ve yön hesaplanmıyor'));
+check('station detail derives personal summary from owned runtime logs, not hardcoded examples',detail.includes('const logs=(R.logs||[]).filter')&&!detail.includes('8 deneme · 6 başarılı'));
+check('visual system contains amber radio frequency hierarchy and dark console surface',css.includes('--radio-amber:#f4b94f')&&css.includes('.radio-frequency')&&css.includes('.radio-console-screen'));
+check('MW guide styles preserve compact mobile cards',mwCss.includes('.mw-guide-card')&&mwCss.includes('@media(max-width:540px)'));
+for(const [name,ok,detailText] of checks)console.log(`${ok?'✓':'✗'} ${name}${detailText?` — ${detailText}`:''}`);
+const failed=checks.filter(([,ok])=>!ok);
+console.log(`\n${checks.length-failed.length}/${checks.length} radio-console checks passed.`);
+if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
