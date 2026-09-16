@@ -21,7 +21,7 @@ function station(e){return String(e?.canonical_name||e?.station||'Yayın adayı'
 function lang(e){return String(e?.language_content||e?.language||'').split(/[;/,]/)[0].trim()}
 function cleanSource(value){return String(value??'').replace(/[\u0000-\u001f\u007f-\u009f]+/g,' ').replace(/\s+/g,' ').trim()}
 function sourceText(e){const value=cleanSource(e?.source_doc||e?.source||e?.schedule_source);return value?`Kaynak: ${value}`:''}
-function score(e){const raw=finiteNumber(e?._score??e?._s?.score??e?.probability_score),n=raw??50;return Math.max(1,Math.min(99,Math.round(n)))}
+function score(e){const raw=finiteNumber(e?._score??e?._s?.score??e?.probability_score),n=Number.isFinite(raw)?raw:50;return Math.max(1,Math.min(99,Math.round(n)))}
 function displayScore(e){if(e?._radioConsole){const n=finiteNumber(e.score);return n===null?null:Math.max(0,Math.min(100,Math.round(n)))}const raw=e?._score??e?._s?.score??e?.probability_score,n=finiteNumber(raw);return n===null?null:Math.max(1,Math.min(99,Math.round(n)))}
 function quality(n,max=100){if(!Number.isFinite(n))return'Puan yok';const p=n/max;return p>=.75?'Güçlü aday':p>=.55?'Denenebilir':p>=.4?'Orta':'Zayıf aday'}
 function windowText(e){return e?._radioConsole?(R.radioConsole?.guideMeta?.(e)?.time||''):R.guideService?.currentWindowText?.(e,R.clock?.today?.(),R.clock?.time?.())||e?.time_text||''}
