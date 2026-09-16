@@ -28,8 +28,8 @@ assert(stylesLink>=0&&baseLink>stylesLink&&earlyTokens>baseLink,'canonical token
 assert(!/^\s*:root\s*\{/m.test(styles),'styles.css must not own a root token namespace after phase 2A');
 assert(!/^\s*:root\s*\{/m.test(base),'app-base.css must not own a root token namespace after phase 2A');
 assert(!/html\.night\{[^}]*--ds-/s.test(base),'app-base dark mode must not redefine DS theme tokens');
-assert(styles.includes('Theme variables are owned by app-design-tokens.css'),'legacy stylesheet must document canonical token ownership');
-assert(base.includes('Theme variables are owned by app-design-tokens.css'),'base stylesheet must document canonical token ownership');
+assert(/theme variables are owned by app-design-tokens\.css/i.test(styles),'legacy stylesheet must document canonical token ownership');
+assert(/theme variables are owned by app-design-tokens\.css/i.test(base),'base stylesheet must document canonical token ownership');
 
 assert(css.includes('@media (min-width:1280px) and (max-width:1399px)'),'desktop rail overlap band must have an explicit safe override');
 assert(/#appDesktopNav\{[\s\S]*position:sticky!important/.test(css),'desktop rail must fall back to sticky navigation in the overlap band');
