@@ -1,0 +1,193 @@
+/* Radyo yüzey dili — ikinci dalga: Ses, Analiz, Harita, Takvim ve QSL. */
+#tab-audio,#tab-analysis,#tab-map,#tab-calendar,#tab-qsl{color:var(--app-radio-text,#f4f2ec)}
+#tab-audio :is(button,input,select,textarea,audio):focus-visible,
+#tab-analysis :is(button,input,select,textarea):focus-visible,
+#tab-map :is(button,a):focus-visible,
+#tab-calendar :is(button,input):focus-visible,
+#tab-qsl :is(button,input,select,textarea,summary,a):focus-visible{
+  outline:3px solid rgba(244,185,79,.34)!important;
+  outline-offset:2px!important;
+}
+#tab-audio .btn,#tab-analysis .btn,#tab-map .btn,#tab-calendar .btn,#tab-qsl .btn{min-height:44px}
+#tab-audio .btn.primary,#tab-analysis .btn.primary,#tab-map .btn.primary,#tab-calendar .btn.primary,#tab-qsl .btn.primary{
+  background:linear-gradient(180deg,#d89a36,#a96f1b)!important;
+  border-color:#dfaa51!important;color:#111820!important;
+  box-shadow:0 8px 22px rgba(244,185,79,.13)!important;
+}
+#tab-audio .btn.ghost,#tab-analysis .btn.ghost,#tab-map .btn.ghost,#tab-calendar .btn.ghost,#tab-qsl .btn.ghost{
+  background:#0b1822!important;border-color:#2a4051!important;color:#dce5ea!important;
+}
+#tab-audio>.two-col>.card,#tab-audio>.smart-card,
+#tab-analysis>.two-col>.card,#tab-map>.card,#tab-calendar>.card,#tab-qsl>.card{
+  background:linear-gradient(180deg,#0a1721,#0b1822)!important;
+  border-color:#263a49!important;color:var(--app-radio-text,#f4f2ec)!important;
+  box-shadow:0 16px 46px rgba(0,0,0,.2)!important;
+}
+#tab-audio h2,#tab-analysis h2,#tab-map h2,#tab-calendar h2,#tab-qsl h2{color:var(--app-radio-text,#f4f2ec)!important;letter-spacing:-.025em}
+#tab-audio .hint,#tab-analysis .hint,#tab-map .hint,#tab-calendar .hint,#tab-qsl .hint,
+#tab-qsl .small{color:var(--app-radio-muted,#91a0ad)!important}
+#tab-audio input,#tab-audio select,#tab-audio textarea,
+#tab-calendar input,
+#tab-qsl input,#tab-qsl select,#tab-qsl textarea{
+  background:#0d1a25!important;border-color:#2a4051!important;color:#eef3f6!important;
+  box-shadow:none!important;
+}
+#tab-audio input::placeholder,#tab-audio textarea::placeholder,#tab-qsl input::placeholder,#tab-qsl textarea::placeholder{color:#6f818f!important}
+#tab-audio input:focus,#tab-audio select:focus,#tab-audio textarea:focus,
+#tab-calendar input:focus,
+#tab-qsl input:focus,#tab-qsl select:focus,#tab-qsl textarea:focus{
+  border-color:#9d6a20!important;box-shadow:0 0 0 3px rgba(244,185,79,.12)!important;
+}
+
+/* Ortak saha göstergesi — ikinci dalgadaki klasik sekmeler. */
+#tab-audio>.app-page-density-rail,#tab-analysis>.app-page-density-rail,#tab-map>.app-page-density-rail,
+#tab-calendar>.app-page-density-rail,#tab-qsl>.app-page-density-rail{
+  --density-accent:var(--app-radio-amber,#f4b94f)!important;
+  border-color:#223849!important;
+  background:radial-gradient(circle at 88% 0,rgba(49,91,119,.18),transparent 34%),linear-gradient(145deg,#08151f,#0a1822)!important;
+  box-shadow:0 16px 46px rgba(0,0,0,.2)!important;color:var(--app-radio-text,#f4f2ec)!important;
+}
+#tab-audio>.app-page-density-rail:before,#tab-analysis>.app-page-density-rail:before,#tab-map>.app-page-density-rail:before,
+#tab-calendar>.app-page-density-rail:before,#tab-qsl>.app-page-density-rail:before{opacity:.25!important}
+#tab-audio>.app-page-density-rail:after,#tab-analysis>.app-page-density-rail:after,#tab-map>.app-page-density-rail:after,
+#tab-calendar>.app-page-density-rail:after,#tab-qsl>.app-page-density-rail:after{opacity:.8!important}
+#tab-audio .app-density-ident,#tab-analysis .app-density-ident,#tab-map .app-density-ident,#tab-calendar .app-density-ident,#tab-qsl .app-density-ident{
+  background:linear-gradient(145deg,#0a1620,#0d202c)!important;border:1px solid #294052!important;
+}
+#tab-audio .app-density-ident small,#tab-analysis .app-density-ident small,#tab-map .app-density-ident small,#tab-calendar .app-density-ident small,#tab-qsl .app-density-ident small{color:#ffd27f!important}
+#tab-audio .app-density-ident span,#tab-analysis .app-density-ident span,#tab-map .app-density-ident span,#tab-calendar .app-density-ident span,#tab-qsl .app-density-ident span{color:var(--app-radio-muted,#91a0ad)!important}
+#tab-audio .app-density-led i,#tab-analysis .app-density-led i,#tab-map .app-density-led i,#tab-calendar .app-density-led i,#tab-qsl .app-density-led i{background:#344754!important}
+#tab-audio .app-density-led i.on,#tab-analysis .app-density-led i.on,#tab-map .app-density-led i.on,#tab-calendar .app-density-led i.on,#tab-qsl .app-density-led i.on{
+  background:var(--app-radio-amber,#f4b94f)!important;box-shadow:0 0 10px rgba(244,185,79,.55)!important;
+}
+#tab-audio .app-density-metric,#tab-analysis .app-density-metric,#tab-map .app-density-metric,#tab-calendar .app-density-metric,#tab-qsl .app-density-metric{
+  border-color:#263b4a!important;background:#0a1721!important;
+}
+#tab-audio .app-density-metric small,#tab-audio .app-density-metric span,
+#tab-analysis .app-density-metric small,#tab-analysis .app-density-metric span,
+#tab-map .app-density-metric small,#tab-map .app-density-metric span,
+#tab-calendar .app-density-metric small,#tab-calendar .app-density-metric span,
+#tab-qsl .app-density-metric small,#tab-qsl .app-density-metric span{color:var(--app-radio-muted,#91a0ad)!important}
+#tab-audio .app-density-metric b,#tab-analysis .app-density-metric b,#tab-map .app-density-metric b,#tab-calendar .app-density-metric b,#tab-qsl .app-density-metric b{
+  color:var(--app-radio-text,#f4f2ec)!important;font-variant-numeric:tabular-nums;
+}
+
+/* Ses — kayıt yüzeyi bir taşınabilir kayıt cihazı gibi davranır. */
+#tab-audio>.two-col>.card:after{opacity:.18!important;background:repeating-linear-gradient(90deg,var(--app-radio-amber,#f4b94f) 0 1px,transparent 1px 11px)!important;height:2px!important;bottom:9px!important}
+#tab-audio .audio-controls{
+  padding:12px!important;border:1px solid #2b4051!important;border-radius:16px!important;background:#08151f!important;
+}
+#tab-audio .timer{
+  min-width:72px!important;padding:7px 10px!important;border:1px solid #5d451e!important;border-radius:10px!important;
+  background:#0b141b!important;color:#ffd27f!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;
+  font-variant-numeric:tabular-nums;text-shadow:0 0 16px rgba(244,185,79,.22)!important;
+}
+#tab-audio .audio-preview{width:100%;margin-top:12px;accent-color:var(--app-radio-amber,#f4b94f)}
+#tab-audio .upload-label{
+  display:block;margin-top:12px;padding:11px 12px;border:1px dashed #3b5263;border-radius:14px;background:#091720!important;color:#cbd4db!important;
+}
+#tab-audio .smart-card{border-color:#2c4150!important}
+#tab-audio .smart-card .section-head{border-bottom:1px solid #223849;padding-bottom:12px}
+#tab-audio .smart-result{
+  min-height:86px!important;border:1px solid #263b4a!important;border-radius:15px!important;background-color:#091720!important;
+  background-image:linear-gradient(90deg,rgba(244,185,79,.035) 1px,transparent 1px)!important;background-size:14px 100%!important;
+  color:#d9e2e7!important;
+}
+#tab-audio .smart-result.empty{color:var(--app-radio-muted,#91a0ad)!important}
+#tab-audio #audioMsg:not(:empty),#tab-audio #speechMsg:not(:empty){margin-top:10px;padding:9px 11px;border:1px solid #2b4051;border-radius:11px;background:#091720;color:#c7d2da}
+
+/* Analiz — ölçüm kartları ve çubuklar aynı alıcı panelinde okunur. */
+#tab-analysis #analysisCards .stat{
+  background:#0b1822!important;border:1px solid #293d4c!important;color:var(--app-radio-text,#f4f2ec)!important;
+}
+#tab-analysis #analysisCards .stat b{color:#ffd27f!important;font-variant-numeric:tabular-nums}
+#tab-analysis #analysisCards .stat small{color:var(--app-radio-muted,#91a0ad)!important}
+#tab-analysis>.two-col>.card{
+  background-color:#0b1822!important;
+  background-image:linear-gradient(rgba(244,185,79,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(244,185,79,.022) 1px,transparent 1px)!important;
+  background-size:100% 28px,28px 100%!important;
+}
+#tab-analysis>.two-col>.card h2{border-bottom-color:#263b4a!important}
+#tab-analysis>.two-col>.card h2:before{background:var(--app-radio-amber,#f4b94f)!important;box-shadow:0 0 0 4px rgba(244,185,79,.1)!important}
+#tab-analysis .bar-row{color:#d7e0e5!important}
+#tab-analysis .bar-row>b{color:#ffd27f!important;font-variant-numeric:tabular-nums}
+#tab-analysis .bar-track{border-color:#2b4051!important;background:#07131c!important}
+#tab-analysis .bar-fill{background:linear-gradient(90deg,#9e6a20,#f4b94f)!important;box-shadow:0 0 12px rgba(244,185,79,.12)}
+#tab-analysis .prediction{
+  margin:8px 0;padding:11px 12px;border:1px solid #293d4c;border-left:3px solid var(--app-radio-amber,#f4b94f);border-radius:12px;background:#091720;color:#cdd7dd;
+}
+#tab-analysis .prediction b{color:#f4f2ec!important}
+
+/* Harita — cihaz çerçevesi koyu, gerçek harita karoları doğal renginde kalır. */
+#tab-map>.card{background-image:radial-gradient(circle at 100% 0,rgba(49,91,119,.18),transparent 230px)!important}
+#tab-map .section-head{padding-bottom:11px;border-bottom:1px solid #223849}
+#tab-map .section-head:after{color:#718795!important}
+#tab-map #map{
+  border:7px solid #0b1822!important;outline:1px solid #385061!important;border-radius:18px!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.3),inset 0 0 0 1px rgba(244,185,79,.08)!important;
+}
+#tab-map #mapCount{background:var(--app-radio-amber-soft,#3a2a12)!important;color:#ffd27f!important;border:1px solid #74511f!important}
+#tab-map .leaflet-control-zoom a{
+  background:#0d1a25!important;color:#eef3f6!important;border-color:#2a4051!important;
+}
+#tab-map .leaflet-control-zoom a:hover{background:#152633!important;color:#ffd27f!important}
+#tab-map .leaflet-control-attribution{background:rgba(7,17,27,.88)!important;color:#aab8c2!important}
+#tab-map .leaflet-control-attribution a{color:#ffd27f!important}
+#tab-map .leaflet-popup-content-wrapper,#tab-map .leaflet-popup-tip{background:#0d1a25!important;color:#eef3f6!important}
+#tab-map .leaflet-popup-content-wrapper{border:1px solid #2a4051!important;box-shadow:0 10px 30px rgba(0,0,0,.32)!important}
+
+/* Takvim — tarih ızgarası amber vurgulu saha günlüğü paneli. */
+#tab-calendar>.card{background-image:linear-gradient(180deg,rgba(244,185,79,.035),transparent 150px)!important}
+#tab-calendar .section-head{padding-bottom:11px;border-bottom:1px solid #223849}
+#tab-calendar .calendar-grid{padding:8px!important;border-color:#263b4a!important;background:#08151f!important}
+#tab-calendar .cal-head{color:#7f919d!important}
+#tab-calendar .cal-day{
+  background:#0d1a25!important;border-color:#293d4c!important;color:#dce5ea!important;
+}
+#tab-calendar .cal-day:hover{border-color:#9d6a20!important;background:#10202b!important}
+#tab-calendar .cal-day.out{background:#07131c!important;border-color:#1d2e3b!important;opacity:.48}
+#tab-calendar .cal-day .num{color:#f3f5f3!important;font-variant-numeric:tabular-nums}
+#tab-calendar .cal-day .cal-count{display:inline-flex;margin-top:5px;padding:3px 6px;border-radius:999px;background:var(--app-radio-amber-soft,#3a2a12)!important;color:#ffd27f!important;font-size:10px;font-weight:800}
+#tab-calendar .cal-day:after{background:repeating-linear-gradient(90deg,#586d7a 0 1px,transparent 1px 7px)!important;opacity:.42!important}
+
+/* QSL — posta raporu karakterini koruyup koyu konsol diline bağla. */
+#tab-qsl>.card{background-image:linear-gradient(135deg,rgba(244,185,79,.028),transparent 220px)!important}
+#tab-qsl .section-head{padding-bottom:11px;border-bottom:1px solid #223849}
+#tab-qsl .qsl-item{
+  margin:10px 0!important;padding:14px 14px 14px 16px!important;border:1px solid #293d4c!important;border-left:3px solid var(--app-radio-amber,#f4b94f)!important;
+  border-radius:16px!important;background-color:#0d1a25!important;
+  background-image:repeating-linear-gradient(0deg,transparent 0 27px,rgba(244,185,79,.018) 28px)!important;color:#eef3f6!important;
+}
+#tab-qsl .qsl-item:after{color:rgba(244,185,79,.06)!important}
+#tab-qsl .record-top b{color:#f4f2ec!important}
+#tab-qsl .record-top .small{color:var(--app-radio-muted,#91a0ad)!important}
+#tab-qsl .badge{background:#17242e!important;color:#aab8c2!important;border:1px solid #425664!important}
+#tab-qsl .badge.gold{background:var(--app-radio-amber-soft,#3a2a12)!important;color:#ffd27f!important;border-color:#74511f!important}
+#tab-qsl .badge.ok{background:var(--app-radio-green-soft,#112d24)!important;color:#78dfa8!important;border-color:#265c46!important}
+#tab-qsl .qsl-fieldset{border-color:#334754!important;background:#091720!important;color:#d4dde2!important}
+#tab-qsl .qsl-item details{margin-top:10px;border:1px solid #263b4a;border-radius:12px;background:#091720;overflow:hidden}
+#tab-qsl .qsl-item details>summary{display:flex;align-items:center;min-height:44px;padding:9px 11px;color:#d4dde2;font-weight:750;cursor:pointer;list-style:none}
+#tab-qsl .qsl-item details>summary::-webkit-details-marker{display:none}
+#tab-qsl .qsl-item details>summary:after{content:'›';margin-left:auto;font-size:20px;color:var(--app-radio-amber,#f4b94f);transition:transform .14s ease}
+#tab-qsl .qsl-item details[open]>summary:after{transform:rotate(90deg)}
+#tab-qsl .qsl-report{padding:12px!important;border-top:1px solid #263b4a;background-color:#0b1822!important;background-image:linear-gradient(transparent 23px,rgba(145,160,173,.08) 24px)!important;color:#dce5ea!important;white-space:pre-wrap}
+#tab-qsl .row-actions{gap:7px!important;flex-wrap:wrap}
+#tab-qsl .row-actions .btn{flex:0 1 auto}
+
+@media(max-width:760px){
+  #tab-audio>.two-col>.card,#tab-audio>.smart-card,#tab-analysis>.two-col>.card,#tab-map>.card,#tab-calendar>.card,#tab-qsl>.card{border-radius:20px!important}
+  #tab-audio>.app-page-density-rail,#tab-analysis>.app-page-density-rail,#tab-map>.app-page-density-rail,#tab-calendar>.app-page-density-rail,#tab-qsl>.app-page-density-rail{border-radius:18px!important}
+  #tab-map .section-head:after{display:none}
+  #tab-map #map{border-width:5px!important;border-radius:15px!important}
+}
+@media(max-width:480px){
+  #tab-audio .audio-controls{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
+  #tab-audio .audio-controls .timer{grid-column:1/-1;justify-self:start}
+  #tab-qsl .row-actions .btn{width:100%;flex:1 1 100%}
+  #tab-calendar .calendar-grid{padding:5px!important;gap:4px!important}
+  #tab-calendar .cal-day{min-height:58px!important;padding:6px!important}
+  #tab-calendar .cal-day .cal-count{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  #tab-audio *,#tab-analysis *,#tab-map *,#tab-calendar *,#tab-qsl *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
