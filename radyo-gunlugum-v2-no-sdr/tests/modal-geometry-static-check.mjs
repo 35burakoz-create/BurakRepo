@@ -53,7 +53,7 @@ check('shared modal accessibility recognizes station detail close controls',moda
 check('shared modal route and auth cleanup closes station detail without restoring old-route focus',modal.includes('R.stationDetailUI?.close?.({restoreFocus:false})'));
 check('favorite active state is visually distinct and focus visible',polish.includes('.radio-detail-fav.active')&&polish.includes('[aria-pressed="true"]')&&polish.includes('.radio-detail-fav:focus-visible'));
 
-check('MW guide progressively renders long result sets in bounded pages',guide.includes('const PAGE_SIZE=60')&&guide.includes('rows.slice(0,visibleLimit)')&&guide.includes('data-mw-more')&&guide.includes('visibleLimit+=PAGE_SIZE'));
+check('MW guide progressively renders long result sets in bounded pages',guide.includes('const PAGE_SIZE=60')&&guide.includes('filteredRows.slice(0,visibleLimit)')&&guide.includes('data-mw-more')&&guide.includes('visibleLimit+=PAGE_SIZE'));
 check('MW guide resets pagination when search frequency or class filters change',guide.includes('visibleLimit=PAGE_SIZE')&&guide.includes('{resetLimit:true}'));
 check('MW guide exposes list progress and a return-to-filters action',guide.includes('role="status" aria-live="polite"')&&guide.includes('data-mw-top')&&guide.includes('Filtrelere dön ↑'));
 check('MW class filters support arrow Home and End keyboard navigation',guide.includes("key==='ArrowRight'")&&guide.includes("key==='ArrowLeft'")&&guide.includes("key==='Home'")&&guide.includes("key==='End'"));
