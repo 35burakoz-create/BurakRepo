@@ -8,33 +8,34 @@ function ensure(){const t=ensureTab();let x=$('#v38Now');if(!x){x=document.creat
 function mode(){const v=R.uiState?.nowMode||R.nowMode||'ALL';return MODES.has(v)?v:'ALL'}
 function labelNow(){try{const value=R.clock?.format?.(new Date(),{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});if(value)return value}catch{}return fallbackLabelFmt.format(new Date())}
 function originName(){return R.listeningOrigin?.()?.name||C.origin?.name||'Bozköy, Torbalı, İzmir'}
+function finiteNumber(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
 function band(e){return e?._radioConsole?'MW':e?.mode==='SW'?(e.band||'SW'):(e?.mode||e?.band||'')}
 function unit(e){return e?._radioConsole?'kHz':e?.unit||((e?.mode||e?.band)==='FM'?'MHz':'kHz')}
-function validCandidate(e){const f=Number(e?.frequency),id=e?._radioConsole?e?.schedule_id:e?.id;if(!e||id===null||id===undefined||String(id).trim()===''||!Number.isFinite(f)||f<=0)return false;if(!e._radioConsole&&R.currentPrograms?.receiverCompatible?.(e)===false)return false;return true}
+function validCandidate(e){const f=finiteNumber(e?.frequency),id=e?._radioConsole?e?.schedule_id:e?.id;if(!e||id===null||id===undefined||String(id).trim()===''||f===null||f<=0)return false;if(!e._radioConsole&&R.currentPrograms?.receiverCompatible?.(e)===false)return false;return true}
 function legacyCandidates(m=mode()){try{if(typeof R.radioNowCandidates==='function'){const rows=R.radioNowCandidates(m);return(Array.isArray(rows)?rows:[]).filter(validCandidate)}const result=R.currentSuggestions?.()||[];return(m==='ALL'?result:result.filter(x=>x.mode===m)).filter(validCandidate)}catch(error){R.reportError?.(error,'now-candidates',{silent:true});return[]}}
 function mwCandidates(){return(R.radioConsole?.rows?.()||[]).filter(validCandidate)}
 function dedupe(rows){const map=new Map();for(const x of rows){const id=x?._radioConsole?`mw:${x.schedule_id}`:`g:${x.id}`;if(!map.has(id))map.set(id,x)}return[...map.values()]}
 function candidates(m=mode()){const mw=mwCandidates();if(m==='MW')return mw.length?mw:legacyCandidates('MW');if(m==='ALL'){const legacy=legacyCandidates('ALL').filter(x=>x.mode!=='MW'&&x.band!=='MW');return dedupe([...mw,...legacy])}return legacyCandidates(m)}
-function fmtFreq(e){const n=Number(e?.frequency);return `${Number.isFinite(n)&&n>0?n.toLocaleString('tr-TR',{maximumFractionDigits:3}):'—'} ${unit(e)}`}
+function fmtFreq(e){const n=finiteNumber(e?.frequency);return `${n!==null&&n>0?n.toLocaleString('tr-TR',{maximumFractionDigits:3}):'—'} ${unit(e)}`}
 function station(e){return String(e?.canonical_name||e?.station||'Yayın adayı').trim()||'Yayın adayı'}
 function lang(e){return String(e?.language_content||e?.language||'').split(/[;/,]/)[0].trim()}
 function cleanSource(value){return String(value??'').replace(/[\u0000-\u001f\u007f-\u009f]+/g,' ').replace(/\s+/g,' ').trim()}
 function sourceText(e){const value=cleanSource(e?.source_doc||e?.source||e?.schedule_source);return value?`Kaynak: ${value}`:''}
-function score(e){const raw=Number(e?._score??e?._s?.score??e?.probability_score??50),n=Number.isFinite(raw)?raw:50;return Math.max(1,Math.min(99,Math.round(n)))}
-function displayScore(e){if(e?._radioConsole){const n=Number(e.score);return Number.isFinite(n)?Math.max(0,Math.min(100,Math.round(n))):null}const raw=e?._score??e?._s?.score??e?.probability_score;if(raw===null||raw===undefined||raw==='')return null;const n=Number(raw);return Number.isFinite(n)?Math.max(1,Math.min(99,Math.round(n))):null}
+function score(e){const raw=finiteNumber(e?._score??e?._s?.score??e?.probability_score),n=raw??50;return Math.max(1,Math.min(99,Math.round(n)))}
+function displayScore(e){if(e?._radioConsole){const n=finiteNumber(e.score);return n===null?null:Math.max(0,Math.min(100,Math.round(n)))}const raw=e?._score??e?._s?.score??e?.probability_score,n=finiteNumber(raw);return n===null?null:Math.max(1,Math.min(99,Math.round(n)))}
 function quality(n,max=100){if(!Number.isFinite(n))return'Puan yok';const p=n/max;return p>=.75?'Güçlü aday':p>=.55?'Denenebilir':p>=.4?'Orta':'Zayıf aday'}
 function windowText(e){return e?._radioConsole?(R.radioConsole?.guideMeta?.(e)?.time||''):R.guideService?.currentWindowText?.(e,R.clock?.today?.(),R.clock?.time?.())||e?.time_text||''}
 function guideReady(){return Array.isArray(R.guideEntries)&&R.guideEntries.length>0}
 function className(e){return e?._radioConsole?R.radioConsole?.classKey?.(e.reception_class)||'unknown':'unknown'}
-function geoText(e){if(!e?._radioConsole)return'';if(Number.isFinite(Number(e.distance_km)))return`${Math.round(Number(e.distance_km)).toLocaleString('tr-TR')} km${e.bearing_direction?` · ${e.bearing_direction}`:''}`;if(e.transmitter_site_name)return'Saha biliniyor · koordinat doğrulanmadı';return'Verici konumu belirsiz'}
+function geoText(e){if(!e?._radioConsole)return'';const distance=finiteNumber(e.distance_km);if(distance!==null)return`${Math.round(distance).toLocaleString('tr-TR')} km${e.bearing_direction?` · ${e.bearing_direction}`:''}`;if(e.transmitter_site_name)return'Saha biliniyor · koordinat doğrulanmadı';return'Verici konumu belirsiz'}
 function reasonParts(e){if(e?._radioConsole)return R.radioConsole?.reasons?.(e)||[];const sc=e?._s||e?._guideScore||R.guideService?.scoreEntry?.(e)||{why:[]};return(sc.why||[]).map(String)}
-function signed(n){const v=Number(n);return Number.isFinite(v)&&v!==0?`${v>0?'+':''}${v}`:''}
-function signedLocale(n){const v=Number(n);if(!Number.isFinite(v))return'';const text=v.toLocaleString('tr-TR',{maximumFractionDigits:1});return`${v>0?'+':''}${text}`}
-function contributionTone(n){const v=Number(n);return!Number.isFinite(v)||v===0?'muted':v>0?'positive':'negative'}
+function signed(n){const v=finiteNumber(n);return v!==null&&v!==0?`${v>0?'+':''}${v}`:''}
+function signedLocale(n){const v=finiteNumber(n);if(v===null)return'';const text=v.toLocaleString('tr-TR',{maximumFractionDigits:1});return`${v>0?'+':''}${text}`}
+function contributionTone(n){const v=finiteNumber(n);return v===null||v===0?'muted':v>0?'positive':'negative'}
 function chipColor(tone){return tone==='positive'?'var(--radio-green)':tone==='negative'?'var(--radio-danger)':tone==='day'?'var(--radio-amber)':tone==='night'||tone==='distance'?'var(--radio-blue)':'var(--radio-muted)'}
-function mwReasonChips(e){const intel=R.radioConsole?.intelligence?.(e)||{},p=intel.propagation||{},solar=Number(p.solar_elevation),distance=Number(e?.distance_km),tb=Number(intel.target?.bonus),pa=Number(intel.personal?.adjustment)||0,targetKnown=Boolean(intel.target?.text);return[
-  {label:p.period==='night'?'Gece':p.period==='day'?'Gündüz':'Yayılım',bonus:Number.isFinite(solar)?`${signedLocale(solar)}°`:'•',tone:p.period==='night'?'night':p.period==='day'?'day':'muted'},
-  {label:'Mesafe',bonus:Number.isFinite(distance)?`${Math.round(distance).toLocaleString('tr-TR')} km`:e?.transmitter_site_name?'koordinat yok':'belirsiz',tone:Number.isFinite(distance)?'distance':'muted'},
+function mwReasonChips(e){const intel=R.radioConsole?.intelligence?.(e)||{},p=intel.propagation||{},solar=finiteNumber(p.solar_elevation),distance=finiteNumber(e?.distance_km),tb=finiteNumber(intel.target?.bonus)??0,pa=finiteNumber(intel.personal?.adjustment)??0,targetKnown=Boolean(intel.target?.text);return[
+  {label:p.period==='night'?'Gece':p.period==='day'?'Gündüz':'Yayılım',bonus:solar!==null?`${signedLocale(solar)}°`:'•',tone:p.period==='night'?'night':p.period==='day'?'day':'muted'},
+  {label:'Mesafe',bonus:distance!==null?`${Math.round(distance).toLocaleString('tr-TR')} km`:e?.transmitter_site_name?'koordinat yok':'belirsiz',tone:distance!==null?'distance':'muted'},
   {label:'Hedef',bonus:targetKnown?(signed(tb)||'nötr'):'bilinmiyor',tone:targetKnown?contributionTone(tb):'muted'},
   {label:'Geçmişim',bonus:signed(pa)||'etkisiz',tone:contributionTone(pa)}
 ]}
