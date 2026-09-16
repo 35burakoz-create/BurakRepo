@@ -117,6 +117,7 @@ jobs:
         run: |
           node radyo-gunlugum-v2-no-sdr/tests/radio-console-static-check.mjs
           node radyo-gunlugum-v2-no-sdr/tests/favorite-scoring-history-integrity-static-check.mjs
+          node radyo-gunlugum-v2-no-sdr/tests/current-favorites-scope-static-check.mjs
       - name: Quick log hardening checks
         run: node radyo-gunlugum-v2-no-sdr/tests/quick-log-hardening-static-check.mjs
       - name: Journal hardening checks

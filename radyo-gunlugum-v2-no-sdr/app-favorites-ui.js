@@ -1,10 +1,12 @@
 (()=>{
 const R=window.R;if(!R||R.__favoritesVisibilityUI)return;R.__favoritesVisibilityUI=true;
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-let queued=false;
+let queued=false,indexUser=null,indexSignature=null,indexMap=new Map();
 function currentUser(){return R.me?.id||null}
-function favoriteFor(id,userId=currentUser()){if(id===null||id===undefined||id===''||!userId)return null;return(R.favorites||[]).find(x=>x?.user_id===userId&&String(x.guide_entry_id)===String(id))||null}
-function favoriteSignature(){const uid=currentUser();if(!uid)return'';return(R.favorites||[]).filter(x=>x?.user_id===uid).map(x=>String(x.guide_entry_id??'')).filter(Boolean).sort().join('|')}
+function fallbackSignature(userId=currentUser()){if(!userId)return'';return(R.favorites||[]).filter(x=>x?.user_id===userId).map(x=>String(x.guide_entry_id??'')).filter(Boolean).sort().join('|')}
+function favoriteSignature(userId=currentUser()){if(!userId)return'';return R.userServices?.favoriteCollectionSignature?.(userId)??fallbackSignature(userId)}
+function favoriteIndex(userId=currentUser()){const signature=favoriteSignature(userId);if(indexUser!==userId||indexSignature!==signature){indexUser=userId;indexSignature=signature;indexMap=new Map();if(userId)for(const row of(R.favorites||[])){if(row?.user_id!==userId)continue;const id=row?.guide_entry_id;if(id===null||id===undefined||String(id).trim()==='')continue;indexMap.set(String(id),row)}}return indexMap}
+function favoriteFor(id,userId=currentUser()){if(id===null||id===undefined||id===''||!userId)return null;return favoriteIndex(userId).get(String(id))||null}
 function guideIdFromSchedule(scheduleId){if(scheduleId===null||scheduleId===undefined||String(scheduleId).trim()==='')return null;const row=R.radioConsole?.get?.(scheduleId);return R.radioConsole?.guideMatch?.(row)?.id??null}
 function guideIdForNode(node){if(!(node instanceof Element))return null;const ownDetail=node.matches?.('[data-station-detail]')?node:null,detail=ownDetail||node.querySelector?.('[data-station-detail]');if(detail?.dataset?.stationDetail)return guideIdFromSchedule(detail.dataset.stationDetail);const ownListen=node.matches?.('[data-listen]')?node:null,listen=ownListen||node.querySelector?.('[data-listen]');return listen?.dataset?.listen??null}
 function stateForId(id){const available=id!==null&&id!==undefined&&String(id).trim()!=='';return{id,available,active:available&&!!favoriteFor(id)}}
@@ -12,11 +14,11 @@ function syncFavoriteButton(button,id){if(!button)return;const state=stateForId(
 function decorateHero(){const hero=$('#v38Now .radio-hero');if(!hero)return;const id=guideIdForNode(hero),state=stateForId(id),main=hero.querySelector('.radio-hero-main'),actions=hero.querySelector('.radio-hero-actions');if(main){let badge=main.querySelector('.radio-favorite-badge');if(!badge){badge=document.createElement('span');badge.className='radio-favorite-badge';badge.setAttribute('aria-label','Favori yayın');badge.textContent='♥ Favori';const title=main.querySelector('h3');title?.insertAdjacentElement('afterend',badge)}if(badge)badge.hidden=!state.active}if(actions){let button=actions.querySelector('[data-radio-favorite]');if(!button&&state.available){button=document.createElement('button');button.type='button';button.className='btn ghost radio-favorite-action';actions.appendChild(button)}if(button){if(!state.available)button.remove();else syncFavoriteButton(button,id)}}}
 function decorateCandidates(){$$('#v38Now .radio-candidate-card').forEach(card=>{const id=guideIdForNode(card),state=stateForId(id);card.classList.toggle('favorite',state.active);let mark=card.querySelector('.radio-candidate-favorite');if(!mark){mark=document.createElement('span');mark.className='radio-candidate-favorite';mark.setAttribute('aria-label','Favori yayın');mark.textContent='♥ Favori';const name=card.querySelector('.radio-candidate-name');name?.insertAdjacentElement('beforebegin',mark)}if(mark)mark.hidden=!state.active})}
 function decorateNow(){decorateHero();decorateCandidates()}
-function sync(){queued=false;decorateNow()}
+function sync(){queued=false;favoriteIndex();decorateNow()}
 function schedule(){if(queued)return;queued=true;queueMicrotask(sync)}
 async function toggle(id,button){if(!currentUser()){R.toast?.('Favoriler için giriş yapmalısın.');return}if(typeof R.userServices?.toggleFavorite!=='function'){R.toast?.('Favoriler servisi şu anda hazır değil.');return}button.disabled=true;button.setAttribute('aria-busy','true');try{await R.userServices.toggleFavorite(id);schedule();requestAnimationFrame(()=>{const replacement=$$('#v38Now [data-radio-favorite]').find(x=>String(x.dataset.radioFavorite)===String(id));replacement?.focus?.()})}catch(error){R.reportError?.(error,'favorite-visibility-toggle',{silent:true});R.toast?.('Favori işlemi tamamlanamadı.',{type:'error'})}finally{if(button.isConnected){button.removeAttribute('aria-busy');button.disabled=false}}}
 document.addEventListener('click',e=>{const target=e.target instanceof Element?e.target.closest('[data-radio-favorite]'):null;if(!target)return;e.preventDefault();e.stopPropagation();const id=target.dataset.radioFavorite;if(id)toggle(id,target)},true);
 for(const event of ['route:changed','radio-console:mw-ready','guide:data-ready','store:updated','favorites:changed','now:rendered'])R.events?.on?.(event,schedule);
-R.events?.on?.('auth:changed',schedule);
-R.favoriteVisibilityUI={favoriteFor,favoriteSignature,guideIdFromSchedule,guideIdForNode,stateForId,decorateNow,sync};R.features?.register?.('favorites-visibility-ui',{ready:true,provider:'app-favorites-ui'});schedule();
+R.events?.on?.('auth:changed',()=>{indexUser=null;indexSignature=null;indexMap=new Map();schedule()});
+R.favoriteVisibilityUI={favoriteFor,favoriteIndex,favoriteSignature,guideIdFromSchedule,guideIdForNode,stateForId,decorateNow,sync};R.features?.register?.('favorites-visibility-ui',{ready:true,provider:'app-favorites-ui'});schedule();
 })();
