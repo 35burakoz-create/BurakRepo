@@ -19,6 +19,7 @@
   --app-text-strong:#0f172a;
   --app-muted:#64748b;
   --app-line:#e5e7eb;
+  --app-line-soft:#e2e8f0;
 
   /* Semantic actions */
   --app-primary:#4f46e5;
@@ -103,6 +104,7 @@ html.night,.night-mode{
   --app-text-strong:#f8fafc;
   --app-muted:#94a3b8;
   --app-line:#334155;
+  --app-line-soft:#334155;
   --app-primary:#6366f1;
   --app-primary-strong:#818cf8;
   --app-primary-dark:#a5b4fc;
