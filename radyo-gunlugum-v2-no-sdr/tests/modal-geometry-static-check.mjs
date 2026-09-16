@@ -15,6 +15,12 @@ const collection=read('app-collection.css');
 const search=read('v44-search-rebuild.css');
 const user=read('app-user-services.js');
 const config=read('app-config.js');
+const detail=read('app-station-detail-ui.js');
+const modal=read('app-modal-accessibility.js');
+const guide=read('app-mw-guide-ui.js');
+const polish=read('app-radio-console-polish.css');
+const mwCss=read('app-mw-guide.css');
+const sw=read('sw.js');
 
 check('bottom dock remains the base fixed navigation layer',/\.v38-dock\{[^}]*z-index:15000/.test(ux));
 check('audit defines a modal layer above the dock',audit.includes('--app-layer-dock:15000')&&audit.includes('--app-layer-modal-bg:19990')&&audit.includes('--app-layer-modal:20000'));
@@ -37,6 +43,22 @@ check('reminder action exists in canonical user service',user.includes('id="appR
 check('settings action exists in canonical user service',user.includes('id="appPrefsSave"')&&user.includes('Ayarları kaydet'));
 const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*-(\d{8})-(\d+)'/);
 check('geometry fix has a fresh PWA generation',!!cache&&Number(cache[1])>=20260910&&Number(cache[2])>=17);
+
+check('station detail favorite uses guide id instead of passing the guide object',detail.includes('R.userServices.toggleFavorite(state.guideId)')&&!detail.includes('toggleFavorite(guide)'));
+check('station detail favorite reflects persisted state accessibly',detail.includes('function favoriteState(row)')&&detail.includes('aria-pressed="${state.active?\'true\':\'false\'}"')&&detail.includes("button.classList.toggle('active',state.active)"));
+check('station detail dialog has a descriptive relationship to the station subtitle',detail.includes('aria-describedby="radioDetailSubtitle"')&&detail.includes('id="radioDetailSubtitle"'));
+check('station detail closes without stale focus restoration on route or account transitions',detail.includes("R.events?.on?.('route:before',()=>close({restoreFocus:false}))")&&detail.includes("R.events?.on?.('auth:changed',()=>close({restoreFocus:false}))"));
+check('shared modal accessibility recognizes station detail close controls',modal.includes('[data-detail-close]'));
+check('shared modal route and auth cleanup closes station detail without restoring old-route focus',modal.includes('R.stationDetailUI?.close?.({restoreFocus:false})'));
+check('favorite active state is visually distinct and focus visible',polish.includes('.radio-detail-fav.active')&&polish.includes('[aria-pressed="true"]')&&polish.includes('.radio-detail-fav:focus-visible'));
+
+check('MW guide progressively renders long result sets in bounded pages',guide.includes('const PAGE_SIZE=60')&&guide.includes('rows.slice(0,visibleLimit)')&&guide.includes('data-mw-more')&&guide.includes('visibleLimit+=PAGE_SIZE'));
+check('MW guide resets pagination when search frequency or class filters change',guide.includes('visibleLimit=PAGE_SIZE')&&guide.includes('{resetLimit:true}'));
+check('MW guide exposes list progress and a return-to-filters action',guide.includes('role="status" aria-live="polite"')&&guide.includes('data-mw-top')&&guide.includes('Filtrelere dön ↑'));
+check('MW class filters support arrow Home and End keyboard navigation',guide.includes("key==='ArrowRight'")&&guide.includes("key==='ArrowLeft'")&&guide.includes("key==='Home'")&&guide.includes("key==='End'"));
+check('MW guide filter group is labeled for assistive technology',guide.includes("bar.setAttribute('role','group')")&&guide.includes("bar.setAttribute('aria-label','MW alım sınıfı filtresi')"));
+check('MW guide pagination controls remain touch-friendly on small screens',mwCss.includes('.mw-guide-pagination')&&mwCss.includes('min-height:40px')&&mwCss.includes('data-mw-more'));
+check('service worker carries station-detail accessibility release marker',sw.includes("STATION_DETAIL_ACCESSIBILITY='20260916-6'"));
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
