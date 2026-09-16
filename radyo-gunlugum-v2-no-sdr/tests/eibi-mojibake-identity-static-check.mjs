@@ -24,5 +24,6 @@ const failed=checks.filter(([,ok])=>!ok);
 console.log(`\n${checks.length-failed.length}/${checks.length} EiBi mojibake identity checks passed.`);
 if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
 
-// Keep the permanent byte-parser regression in the same EiBi CI gate.
+// Keep the permanent byte-parser and normalization-pipeline regressions in the same EiBi CI gate.
 await import('./eibi-csv-parser-static-check.mjs');
+await import('./eibi-a26-normalize-static-check.mjs');
