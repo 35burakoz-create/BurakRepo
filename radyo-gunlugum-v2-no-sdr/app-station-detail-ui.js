@@ -31,7 +31,8 @@ async function favorite(row,button){const state=favoriteState(row);if(!state.ava
 document.addEventListener('click',e=>{const target=e.target instanceof Element?e.target:null;if(!target)return;const b=target.closest('[data-station-detail]');if(b){e.preventDefault();open(b.dataset.stationDetail,b);return}if(target.closest('[data-detail-close]')){e.preventDefault();close();return}const f=target.closest('[data-detail-favorite]');if(f){e.preventDefault();const row=detailRow();if(row)favorite(row,f)}},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#radioStationDetail')){e.preventDefault();close()}},true);
 R.events?.on?.('route:before',()=>close({restoreFocus:false}));
-R.events?.on?.('auth:changed',()=>{invalidatePersonalHistory();close({restoreFocus:false})});
+R.events?.on?.('auth:changed',()=>close({restoreFocus:false}));
+R.events?.on?.('auth:changed',invalidatePersonalHistory);
 R.events?.on?.('favorites:changed',()=>{const root=$('#radioStationDetail'),row=detailRow(root);if(root&&row)syncFavoriteButton(root.querySelector('[data-detail-favorite]'),row)});
 for(const event of ['record:saved','record:deleted'])R.events?.on?.(event,invalidatePersonalHistory);
 for(const event of ['data:loaded','store:updated'])R.events?.on?.(event,()=>{invalidatePersonalHistory();refreshOpen()});
