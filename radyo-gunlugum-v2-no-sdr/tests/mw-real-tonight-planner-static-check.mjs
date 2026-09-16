@@ -63,7 +63,9 @@ check('service normalizes tonight metadata without changing current active seman
   service.includes('active_now:!!row.active_now')&&service.includes('night_window_source:clean(row.night_window_source)'));
 check('intelligence parser recognizes astronomical-night explanation',
   service.includes("lower(x).startsWith('astronomik gece ')")&&
-  service.includes("propagationText.startsWith('astronomik gece ')?'night'"));
+  service.includes("lower(x).startsWith('gece penceresi ')")&&
+  service.includes("propagationText.startsWith('astronomik gece ')")&&
+  service.includes("propagationText.startsWith('gece penceresi ')"));
 
 check('MW guide night scope is schedule-backed rather than Gece DX class-backed',
   guide.includes("if(scope==='night')return!!row?.scheduled_tonight")&&
