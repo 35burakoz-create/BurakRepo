@@ -13,6 +13,9 @@ const shell=read('app-shell-core.js');
 const modal=read('app-modal-accessibility.js');
 const css=read('app-ui-integrity.css');
 const tokens=read('app-design-tokens.css');
+const radioConsole=read('app-radio-console.css');
+const radioPolish=read('app-radio-console-polish.css');
+const radioTheme=read('app-radio-surface-theme.css');
 const memory=read('app-memory.js');
 const sw=read('sw.js');
 
@@ -45,6 +48,16 @@ assert(!/\.night-mode\s*\{[^}]*--ds-/s.test(ds),'v42 dark mode must not redefine
 assert(/consumes canonical app-design-tokens\.css variables directly/i.test(ds),'v42 must document direct canonical token consumption');
 assert(!ds.includes('var(--ds-'),'v42 must not consume DS compatibility aliases after phase 2C');
 assert(ds.includes('var(--app-bg)')&&ds.includes('var(--app-primary)')&&ds.includes('var(--app-shadow-panel)'),'v42 must consume canonical app tokens directly');
+
+assert(/consumes canonical app-design-tokens\.css variables directly/i.test(radioConsole),'radio console must document canonical radio token ownership');
+assert(!/:root\s*\{[^}]*--radio-/s.test(radioConsole),'radio console must not redefine legacy radio root tokens after phase 2E');
+assert(!radioConsole.includes('var(--radio-'),'radio console must consume --app-radio-* tokens directly after phase 2E');
+assert(!radioPolish.includes('var(--radio-'),'radio console polish must consume --app-radio-* tokens directly after phase 2E');
+assert(radioConsole.includes('var(--app-radio-text)')&&radioConsole.includes('var(--app-radio-amber)')&&radioConsole.includes('var(--app-radio-green)'),'radio console must retain canonical text, amber and green semantics');
+assert(radioPolish.includes('var(--app-radio-blue)')&&radioPolish.includes('var(--app-radio-green)'),'radio polish must retain canonical day/night and positive semantics');
+assert(radioConsole.includes('z-index:var(--app-layer-modal,20000)'),'station detail source must use the canonical modal layer directly');
+assert(!/--radio-(?:bg|panel|text|muted|amber|green|blue|danger|radius|shadow)\s*:/.test(tokens),'canonical token source must not expose the retired --radio-* compatibility family after phase 2E');
+assert(radioTheme.includes('var(--radio-bg,#07111b)'),'legacy surface bridge may remain only as a fallback-only transition until phase 2F');
 
 assert(css.includes('@media (min-width:1280px) and (max-width:1399px)'),'desktop rail overlap band must have an explicit safe override');
 assert(/#appDesktopNav\{[\s\S]*position:sticky!important/.test(css),'desktop rail must fall back to sticky navigation in the overlap band');
@@ -82,8 +95,6 @@ for(const alias of [
   '--ux-ink:var(--app-text-strong)',
   '--ux-accent:var(--app-accent)',
   '--ux-shadow:var(--app-shadow-soft)',
-  '--radio-bg:var(--app-radio-bg)',
-  '--radio-amber:var(--app-radio-amber)',
   '--bg:var(--app-legacy-bg)',
   '--accent:var(--app-legacy-accent)'
 ])assert(tokens.includes(alias),`compatibility alias missing: ${alias}`);
@@ -112,6 +123,7 @@ assert(sw.includes("const DESIGN_TOKEN_PHASE2A='20260916-21';"),'service worker 
 assert(sw.includes("const DESIGN_TOKEN_PHASE2B='20260916-22';"),'service worker must carry the phase 2B marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2C='20260916-23';"),'service worker must carry the phase 2C marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2D='20260916-24';"),'service worker must carry the phase 2D marker');
+assert(sw.includes("const DESIGN_TOKEN_PHASE2E='20260916-25';"),'service worker must carry the phase 2E marker');
 assert(sw.includes("'./app-ui-integrity.css'"),'UI integrity CSS must be available to the offline cache');
 assert(sw.includes("'./app-design-tokens.css'"),'canonical design tokens must be available to the offline cache');
 

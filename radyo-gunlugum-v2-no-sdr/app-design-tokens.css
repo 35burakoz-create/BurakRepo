@@ -144,22 +144,6 @@
   --ux-red:var(--app-danger);
   --ux-shadow:var(--app-shadow-soft);
 
-  /* Radio compatibility aliases */
-  --radio-bg:var(--app-radio-bg);
-  --radio-panel:var(--app-radio-panel);
-  --radio-panel-2:var(--app-radio-panel-2);
-  --radio-line:var(--app-radio-line);
-  --radio-text:var(--app-radio-text);
-  --radio-muted:var(--app-radio-muted);
-  --radio-amber:var(--app-radio-amber);
-  --radio-amber-soft:var(--app-radio-amber-soft);
-  --radio-green:var(--app-radio-green);
-  --radio-green-soft:var(--app-radio-green-soft);
-  --radio-blue:var(--app-radio-blue);
-  --radio-danger:var(--app-radio-danger);
-  --radio-radius:var(--app-radio-radius);
-  --radio-shadow:var(--app-radio-shadow);
-
   /* Original styles.css compatibility aliases. */
   --bg:var(--app-legacy-bg);
   --paper:var(--app-legacy-paper);
