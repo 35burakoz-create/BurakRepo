@@ -19,7 +19,7 @@ for(const [name,src] of [['service',service],['now',now],['mw-guide',guide],['de
 check('bootstrap loads radio console service before current screen',bootstrap.indexOf("'app-radio-console-service.js'")>0&&bootstrap.indexOf("'app-radio-console-service.js'")<bootstrap.indexOf("'app-now-ui.js'"));
 check('bootstrap loads station detail and dedicated MW guide',bootstrap.includes("'app-station-detail-ui.js'")&&bootstrap.includes("'app-mw-guide-ui.js'"));
 check('PWA cache version remains on current stable radio console generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52'"));
-check('service worker carries a UI-polish release signature so existing PWA installs refresh cached modules',sw.includes("RADIO_INTELLIGENCE_POLISH='20260916-1'"));
+check('service worker carries latest UI-polish release signature so existing PWA installs refresh cached modules',sw.includes("RADIO_INTELLIGENCE_POLISH='20260916-2'"));
 for(const asset of ['app-radio-console-service.js','app-radio-console.css','app-station-detail-ui.js','app-mw-guide-ui.js','app-mw-guide.css'])check(`service worker caches ${asset}`,sw.includes(`'./${asset}'`));
 check('MW service uses authenticated ranking RPC and bounded p_limit',service.includes("R.S.rpc('radio_mw_now_candidates',{p_limit:n})")&&service.includes('Math.min(500'));
 check('MW service scopes cache to active authenticated user',service.includes('cacheUser!==uid')&&service.includes('if(userId()!==uid)return[]'));
@@ -29,6 +29,9 @@ check('MW service exposes active listening origin instead of forcing Bozköy in 
 check('current screen uses real radio console rows and 0–100 RPC scores',now.includes('R.radioConsole?.rows?.()')&&now.includes("e?._radioConsole?'100':'99'"));
 check('current screen exposes transmitter detail affordances',now.includes('data-station-detail')&&now.includes('Neden bu aday?')&&now.includes('MW bandı'));
 check('current screen explicitly labels ungeocoded known sites',now.includes('Saha biliniyor · koordinat doğrulanmadı'));
+check('current MW hero derives four chips from structured intelligence instead of positional reason indexes',now.includes('function mwReasonChips(e)')&&now.includes('R.radioConsole?.intelligence?.(e)')&&!now.includes("compactReason(e,'Gece',0)"));
+check('current MW hero shows real solar elevation, distance, target bonus and personal adjustment',now.includes("solar_elevation")&&now.includes("label:'Mesafe'")&&now.includes("label:'Hedef'")&&now.includes("label:'Geçmişim'"));
+check('current MW why list uses semantic activity target personal and propagation reasons',now.includes('function whyParts(e)')&&now.includes('intel.activity?.text')&&now.includes('intel.target?.text')&&now.includes('intel.personal?.text')&&now.includes('intel.propagation?.text'));
 check('dedicated MW guide renders one card per schedule/transmitter candidate',guide.includes('data-station-detail="${esc(row.schedule_id)}"')&&guide.includes('yayın/verici adayı'));
 check('MW guide exposes requested reception filters',guide.includes("['local','Yerel']")&&guide.includes("['regional','Bölgesel']")&&guide.includes("['dx','Gece DX']")&&guide.includes("['far','Çok uzak']"));
 check('MW guide avoids fake direction or distance when coordinates are missing',guide.includes("row.transmitter_site_name?'Saha biliniyor · koordinat doğrulanmadı':'Verici konumu belirsiz'"));
