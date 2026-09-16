@@ -29,19 +29,19 @@
 /* Feature'lar kendi z-index uzayını kurmasın; station detail merkezi modal katmanını kullansın. */
 .radio-station-detail{z-index:var(--app-layer-modal,20000)!important}
 
-/* Saha kullanımında dokunma hedefleri 44 px altına düşmesin. */
+/* Saha kullanımında dokunma hedefleri canonical 44 px tabanının altına düşmesin. */
 .mw-guide-side>button,
 .radio-detail-back,
 .radio-detail-fav{
-  min-width:44px!important;
-  min-height:44px!important;
+  min-width:var(--app-touch-min,44px)!important;
+  min-height:var(--app-touch-min,44px)!important;
 }
 @media(max-width:480px){
   .mw-guide-side>button,
   .radio-detail-back,
   .radio-detail-fav{
-    width:44px!important;
-    height:44px!important;
+    width:var(--app-touch-min,44px)!important;
+    height:var(--app-touch-min,44px)!important;
   }
 }
 
@@ -75,27 +75,27 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
-  margin-top:12px;
-  padding:10px 12px;
-  border:1px solid var(--ux-line,#e5e7eb);
+  gap:var(--app-space-3,12px);
+  margin-top:var(--app-space-3,12px);
+  padding:10px var(--app-space-3,12px);
+  border:1px solid var(--app-line,#e5e7eb);
   border-radius:14px;
-  background:var(--ux-surface,#fff);
-  color:var(--ux-muted,#64748b);
+  background:var(--app-surface,#fff);
+  color:var(--app-muted,#64748b);
   font-size:12px;
   line-height:1.4;
 }
-.am-browse-status b{color:var(--ux-ink,#0f172a)}
-.am-browse-status .btn{flex:0 0 auto;min-height:44px}
+.am-browse-status b{color:var(--app-text,#111827)}
+.am-browse-status .btn{flex:0 0 auto;min-height:var(--app-touch-min,44px)}
 @media(max-width:520px){
   .am-browse-status{align-items:stretch;flex-direction:column}
   .am-browse-status .btn{width:100%}
 }
 .night-mode .am-browse-status,
 html.night .am-browse-status{
-  border-color:#334155;
-  background:#111827;
-  color:#a8b4c6;
+  border-color:var(--app-line,#334155);
+  background:var(--app-surface,#111827);
+  color:var(--app-muted,#a8b4c6);
 }
 .night-mode .am-browse-status b,
-html.night .am-browse-status b{color:#f8fafc}
+html.night .am-browse-status b{color:var(--app-text,#f8fafc)}
