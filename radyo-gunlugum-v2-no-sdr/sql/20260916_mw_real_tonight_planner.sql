@@ -415,8 +415,8 @@ BEGIN
       ' · ',
       r.rx_class,
       'bu gece EiBi çizelgesinde ' ||
-        to_char(r.occurrence_start AT TIME ZONE v_tz, 'HH24:MI') || '–' ||
-        to_char(r.occurrence_end AT TIME ZONE v_tz, 'HH24:MI'),
+        to_char(r.overlap_start AT TIME ZONE v_tz, 'HH24:MI') || '–' ||
+        to_char(r.overlap_end AT TIME ZONE v_tz, 'HH24:MI'),
       r.active_scope,
       CASE
         WHEN r.distance_km IS NOT NULL THEN round(r.distance_km)::text || ' km'
@@ -441,8 +441,8 @@ BEGIN
       'saat dilimi ' || v_tz
     ),
     true,
-    r.occurrence_start,
-    r.occurrence_end,
+    r.overlap_start,
+    r.overlap_end,
     v_night_start,
     v_night_end,
     v_window_source,
