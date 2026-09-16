@@ -137,3 +137,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/mw-reference-enrichment-static-check.mjs
       - name: MW astronomical-night checks
         run: node radyo-gunlugum-v2-no-sdr/tests/mw-astronomical-night-static-check.mjs
+      - name: MW target-geography checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/mw-target-geography-static-check.mjs
