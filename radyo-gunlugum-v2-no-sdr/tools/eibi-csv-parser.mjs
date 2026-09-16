@@ -1,10 +1,5 @@
-// EiBi documents sked-Xzz.csv as an 11-field, 10-semicolon database.
-// The server currently sends text/csv without a charset. Read response BYTES and
-// decode Windows-1252 before splitting fields; decoding the byte stream as UTF-8
-// can collapse an accented byte plus following ASCII separators/language letters
-// into one Unicode code point.
-
 const WIN1252 = new TextDecoder('windows-1252', { fatal: false });
+const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true });
 const UTF8 = new TextEncoder();
 
 export const EIBI_FIELDS = Object.freeze([
@@ -12,9 +7,22 @@ export const EIBI_FIELDS = Object.freeze([
   'target','tx_site_code','persistence_code','start_date','stop_date'
 ]);
 
+export function detectEiBiEncoding(input) {
+  const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+  if (bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) return 'utf-8';
+  try {
+    UTF8_DECODER.decode(bytes);
+    return 'utf-8';
+  } catch {
+    return 'windows-1252';
+  }
+}
+
 export function decodeEiBiBytes(input) {
   const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
-  return WIN1252.decode(bytes).replace(/^\uFEFF/, '');
+  const encoding = detectEiBiEncoding(bytes);
+  const text = encoding === 'utf-8' ? new TextDecoder('utf-8').decode(bytes) : WIN1252.decode(bytes);
+  return text.replace(/^\uFEFF/, '');
 }
 
 export function countSemicolons(line) {
@@ -23,8 +31,22 @@ export function countSemicolons(line) {
 
 export function extractLanguageCodes(readmeText) {
   const out = new Set();
+  let inLanguageSection = false;
   for (const raw of String(readmeText || '').split(/\r?\n/)) {
-    const m = raw.match(/^\s{3}([A-Z][A-Z0-9-]{0,2})\s{2,}/);
+    if (/^\s*I\)\s+Language codes\./i.test(raw)) {
+      // README has a short table of contents and then the real section.
+      // Reset here so only the last actual language section survives.
+      out.clear();
+      inLanguageSection = true;
+      continue;
+    }
+    if (inLanguageSection && /^\s*II\)\s+Country codes\./i.test(raw)) {
+      if (out.size) break;
+      inLanguageSection = false;
+      continue;
+    }
+    if (!inLanguageSection) continue;
+    const m = raw.match(/^\s{3}((?:-[A-Z]{2})|(?:[A-Z][A-Z0-9-]{0,2}))\s{2,}/);
     if (m) out.add(m[1]);
   }
   return out;
@@ -37,32 +59,29 @@ function validHhmm(value) {
   return (h === 24 && m === 0) || (h >= 0 && h <= 23 && m >= 0 && m <= 59);
 }
 
-// Compatibility only for legacy text that has already gone through the old,
-// permissive UTF-8 text path. This is NOT used for correctly fetched bytes.
 function decodePackedWindows1252Char(ch) {
   const bytes = UTF8.encode(ch);
   if (bytes.length < 2 || bytes.length > 4 || bytes[0] < 0xc2 || bytes[0] > 0xf4) return null;
   const head = WIN1252.decode(Uint8Array.of(bytes[0]));
   if (!head || head === '\uFFFD') return null;
-
   let out = head;
   let afterDelimiter = false;
   for (let i=1;i<bytes.length;i++) {
-    const payload = bytes[i] & 0x3f;
-    if (payload === 59) {
+    const p = bytes[i] & 0x3f;
+    if (p === 59) {
       out += ';';
       afterDelimiter = true;
       continue;
     }
     if (afterDelimiter) {
-      if (payload >= 1 && payload <= 26) out += String.fromCharCode(64 + payload);
-      else if (payload === 45) out += '-';
-      else if (payload >= 48 && payload <= 57) out += String.fromCharCode(payload);
+      if (p >= 1 && p <= 26) out += String.fromCharCode(64 + p);
+      else if (p === 45) out += '-';
+      else if (p >= 48 && p <= 57) out += String.fromCharCode(p);
       else return null;
     } else {
-      if (payload >= 33 && payload <= 58) out += String.fromCharCode(64 + payload);
-      else if (payload >= 1 && payload <= 26) out += String.fromCharCode(64 + payload);
-      else if (payload === 32) out += ' ';
+      if (p >= 33 && p <= 58) out += String.fromCharCode(64 + p);
+      else if (p >= 1 && p <= 26) out += String.fromCharCode(64 + p);
+      else if (p === 32) out += ' ';
       else return null;
     }
   }
@@ -77,8 +96,6 @@ export function recoverLegacyMisdecodedLine(rawLine) {
 
   const chars = [...parts[4]];
   const decoded = chars.map(ch => decodePackedWindows1252Char(ch));
-  // Do not rewrite arbitrary Unicode. At least one packed character must contain
-  // the missing field delimiter before this compatibility path is permitted.
   if (!decoded.some(value => value?.includes(';'))) return null;
 
   const stationField = chars.map((ch,i) => decoded[i] ?? ch).join('');
@@ -105,10 +122,10 @@ export function parseEiBiCsvLine(rawLine, options={}) {
     recovered = true;
   }
 
-  const fieldsRaw = working.split(';');
-  if (fieldsRaw.length !== 11) return qa('field_count',line,lineNumber,{fields:fieldsRaw.length});
+  const f = working.split(';');
+  if (f.length !== 11) return qa('field_count',line,lineNumber,{fields:f.length});
 
-  const [freqRaw,timeUtc,days,countryRaw,stationRaw,langRaw,targetRaw,siteRaw,persistenceRaw,startRaw,stopRaw] = fieldsRaw;
+  const [freqRaw,timeUtc,days,countryRaw,stationRaw,langRaw,targetRaw,siteRaw,persistenceRaw,startRaw,stopRaw] = f;
   const frequency = Number(freqRaw);
   const country = countryRaw.trim();
   const station = stationRaw.trim();
@@ -118,17 +135,15 @@ export function parseEiBiCsvLine(rawLine, options={}) {
   const persistenceCode = persistenceRaw.trim();
 
   if (!Number.isFinite(frequency) || frequency < 10 || frequency > 30000) return qa('frequency',line,lineNumber);
-  const timeMatch = timeUtc.match(/^(\d{4})-(\d{4})$/);
-  if (!timeMatch || !validHhmm(timeMatch[1]) || !validHhmm(timeMatch[2])) return qa('time_utc',line,lineNumber);
+  const tm = timeUtc.match(/^(\d{4})-(\d{4})$/);
+  if (!tm || !validHhmm(tm[1]) || !validHhmm(tm[2])) return qa('time_utc',line,lineNumber);
   if (!/^[A-Z0-9]{1,3}$/.test(country)) return qa('country',line,lineNumber);
   if (!station) return qa('station',line,lineNumber);
   if (languageCode && !/^[A-Z0-9-]{1,3}$/.test(languageCode)) return qa('language_code',line,lineNumber);
-  if (languageCode && options.languageCodes instanceof Set && !options.languageCodes.has(languageCode)) {
-    return qa('unknown_language_code',line,lineNumber,{languageCode});
-  }
+  if (languageCode && options.languageCodes instanceof Set && !options.languageCodes.has(languageCode)) return qa('unknown_language_code',line,lineNumber,{languageCode});
   if (target && target.length > 3) return qa('target',line,lineNumber);
   if (txSiteCode && /^\d+$/.test(txSiteCode)) return qa('tx_site_code',line,lineNumber);
-  if (!/^(?:[0-6]|8|9[0-8])$/.test(persistenceCode)) return qa('persistence_code',line,lineNumber);
+  if (!/^(?:[0-6]|8|9[0-6]|98)$/.test(persistenceCode)) return qa('persistence_code',line,lineNumber);
 
   const fields = {
     frequency_khz: frequency,
@@ -155,7 +170,9 @@ export function parseEiBiCsvLine(rawLine, options={}) {
 }
 
 export function parseEiBiCsvBytes(input, options={}) {
-  const text = decodeEiBiBytes(input);
+  const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+  const encoding = detectEiBiEncoding(bytes);
+  const text = decodeEiBiBytes(bytes);
   const records=[];
   const qaRows=[];
   let header=null;
@@ -167,5 +184,5 @@ export function parseEiBiCsvBytes(input, options={}) {
     if(parsed.status==='qa') qaRows.push(parsed);
     else records.push(parsed);
   }
-  return { encoding:'windows-1252', header, records, qa:qaRows };
+  return { encoding, header, records, qa:qaRows };
 }
