@@ -86,7 +86,7 @@ check('favorite state keeps a safe fallback before shared UI is available',fallb
 R.me={id:'u2'};
 handlers.get('auth:changed')?.();
 const switched=R.stationDetailUI.personalSummary(row);
-check('account transition rebuild excludes previous account rows',switched.count===1,JSON.stringify(switched));
+check('account transition rebuild excludes previous account-owned rows while preserving ownerless legacy',switched.count===2&&Math.abs(switched.avg-3)<1e-9,JSON.stringify(switched));
 
 for(const [name,ok,detail] of checks)console.log(`${ok?'✓':'✗'} ${name}${detail?` — ${detail}`:''}`);
 const failed=checks.filter(([,ok])=>!ok);
