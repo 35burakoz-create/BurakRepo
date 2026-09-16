@@ -20,7 +20,7 @@ for(const [name,src] of [['service',service],['now',now],['mw-guide',guide],['de
 check('bootstrap loads radio console service before current screen',bootstrap.indexOf("'app-radio-console-service.js'")>0&&bootstrap.indexOf("'app-radio-console-service.js'")<bootstrap.indexOf("'app-now-ui.js'"));
 check('bootstrap loads station detail and dedicated MW guide',bootstrap.includes("'app-station-detail-ui.js'")&&bootstrap.includes("'app-mw-guide-ui.js'"));
 check('PWA cache version remains on current stable radio console generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52'"));
-check('service worker carries latest UI-polish release signature so existing PWA installs refresh cached modules',sw.includes("RADIO_INTELLIGENCE_POLISH='20260916-4'"));
+check('service worker carries latest UI-polish release signature so existing PWA installs refresh cached modules',sw.includes("RADIO_INTELLIGENCE_POLISH='20260916-5'"));
 for(const asset of ['app-radio-console-service.js','app-radio-console.css','app-radio-console-polish.css','app-station-detail-ui.js','app-mw-guide-ui.js','app-mw-guide.css'])check(`service worker caches ${asset}`,sw.includes(`'./${asset}'`));
 check('radio console service loads additive polish styles after its base surface',service.includes("loadConsoleCss('app-radio-console.css','radio-console-css')")&&service.includes("loadConsoleCss('app-radio-console-polish.css','radio-console-polish-css')"));
 check('MW service uses authenticated ranking RPC and bounded p_limit',service.includes("R.S.rpc('radio_mw_now_candidates',{p_limit:n})")&&service.includes('Math.min(500'));
@@ -39,9 +39,14 @@ check('current MW candidate cards expose score and reception class as separate s
 check('current MW why list uses semantic activity target personal and propagation reasons',now.includes('function whyParts(e)')&&now.includes('intel.activity?.text')&&now.includes('intel.target?.text')&&now.includes('intel.personal?.text')&&now.includes('intel.propagation?.text'));
 check('dedicated MW guide renders one card per schedule/transmitter candidate',guide.includes('data-station-detail="${esc(row.schedule_id)}"')&&guide.includes('yayın/verici adayı'));
 check('MW guide exposes requested reception filters',guide.includes("['local','Yerel']")&&guide.includes("['regional','Bölgesel']")&&guide.includes("['dx','Gece DX']")&&guide.includes("['far','Çok uzak']"));
+check('MW guide exposes live counts beside reception filters',guide.includes('function filterCounts()')&&guide.includes('(counts[value]||0).toLocaleString')&&mwCss.includes('.mw-guide-class-filters button b'));
+check('MW guide preserves nullable score and distance instead of coercing them to zero',guide.includes('function finiteNumber(value)')&&guide.includes('distance=finiteNumber(row.distance_km)')&&guide.includes('score=finiteNumber(row.score)')&&guide.includes("n===null?'unknown'"));
 check('MW guide avoids fake direction or distance when coordinates are missing',guide.includes("row.transmitter_site_name?'Saha biliniyor · koordinat doğrulanmadı':'Verici konumu belirsiz'"));
+check('MW guide distinguishes unknown score from a weak score',guide.includes("return n===null?'Puan yok'")&&guide.includes('data-score-unknown')&&mwCss.includes('.mw-guide-score.unknown'));
+check('MW guide target and personal chips use signed semantic contribution states',guide.includes('function contributionClass(n)')&&guide.includes("klass:targetKnown?contributionClass(targetBonus):'neutral'")&&guide.includes('klass:contributionClass(personal)')&&mwCss.includes('.mw-guide-tags span.negative'));
 check('MW guide uses astronomical propagation status rather than equating Gece DX with current night',guide.includes("period==='night'")&&guide.includes("period==='day'")&&!guide.includes("klass==='dx'?'☾ gece'"));
 check('MW guide visually distinguishes day and night intelligence chips',mwCss.includes('.mw-guide-tags span.night')&&mwCss.includes('.mw-guide-tags span.day'));
+check('MW guide gives very narrow screens a full-width identity column and horizontal score footer',mwCss.includes('@media(max-width:420px)')&&mwCss.includes('.mw-guide-card{grid-template-columns:1fr')&&mwCss.includes('.mw-guide-side{display:flex'));
 check('station detail is a modal dialog with escape/close support',detail.includes('role="dialog" aria-modal="true"')&&detail.includes("e.key==='Escape'")&&detail.includes('data-detail-close'));
 check('station detail leaves missing geometry explicit',detail.includes('Koordinat doğrulanmadı')&&detail.includes('mesafe ve yön hesaplanmıyor'));
 check('station detail derives personal summary from owned runtime logs, not hardcoded examples',detail.includes('const logs=(R.logs||[]).filter')&&!detail.includes('8 deneme · 6 başarılı'));
@@ -65,6 +70,26 @@ const nullableRow=serviceR.radioConsole.normalizeRow({frequency:600,score:null,d
 check('runtime MW normalization keeps null score distance and bearing nullable',nullableRow.score===null&&nullableRow.distance_km===null&&nullableRow.bearing_deg===null&&nullableRow.personal_adjustment===0);
 check('runtime MW geometry confidence does not upgrade named null-coordinate site to verified',serviceR.radioConsole.intelligence(nullableRow).geometry.key==='named');
 check('runtime radio console injects both base and polish style links',serviceLinks.some(x=>x.href==='app-radio-console.css')&&serviceLinks.some(x=>x.href==='app-radio-console-polish.css'));
+
+const guideLinks=[];
+const guideRows=[
+  {schedule_id:'a',frequency:600,score:null,distance_km:null,reception_class:'Gece DX',station:'A',transmitter_site_name:'Saha A'},
+  {schedule_id:'b',frequency:700,score:72,distance_km:900,reception_class:'Bölgesel',station:'B'}
+];
+const guideR={
+  router:{current:()=> 'home'},
+  radioConsole:{rows:()=>guideRows,classKey:value=>value==='Gece DX'?'dx':value==='Bölgesel'?'regional':'unknown'},
+  events:{on(){}},features:{register(){}}
+};
+const guideDocument={querySelector(selector){if(selector==='link[data-mw-guide-css]')return null;return null},createElement(){return{dataset:{}}},head:{appendChild(node){guideLinks.push(node)}},addEventListener(){}};
+const guideSandbox={window:{R:guideR},R:guideR,document:guideDocument,Element:class{},globalThis:null,Number,String,Array,Object,Map,Set,Math,Date,Error,console,clearTimeout(){},setTimeout(){return 1}};
+guideSandbox.globalThis=guideSandbox;
+vm.createContext(guideSandbox);
+vm.runInContext(guide,guideSandbox,{filename:'app-mw-guide-ui.js'});
+check('runtime MW guide keeps null score in unknown class',guideR.mwGuideUI.scoreClass(null)==='unknown'&&guideR.mwGuideUI.scoreLabel(null)==='Puan yok');
+const guideCounts=guideR.mwGuideUI.filterCounts();
+check('runtime MW guide class counts reflect unfiltered rows',guideCounts.ALL===2&&guideCounts.dx===1&&guideCounts.regional===1);
+check('runtime MW guide injects its stylesheet',guideLinks.some(x=>x.href==='app-mw-guide.css'));
 
 for(const [name,ok,detailText] of checks)console.log(`${ok?'✓':'✗'} ${name}${detailText?` — ${detailText}`:''}`);
 const failed=checks.filter(([,ok])=>!ok);
