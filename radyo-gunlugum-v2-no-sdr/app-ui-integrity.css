@@ -1,0 +1,101 @@
+/* UI integrity pass — layout safety, layering, touch targets, readability and long-list transparency. */
+
+/* 1280–1399 px aralığında 98 px sabit rail içerik alanına taşmasın. Rail ancak gerçek yan boşluk olduğunda sabitlenir. */
+@media (min-width:1280px) and (max-width:1399px){
+  html[data-ui-mode="desktop"] #appDesktopNav{
+    position:sticky!important;
+    left:auto!important;
+    top:8px!important;
+    transform:none!important;
+    width:auto!important;
+    max-height:none!important;
+    margin:0 0 16px!important;
+    padding:7px!important;
+    display:flex!important;
+    flex-direction:row!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    border-radius:20px!important;
+  }
+  html[data-ui-mode="desktop"] #appDesktopNav button{
+    flex:1 0 104px!important;
+    width:auto!important;
+    min-height:52px!important;
+    padding:7px 9px!important;
+  }
+  html[data-ui-mode="desktop"] #appDesktopNav .desktop-quick{min-height:52px!important}
+}
+
+/* Feature'lar kendi z-index uzayını kurmasın; station detail merkezi modal katmanını kullansın. */
+.radio-station-detail{z-index:var(--app-layer-modal,20000)!important}
+
+/* Saha kullanımında dokunma hedefleri 44 px altına düşmesin. */
+.mw-guide-side>button,
+.radio-detail-back,
+.radio-detail-fav{
+  min-width:44px!important;
+  min-height:44px!important;
+}
+@media(max-width:480px){
+  .mw-guide-side>button,
+  .radio-detail-back,
+  .radio-detail-fav{
+    width:44px!important;
+    height:44px!important;
+  }
+}
+
+/* Teknik görünümü korurken bilgi taşıyan mikro metinleri gerçek telefon boyutuna çıkar. */
+.mw-guide-summary span,
+.mw-guide-summary small,
+.mw-guide-tags span,
+.mw-guide-score small,
+.mw-guide-favorite-scopes small,
+.mw-guide-pagination,
+.mw-guide-pagination button{
+  font-size:11.5px!important;
+  line-height:1.4!important;
+}
+.mw-guide-main p,
+.mw-guide-geo,
+.radio-candidate-card .radio-source,
+.radio-detail-header p,
+.radio-detail-score small,
+.radio-facts span,
+.radio-detail-path small{
+  font-size:11.5px!important;
+  line-height:1.4!important;
+}
+.mw-guide-main p,.mw-guide-geo{color:#b4c0c8!important}
+.radio-candidate-card .radio-source{color:#9eacb6!important}
+.radio-detail-header p,.radio-detail-score small,.radio-facts span{color:#a9b6bf!important}
+
+/* Radyo Hafızası uzun listeleri sessizce kesmez; görünür kapsamı açıkça gösterir. */
+.am-browse-status{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:12px;
+  padding:10px 12px;
+  border:1px solid var(--ux-line,#e5e7eb);
+  border-radius:14px;
+  background:var(--ux-surface,#fff);
+  color:var(--ux-muted,#64748b);
+  font-size:12px;
+  line-height:1.4;
+}
+.am-browse-status b{color:var(--ux-ink,#0f172a)}
+.am-browse-status .btn{flex:0 0 auto;min-height:44px}
+@media(max-width:520px){
+  .am-browse-status{align-items:stretch;flex-direction:column}
+  .am-browse-status .btn{width:100%}
+}
+.night-mode .am-browse-status,
+html.night .am-browse-status{
+  border-color:#334155;
+  background:#111827;
+  color:#a8b4c6;
+}
+.night-mode .am-browse-status b,
+html.night .am-browse-status b{color:#f8fafc}
