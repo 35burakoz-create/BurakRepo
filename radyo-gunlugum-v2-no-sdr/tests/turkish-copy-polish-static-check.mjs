@@ -9,7 +9,7 @@ check('main navigation uses sentence case',index.includes('Ses ve akıllı anali
 check('guide description is natural Turkish',index.includes('TECSUN R-9012 ile dinlenebilen FM, MW ve kısa dalga yayınları.'));
 check('home uses suitable-candidate wording',home.includes('uygun aday')&&home.includes('Şu anda dinlemeye uygun bir yayın adayı yok')&&!home.includes('etkin aday'));
 check('home uses natural activity wording',home.includes('Dinleme sıklığı')&&home.includes('ardışık gün')&&home.includes('ŞİMDİ DİNLENEBİLİR')&&!home.includes('Dinleme ritmi')&&!home.includes('günlük seri')&&!home.includes('ETERDE ŞİMDİ'));
-check('now screen avoids awkward radio jargon',now.includes('ŞU ANKİ YAYIN ADAYLARI')&&now.includes('Yayın saati:')&&now.includes('yerel FM')&&!now.includes('CANLI ETER GÖRÜNÜMÜ')&&!now.includes('Geçerli yayın penceresi'));
+check('now screen avoids awkward radio jargon',now.includes('Şu An ne dinlenir?')&&now.includes('Şu an yayında')&&now.includes('Şu an çizelgede aktif değil')&&!now.includes('CANLI ETER GÖRÜNÜMÜ')&&!now.includes('Geçerli yayın penceresi'));
 check('station fallback is consistently phrased',home.includes("'Yayın adayı'")&&now.includes("'Yayın adayı'")&&guide.includes("'Yayın adayı'")&&!guide.includes("'Aday yayın'"));
 check('guide candidate and pagination text is user-facing',guide.includes('farklı yayın adayı')&&guide.includes('yayın daha')&&guide.includes('istasyon–frekans eşleşmesi')&&!guide.includes('satır daha'));
 check('menu labels use Turkish sentence case',menu.includes('Radyo hafızası')&&menu.includes('Radyo atlası')&&menu.includes('Yayılım asistanı')&&menu.includes('Yayın rehberi')&&menu.includes('Sistem durumu'));
