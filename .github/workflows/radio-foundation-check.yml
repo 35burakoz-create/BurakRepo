@@ -129,3 +129,5 @@ jobs:
         run: node radyo-gunlugum-v2-no-sdr/tests/radio-browser-integration-static-check.mjs
       - name: NOAA space weather integration checks
         run: node radyo-gunlugum-v2-no-sdr/tests/space-weather-integration-static-check.mjs
+      - name: HFCC A26 import hardening checks
+        run: node radyo-gunlugum-v2-no-sdr/tests/hfcc-a26-import-hardening-static-check.mjs
