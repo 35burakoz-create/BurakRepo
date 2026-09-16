@@ -4,6 +4,7 @@ import vm from 'node:vm';
 
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const read=name=>fs.readFileSync(path.join(root,name),'utf8');
+const designTokens=read('app-design-tokens.css');
 const css=read('app-radio-surface-theme.css');
 const extended=read('app-radio-surface-extended.css');
 const overlays=read('app-radio-surface-overlays.css');
@@ -21,10 +22,19 @@ check('service worker caches all radio surface layers',sw.includes("'./app-radio
 check('service worker carries first-wave harmony marker',sw.includes("RADIO_SURFACE_HARMONY='20260916-14'"));
 check('service worker carries second-wave release marker',sw.includes("RADIO_SURFACE_WAVE2='20260916-15'"));
 check('service worker carries overlay release marker',sw.includes("RADIO_SURFACE_OVERLAYS='20260916-16'"));
+check('service worker carries canonical radio-token ownership marker',sw.includes("DESIGN_TOKEN_PHASE2F='20260916-26'"));
 
 for(const token of ['--app-radio-bg','--app-radio-panel','--app-radio-line','--app-radio-text','--app-radio-muted','--app-radio-amber','--app-radio-green']){
-  check(`shared theme defines ${token}`,css.includes(token));
+  check(`canonical design tokens own ${token}`,new RegExp(`^\\s*${token.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')}\\s*:`,`m`).test(designTokens));
 }
+check('first-wave surface consumes canonical radio tokens without redefining them',
+  css.includes('var(--app-radio-text)')&&!/^\s*--app-radio-[\w-]+\s*:/m.test(css));
+const runtimeFiles=fs.readdirSync(root,{withFileTypes:true})
+  .filter(entry=>entry.isFile()&&/\.(?:css|js|html)$/.test(entry.name))
+  .map(entry=>entry.name);
+const legacyRadioTokenFiles=runtimeFiles.filter(name=>read(name).includes('--radio-'));
+check('runtime has no legacy --radio-* token definitions or consumers',legacyRadioTokenFiles.length===0,legacyRadioTokenFiles.join(', '));
+
 check('home receives console surface and amber frequency hierarchy',
   css.includes('#tab-home .v42-home-hero')&&css.includes('#tab-home .v42-frequency')&&css.includes('color:#ffd27f!important'));
 check('home keeps live state semantically green',
