@@ -16,6 +16,7 @@ const tokens=read('app-design-tokens.css');
 const radioConsole=read('app-radio-console.css');
 const radioPolish=read('app-radio-console-polish.css');
 const radioTheme=read('app-radio-surface-theme.css');
+const now=read('app-now-ui.js');
 const memory=read('app-memory.js');
 const sw=read('sw.js');
 
@@ -57,7 +58,8 @@ assert(radioConsole.includes('var(--app-radio-text)')&&radioConsole.includes('va
 assert(radioPolish.includes('var(--app-radio-blue)')&&radioPolish.includes('var(--app-radio-green)'),'radio polish must retain canonical day/night and positive semantics');
 assert(radioConsole.includes('z-index:var(--app-layer-modal,20000)'),'station detail source must use the canonical modal layer directly');
 assert(!/--radio-(?:bg|panel|text|muted|amber|green|blue|danger|radius|shadow)\s*:/.test(tokens),'canonical token source must not expose the retired --radio-* compatibility family after phase 2E');
-assert(radioTheme.includes('var(--radio-bg,#07111b)'),'legacy surface bridge may remain only as a fallback-only transition until phase 2F');
+assert(!radioTheme.includes('--radio-')&&radioTheme.includes('app-design-tokens.css'),'legacy radio surface bridge must be retired and document canonical ownership after phase 2F');
+assert(!now.includes('var(--radio-')&&now.includes('var(--app-radio-blue)')&&now.includes('var(--app-radio-muted)'),'current view must consume canonical radio color tokens after phase 2F');
 
 assert(css.includes('@media (min-width:1280px) and (max-width:1399px)'),'desktop rail overlap band must have an explicit safe override');
 assert(/#appDesktopNav\{[\s\S]*position:sticky!important/.test(css),'desktop rail must fall back to sticky navigation in the overlap band');
@@ -124,6 +126,7 @@ assert(sw.includes("const DESIGN_TOKEN_PHASE2B='20260916-22';"),'service worker 
 assert(sw.includes("const DESIGN_TOKEN_PHASE2C='20260916-23';"),'service worker must carry the phase 2C marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2D='20260916-24';"),'service worker must carry the phase 2D marker');
 assert(sw.includes("const DESIGN_TOKEN_PHASE2E='20260916-25';"),'service worker must carry the phase 2E marker');
+assert(sw.includes("const DESIGN_TOKEN_PHASE2F='20260916-26';"),'service worker must carry the phase 2F marker');
 assert(sw.includes("'./app-ui-integrity.css'"),'UI integrity CSS must be available to the offline cache');
 assert(sw.includes("'./app-design-tokens.css'"),'canonical design tokens must be available to the offline cache');
 
