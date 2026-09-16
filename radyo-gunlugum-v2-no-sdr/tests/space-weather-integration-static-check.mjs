@@ -9,6 +9,8 @@ const css=read('app-space-weather.css');
 const boot=read('app-bootstrap.js');
 const sw=read('sw.js');
 const edge=read('supabase/functions/space-weather/index.ts');
+const records=read('app-record-service.js');
+const triggerSql=read('sql/20260916_restrict_propagation_trigger_execute.sql');
 const checks=[];
 function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
 
@@ -33,6 +35,12 @@ check('weather cards are overwritten from normalized edge data',client.includes(
 check('manual refresh intercepts old direct refresh path',client.includes('stopImmediatePropagation()')&&client.includes('render(true)'));
 check('forecast copy clearly says NOAA forecast is not reception guarantee',client.includes('NOAA Kp tahmini alım garantisi değildir'));
 check('forecast copy distinguishes estimate and prediction',client.includes("'NOAA kestirimi'")&&client.includes("'NOAA tahmini'"));
+check('snapshot requests are explicit edge actions',client.includes("action:'snapshot'")&&client.includes('logId')&&client.includes('attemptId'));
+check('snapshot requests are coalesced per record',client.includes('const snapshotFlights=new Map()')&&client.includes('snapshotFlights.has(key)')&&client.includes('snapshotFlights.delete(key)'));
+check('snapshot result is pinned to initiating account',client.includes('Hesap değiştiği için uzay havası snapshot işlemi durduruldu.'));
+check('new record events trigger log snapshots',client.includes("R.events?.on?.('record:saved'")&&client.includes("snapshotQuiet({logId:x.id},'space-weather-log-snapshot')"));
+check('listening attempt events snapshot both attempt and generated log',client.includes("R.events?.on?.('listening:attempt'")&&client.includes('snapshotQuiet({attemptId:x.attempt.id}')&&client.includes('snapshotQuiet({logId:x.log.id}'));
+check('created radio log id is returned to event layer',records.includes(".insert(payload).select('id,audio_path').single()")&&records.includes('id:id||createdId'));
 check('edge function uses official NOAA SWPC host',edge.includes("const BASE='https://services.swpc.noaa.gov'"));
 check('edge function reads current planetary Kp',edge.includes('/products/noaa-planetary-k-index.json'));
 check('edge function reads NOAA planetary Kp forecast',edge.includes('/products/noaa-planetary-k-index-forecast.json'));
@@ -45,6 +53,14 @@ check('edge function limits forecast horizon',edge.includes('now+96*3600000'));
 check('edge function keeps a five minute edge cache',edge.includes('CACHE_MS=5*60*1000'));
 check('edge function serves stale edge cache on NOAA outage',edge.includes("cache:'stale-edge'"));
 check('edge function is POST only',edge.includes("req.method!=='POST'"));
+check('edge function authenticates snapshot caller against Supabase Auth',edge.includes("'/auth/v1/user'")&&edge.includes('requireUser(req)'));
+check('edge snapshot lookup is ownership-scoped',edge.includes('user_id=eq.')&&edge.includes('Owned record not found'));
+check('edge snapshot refuses overwrite when already present',edge.includes("reason:'already_snapshotted'")&&edge.includes('if(row?.space_weather_observed_at)'));
+check('edge snapshot rejects historical observations older than six hours',edge.includes('MAX_SNAPSHOT_AGE_MS=6*60*60*1000')&&edge.includes('Historical observation: current space-weather snapshot was not written.'));
+check('edge snapshot rejects materially future observations',edge.includes('MAX_FUTURE_SKEW_MS=5*60*1000')&&edge.includes('Future observation: current space-weather snapshot was not written.'));
+check('edge snapshot writes only fresh Kp or F10.7 values',edge.includes("p?.quality?.kpFresh===true")&&edge.includes("p?.quality?.fluxFresh===true")&&edge.includes('Fresh NOAA Kp/F10.7 data is unavailable'));
+check('trigger-only log enrichment function is not browser-executable',triggerSql.includes('revoke execute on function public.radio_enrich_log_propagation_context() from public, anon, authenticated'));
+check('trigger-only attempt enrichment function is not browser-executable',triggerSql.includes('revoke execute on function public.radio_enrich_attempt_propagation_context() from public, anon, authenticated'));
 check('space weather visual layer covers freshness states',css.includes('.v41-noaa-badge.live')&&css.includes('.v41-noaa-badge.degraded')&&css.includes('.v41-noaa-badge.stale'));
 check('space weather visual layer covers night mode',css.includes('html.night .v41-noaa-trust'));
 check('space weather visual layer is mobile aware',css.includes('@media(max-width:560px)'));
@@ -54,13 +70,13 @@ class ElementStub{closest(){return null}}
 const document={querySelector(){return null},querySelectorAll(){return[]},createElement(){return{dataset:{},className:'',textContent:'',setAttribute(){},append(){},appendChild(){},querySelector(){return null},querySelectorAll(){return[]}}},head:{appendChild(){}},addEventListener(){}};
 const now=Date.parse('2026-09-15T08:00:00Z');
 const payload={generatedAt:'2026-09-15T08:00:00Z',current:{kp:2,kpTime:'2026-09-15T07:30:00Z',kpKind:'estimated',r:0,s:0,g:0,scalesTime:'2026-09-15T07:30:00Z',flux:145,fluxTime:'2026-09-15T00:00:00Z'},forecast:[{time:'2026-09-15T08:30:00Z',kp:3,kind:'observed'},{time:'2026-09-15T09:00:00Z',kp:4,kind:'estimated'},{time:'2026-09-15T12:00:00Z',kp:6,kind:'predicted',noaaScale:'G2'},{time:'2026-09-16T12:00:00Z',kp:9,kind:'predicted'}]};
-let invokes=0,registered=null;
-const R={me:{id:'u1'},S:{functions:{async invoke(){invokes++;return{data:payload,error:null}}}},events:{on(){},emit(){}},features:{register(){}},reportError(){},esc:v=>String(v??''),propagation:{rankings:()=>[{band:'SW5',score:80},{band:'SW8',score:70}]},renderPropagation:async()=>{},router:{current:()=> 'home',register(name,adapter){if(name==='propagation')registered=adapter}}};
+let invokes=0,snapshotInvokes=0,lastSnapshotBody=null,registered=null;
+const R={me:{id:'u1'},S:{functions:{async invoke(_name,{body}={}){if(body?.action==='snapshot'){snapshotInvokes++;lastSnapshotBody=body;return{data:{provider:'NOAA SWPC',snapshot:{written:1,kp:2,f107:145,observedAt:'2026-09-15T08:00:00Z'}},error:null}}invokes++;return{data:payload,error:null}}}},events:{on(){},emit(){}},features:{register(){}},reportError(){},esc:v=>String(v??''),propagation:{rankings:()=>[{band:'SW5',score:80},{band:'SW8',score:70}]},renderPropagation:async()=>{},router:{current:()=> 'home',register(name,adapter){if(name==='propagation')registered=adapter}}};
 const localStorage={getItem(){return null},setItem(){}};
 const context={window:{R},document,Element:ElementStub,localStorage,RADIO_APP_CONFIG:{timezone:'Europe/Istanbul'},console,Intl,Number,String,Array,Object,Map,Set,Math,Date,URL,Promise,setTimeout,clearTimeout,setInterval:()=>1,clearInterval(){}};
 vm.runInNewContext(client,context,{filename:'app-space-weather.js'});
 const api=R.spaceWeather;
-check('functional space weather API is exposed',!!api&&typeof api.refresh==='function'&&typeof api.forecastWindow==='function');
+check('functional space weather API is exposed',!!api&&typeof api.refresh==='function'&&typeof api.forecastWindow==='function'&&typeof api.snapshot==='function');
 const normalized=api.normalizePayload(payload,'edge');
 check('functional payload normalization keeps valid current values',normalized.current.kp===2&&normalized.current.flux===145&&normalized.current.r===0);
 const invalid=api.normalizePayload({generatedAt:'bad',current:{kp:99},forecast:[{time:'bad',kp:-1,kind:'predicted'}]},'edge');
@@ -74,6 +90,9 @@ check('functional forecast score applies only Kp delta',ranked[0].band==='SW5'&&
 const refreshed=await api.refresh({force:true});
 check('functional edge refresh returns normalized NOAA data',refreshed.provider==='NOAA SWPC'&&refreshed.current.kp===2);
 check('functional forced refresh performs one edge invocation',invokes===1);
+const snap=await api.snapshot({logId:'11111111-1111-4111-8111-111111111111'});
+check('functional snapshot call returns edge snapshot metadata',snap?.written===1&&snap?.kp===2&&snap?.f107===145);
+check('functional snapshot call uses explicit log action body',snapshotInvokes===1&&lastSnapshotBody?.action==='snapshot'&&lastSnapshotBody?.logId==='11111111-1111-4111-8111-111111111111');
 check('functional propagation route is wrapped by enhanced renderer',typeof registered?.enter==='function'&&R.renderPropagation===api.render);
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
