@@ -87,8 +87,8 @@
 #tab-log #formMsg.is-error{background:#fff1f2;border:1px solid #fecdd3;color:#be123c}
 #tab-log #formMsg.is-success{background:#ecfdf5;border:1px solid #a7f3d0;color:#047857}
 
-.app-log-advanced{border:1px dashed var(--ds-line,#e2e8f0);border-radius:14px;background:var(--ds-surface-soft,#f8fafc);padding:0;overflow:hidden}
-.app-log-advanced>summary{display:flex;align-items:center;min-height:46px;cursor:pointer;list-style:none;font-weight:800;color:var(--ds-text,#111827);padding:9px 12px}
+.app-log-advanced{border:1px dashed var(--app-line,#e2e8f0);border-radius:14px;background:var(--app-surface-soft,#f8fafc);padding:0;overflow:hidden}
+.app-log-advanced>summary{display:flex;align-items:center;min-height:46px;cursor:pointer;list-style:none;font-weight:800;color:var(--app-text,#111827);padding:9px 12px}
 .app-log-advanced>summary::-webkit-details-marker{display:none}
 .app-log-advanced>summary:after{content:'›';margin-left:auto;font-size:20px;line-height:1;color:#94a3b8;transition:transform .14s ease}
 .app-log-advanced[open]>summary:after{transform:rotate(90deg)}
