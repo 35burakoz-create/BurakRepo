@@ -17,6 +17,8 @@
   --app-surface-soft:#f8fafc;
   --app-text:#111827;
   --app-text-strong:#0f172a;
+  --app-text-secondary:#475569;
+  --app-text-tertiary:#94a3b8;
   --app-muted:#64748b;
   --app-line:#e5e7eb;
   --app-line-soft:#e2e8f0;
@@ -102,6 +104,8 @@ html.night,.night-mode{
   --app-surface-soft:#0f172a;
   --app-text:#f8fafc;
   --app-text-strong:#f8fafc;
+  --app-text-secondary:#cbd5e1;
+  --app-text-tertiary:#94a3b8;
   --app-muted:#94a3b8;
   --app-line:#334155;
   --app-line-soft:#334155;
