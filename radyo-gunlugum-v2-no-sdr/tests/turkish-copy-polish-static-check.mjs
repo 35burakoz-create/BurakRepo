@@ -1,3 +1,4 @@
+import './ui-ux-audit-p0-p1-static-check.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
@@ -14,7 +15,7 @@ check('station fallback is consistently phrased',home.includes("'Yayın adayı'"
 check('guide candidate and pagination text is user-facing',guide.includes('farklı yayın adayı')&&guide.includes('yayın daha')&&guide.includes('istasyon–frekans eşleşmesi')&&!guide.includes('satır daha'));
 check('menu labels use Turkish sentence case',menu.includes('Radyo hafızası')&&menu.includes('Radyo atlası')&&menu.includes('Yayılım asistanı')&&menu.includes('Yayın rehberi')&&menu.includes('Sistem durumu'));
 check('menu descriptions avoid technical queue language',menu.includes('Çevrimdışı kayıtları bulutla eşitle')&&!menu.includes('Çevrimdışı kuyruğu buluta gönder'));
-check('QSL center copy is clear Turkish',qsl.includes('QSL raporu yalnızca İngilizce hazırlanır')&&qsl.includes('İletişim bilgisi bul')&&qsl.includes('Program ayrıntıları (İngilizce, isteğe bağlı)')&&!qsl.includes('English programme details'));
+check('QSL center copy is clear Turkish',qsl.includes('QSL raporu İngilizce hazırlanır')&&qsl.includes('İletişim bilgisi bul')&&qsl.includes('Program ayrıntıları (İngilizce, isteğe bağlı)')&&!qsl.includes('English programme details'));
 check('analysis labels describe counts accurately',analysis.includes('QSL gönderimi')&&analysis.includes('Farklı konum')&&analysis.includes('Sinyal puanı içeren kayıtlar'));
 check('advanced form wording is concise',form.includes('Ek ayrıntılar')&&!form.includes('＋ Ek ayrıntılar')&&form.includes('Yaklaşık kadran konumu')&&form.includes('“Ses ve akıllı analiz”'));
 check('recommendation probability explanation uses Turkish wording',intel.includes('Bu puan, duyulma olasılığını yüzde olarak göstermez')&&!intel.includes('Bu skor bir duyulma olasılığı yüzdesi değildir'));
