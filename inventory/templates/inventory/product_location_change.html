@@ -1,0 +1,13 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1>Konum Değiştir</h1>
+    <p class="text-muted mb-0">{{ product.sku }} - {{ product.display_material_name }} / Mevcut konum: {{ current_location }}</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{{ product.get_absolute_url }}">Detaya dön</a>
+</div>
+<div class="card"><div class="card-body">
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary">Konumu değiştir</button></form>
+</div></div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h1>Stoklar{% if selected_location %} - {{ selected_location.name }}{% endif %}</h1>
+  {% if perms.inventory.add_product %}<a class="btn btn-primary" href="{% url 'product_create' %}">Yeni stok</a>{% endif %}
+</div>
+
+<form class="card mb-3" method="get">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-12">
+        <label class="form-label" for="q">Hızlı arama</label>
+        <input id="q" class="form-control" name="q" placeholder="Malzeme, kesim, yüzey, kalite, kalınlık, ölçü, konum veya durum ara" value="{{ request.GET.q }}">
+      </div>
+      <div class="col-md-3"><label class="form-label">Malzeme adı</label><input class="form-control" name="material_name" value="{{ request.GET.material_name }}" list="material_names"></div>
+      <div class="col-md-3"><label class="form-label">Kalınlık</label><input class="form-control" name="thickness" value="{{ request.GET.thickness }}" list="thicknesses"></div>
+      <div class="col-md-3"><label class="form-label">Ölçü</label><input class="form-control" name="size" value="{{ request.GET.size }}" list="sizes"></div>
+      <div class="col-md-3"><label class="form-label">Yüzey işlemi</label><input class="form-control" name="surface_finish" value="{{ request.GET.surface_finish }}" list="surface_finishes"></div>
+      <div class="col-md-3"><label class="form-label">Kesim yönü</label><input class="form-control" name="cut_direction" value="{{ request.GET.cut_direction }}" list="cut_directions"></div>
+      <div class="col-md-3"><label class="form-label">Kalite</label><input class="form-control" name="quality" value="{{ request.GET.quality }}" list="qualities"></div>
+      <div class="col-md-3"><label class="form-label">Konum</label><select class="form-select" name="location"><option value="">Tümü</option>{% for location in locations %}<option value="{{ location.id }}" {% if request.GET.location == location.id|stringformat:'s' %}selected{% endif %}>{{ location.name }}</option>{% endfor %}</select></div>
+      <div class="col-md-3"><label class="form-label">Durum</label><select class="form-select" name="status"><option value="">Tümü</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="col-md-3"><label class="form-label">Minimum m²</label><input class="form-control" type="number" step="0.01" name="min_m2" value="{{ request.GET.min_m2 }}"></div>
+      <div class="col-md-3"><label class="form-label">Maksimum m²</label><input class="form-control" type="number" step="0.01" name="max_m2" value="{{ request.GET.max_m2 }}"></div>
+    </div>
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-primary">Filtrele</button>
+      <a class="btn btn-outline-secondary" href="{% url 'product_list' %}">Temizle</a>
+    </div>
+  </div>
+</form>
+
+
+{% if perms.inventory.export_reports %}
+<form class="card mb-3" method="get" action="{% url 'stock_pdf_report' %}">
+  <div class="card-body">
+    <h2 class="h5">Filtrelenmiş listeyi PDF oluştur</h2>
+    <input type="hidden" name="q" value="{{ request.GET.q }}">
+    <input type="hidden" name="material_name" value="{{ request.GET.material_name }}">
+    <input type="hidden" name="thickness" value="{{ request.GET.thickness }}">
+    <input type="hidden" name="size" value="{{ request.GET.size }}">
+    <input type="hidden" name="surface_finish" value="{{ request.GET.surface_finish }}">
+    <input type="hidden" name="cut_direction" value="{{ request.GET.cut_direction }}">
+    <input type="hidden" name="quality" value="{{ request.GET.quality }}">
+    <input type="hidden" name="location" value="{{ request.GET.location }}">
+    <input type="hidden" name="status" value="{{ request.GET.status }}">
+    <input type="hidden" name="min_m2" value="{{ request.GET.min_m2 }}">
+    <input type="hidden" name="max_m2" value="{{ request.GET.max_m2 }}">
+    <div class="row g-2">
+      <div class="col-md-4 form-check"><input class="form-check-input" type="checkbox" name="include_location" id="pdf_location" checked><label class="form-check-label" for="pdf_location">Konum bilgisini dahil et</label></div>
+      <div class="col-md-4 form-check"><input class="form-check-input" type="checkbox" name="include_weights" id="pdf_weights"><label class="form-check-label" for="pdf_weights">Tahmini ağırlıkları dahil et</label></div>
+      <div class="col-md-4 form-check"><input class="form-check-input" type="checkbox" name="include_photo_album" id="pdf_album"><label class="form-check-label" for="pdf_album">Fotoğraf albüm linkini dahil et</label></div>
+      <div class="col-md-4 form-check"><input class="form-check-input" type="checkbox" name="exclude_prices" id="pdf_no_price" checked><label class="form-check-label" for="pdf_no_price">Fiyat alanlarını dahil etme</label></div>
+      <div class="col-md-4 form-check"><input class="form-check-input" type="checkbox" name="only_active" id="pdf_active"><label class="form-check-label" for="pdf_active">Sadece aktif stokları göster</label></div>
+      <div class="col-md-4 form-check"><input class="form-check-input" type="checkbox" name="only_sellable" id="pdf_sellable"><label class="form-check-label" for="pdf_sellable">Sadece satılabilir m² göster</label></div>
+    </div>
+    <button class="btn btn-outline-primary mt-3">PDF oluştur</button>
+  </div>
+</form>
+
+
+<form class="card mb-3" method="get" action="{% url 'stock_excel_export' %}">
+  <div class="card-body d-flex flex-wrap align-items-end gap-2">
+    <div class="me-auto"><h2 class="h5 mb-1">Filtrelenmiş listeyi Excel’e aktar</h2><p class="text-muted mb-0 small">Aktif filtrelerle görünen stokları .xlsx olarak indirir.</p></div>
+    <input type="hidden" name="q" value="{{ request.GET.q }}">
+    <input type="hidden" name="material_name" value="{{ request.GET.material_name }}">
+    <input type="hidden" name="thickness" value="{{ request.GET.thickness }}">
+    <input type="hidden" name="size" value="{{ request.GET.size }}">
+    <input type="hidden" name="surface_finish" value="{{ request.GET.surface_finish }}">
+    <input type="hidden" name="cut_direction" value="{{ request.GET.cut_direction }}">
+    <input type="hidden" name="quality" value="{{ request.GET.quality }}">
+    <input type="hidden" name="location" value="{{ request.GET.location }}">
+    <input type="hidden" name="status" value="{{ request.GET.status }}">
+    <input type="hidden" name="min_m2" value="{{ request.GET.min_m2 }}">
+    <input type="hidden" name="max_m2" value="{{ request.GET.max_m2 }}">
+    <button class="btn btn-outline-success">Excel’e aktar</button>
+  </div>
+</form>
+{% endif %}
+
+<datalist id="material_names">{% for item in filter_options.material_names %}<option value="{{ item }}">{% endfor %}</datalist>
+<datalist id="thicknesses">{% for item in filter_options.thicknesses %}<option value="{{ item }}">{% endfor %}</datalist>
+<datalist id="sizes">{% for item in filter_options.sizes %}<option value="{{ item }}">{% endfor %}</datalist>
+<datalist id="surface_finishes">{% for item in filter_options.surface_finishes %}<option value="{{ item }}">{% endfor %}</datalist>
+<datalist id="cut_directions">{% for item in filter_options.cut_directions %}<option value="{{ item }}">{% endfor %}</datalist>
+<datalist id="qualities">{% for item in filter_options.qualities %}<option value="{{ item }}">{% endfor %}</datalist>
+
+<input class="form-check-input" type="checkbox" id="show-weights"><label class="form-check-label mb-2 ms-1" for="show-weights">Ağırlık sütunlarını göster</label>
+<div class="card"><div class="table-responsive"><table class="table table-hover mb-0"><tr><th>Konum</th><th>Malzeme</th><th>Kesim yönü</th><th>Yüzey</th><th>Kalite</th><th>Kalınlık</th><th>Ölçü</th><th>Toplam m²</th><th>Rezerve m²</th><th>Satılabilir m²</th><th>Fotoğraf</th><th class="weight-col">Katsayı</th><th class="weight-col">Kasa Ağ. kg</th><th class="weight-col">Toplam Ağ. kg</th></tr>{% for p in products %}<tr><td>{{ p.location }}</td><td><a href="{{ p.get_absolute_url }}">{{ p.display_material_name }}</a></td><td>{{ p.cut_direction|default:'-' }}</td><td>{{ p.display_surface_finish|default:'-' }}</td><td>{{ p.quality|default:'-' }}</td><td>{{ p.thickness|default:'-' }}</td><td>{{ p.display_size|default:'-' }}</td><td>{{ p.quantity_m2 }}</td><td>{{ p.reserved_m2 }}</td><td>{{ p.available_m2 }}</td><td>{% if p.photo_album_url %}<span class="badge bg-success">Albüm var</span> <a class="btn btn-sm btn-outline-primary" href="{{ p.photo_album_url }}" target="_blank" rel="noopener noreferrer">Aç</a>{% else %}<span class="text-muted">Fotoğraf yok</span>{% endif %}</td><td class="weight-col">{% if p.weight_coefficient_kg_m2 %}{{ p.weight_coefficient_kg_m2 }}{% else %}Katsayı tanımlı değil{% endif %}</td><td class="weight-col">{% if p.estimated_crate_weight_kg %}{{ p.estimated_crate_weight_kg }}{% else %}Katsayı tanımlı değil{% endif %}</td><td class="weight-col">{% if p.estimated_total_weight_kg %}{{ p.estimated_total_weight_kg }}{% else %}Katsayı tanımlı değil{% endif %}</td></tr>{% empty %}<tr><td colspan="14">Stok kaydı yok.</td></tr>{% endfor %}</table></div></div>
+{% endblock %}

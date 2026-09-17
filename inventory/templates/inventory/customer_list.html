@@ -1,0 +1,5 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3"><h1>Müşteriler</h1>{% if perms.inventory.add_customer %}<a class="btn btn-primary" href="{% url 'customer_create' %}">Yeni müşteri</a>{% endif %}</div>
+<div class="card"><div class="table-responsive"><table class="table mb-0"><tr><th>Şirket</th><th>Ülke</th><th>Yetkili</th><th>E-posta</th><th>Telefon</th><th>WhatsApp</th></tr>{% for customer in customers %}<tr><td>{{ customer.company_name }}</td><td>{{ customer.country }}</td><td>{{ customer.contact_name|default:'-' }}</td><td>{{ customer.email|default:'-' }}</td><td>{{ customer.phone|default:'-' }}</td><td>{{ customer.whatsapp|default:'-' }}</td></tr>{% empty %}<tr><td colspan="6">Müşteri yok.</td></tr>{% endfor %}</table></div></div>
+{% endblock %}
