@@ -42,6 +42,8 @@ assert(accessibility.includes("select.setAttribute('aria-describedby',desc)")&&a
 assert(accessibility.includes("save.setAttribute('aria-label',`${name} kartını PNG olarak kaydet`)")&&accessibility.includes("native.setAttribute('aria-describedby',status?.id||'')"),'save/share actions must expose meaningful assistive descriptions');
 assert(accessibility.includes("delete save.dataset.shareSave")&&accessibility.includes("save.dataset.shareSaveEnhanced='1'"),'enhanced save action must bypass the earlier generic save handler without duplicating activation');
 assert(accessibility.includes("typeof window.showSaveFilePicker==='function'")&&accessibility.includes('handle.createWritable()'),'desktop save should use the native file picker when supported');
+assert(accessibility.includes("if(error?.name==='AbortError')return;"),'canceling the native save picker must exit quietly instead of triggering a fallback download');
+assert(accessibility.includes("button.disabled=busyState(dialog)")&&accessibility.includes("button.removeAttribute('aria-busy')"),'save button state must be restored after native save, cancel, or fallback');
 assert(accessibility.includes('await anchorSave(file)')&&accessibility.includes('a.download=safeName(file)'),'save flow must fall back to a conventional PNG download');
 assert(accessibility.includes("replace(/[\\\\/:*?\"<>|\\u0000-\\u001f]/g,'-')"),'download filename must strip filesystem-invalid characters');
 assert(accessibility.includes("URL.revokeObjectURL(url),1800"),'enhanced fallback download URL must be revoked');
