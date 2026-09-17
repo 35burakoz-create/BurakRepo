@@ -18,8 +18,8 @@ const uxCss=read('app-ui-ux-consistency.css');
 
 new Function(scope);
 new Function(ux);
-check('PWA config has a unique build generation',config.includes("cacheVersion:'v385-build-20260917-19'")&&config.includes("buildId:'20260917-19'")&&config.includes('dataset.appBuild=config.buildId'));
-check('service worker cache name consumes the central cache generation',sw.includes('const CACHE=`radyo-${CFG.cacheVersion}`'));
+check('PWA config has a unique build generation',config.includes("cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52'")&&config.includes("buildId:'20260917-19'")&&config.includes('dataset.appBuild=config.buildId'));
+check('service worker cache name consumes the central build generation',sw.includes("const BUILD_ID=String(CFG.buildId||'legacy')")&&sw.includes('const CACHE=`radyo-${CFG.cacheVersion}-${BUILD_ID}`')&&sw.includes("const PWA_CACHE_GENERATION='20260917-19'"));
 check('owned log scope boots between foundation and runtime',bootstrap.indexOf("'app-foundation.js'")<bootstrap.indexOf("'app-user-log-scope.js'")&&bootstrap.indexOf("'app-user-log-scope.js'")<bootstrap.indexOf("'app-runtime-core.js'"));
 check('owned log scope is a critical bootstrap module',bootstrap.includes("CRITICAL=new Set(['app-foundation.js','app-user-log-scope.js'"));
 check('owned log scope is cached as a critical PWA module',sw.includes("const OWNED_LOG_SCOPE='20260917-13'")&&sw.includes("'./app-user-log-scope.js'")&&sw.includes("'./app-foundation.js','./app-user-log-scope.js','./app-runtime-core.js'"));
