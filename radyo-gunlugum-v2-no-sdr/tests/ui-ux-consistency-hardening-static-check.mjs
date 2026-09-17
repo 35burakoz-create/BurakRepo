@@ -57,6 +57,12 @@ check('GPS success resolves the location-coordinate warning',ux.includes('Mutati
 check('coordinate confirmation validates latitude and longitude ranges',ux.includes('a>=-90&&a<=90')&&ux.includes('b>=-180&&b<=180'));
 check('location mismatch warning is mobile-friendly and uses canonical touch size',uxCss.includes('app-location-coordinate-guard')&&uxCss.includes('var(--app-touch-min,44px)')&&uxCss.includes('@media(max-width:560px)'));
 
+check('Now candidate cards are converted from implicit buttons into informational articles',ux.includes("root.querySelectorAll('button.radio-candidate-card')")&&ux.includes("document.createElement('article')")&&ux.includes('app-now-candidate-static'));
+check('Now candidate actions are explicit and consistent',ux.includes("nowButton('Dinle'")&&ux.includes("nowButton('Detay'")&&ux.includes("nowButton('Kayıt formuna aktar'"));
+check('MW candidates reuse guide matches for listen and prefill actions',ux.includes('R.radioConsole?.guideMatch?.(row)')&&ux.includes('guide?.id'));
+check('Now card normalization survives rerenders',ux.includes('new MutationObserver(scheduleNowNormalization)')&&ux.includes("'radio-console:mw-ready'")&&ux.includes("'render:all'"));
+check('explicit Now actions keep canonical touch targets on mobile',uxCss.includes('.app-now-card-actions .btn')&&uxCss.includes('min-height:var(--app-touch-min,44px)'));
+
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
 console.log(`\n${checks.length-failed.length}/${checks.length} UI/UX consistency hardening checks passed.`);

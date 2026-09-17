@@ -4,6 +4,9 @@
 .app-location-coordinate-guard p{margin:4px 0 0;color:var(--app-text-secondary,#475569);font-size:12.5px;line-height:1.5}
 .app-location-coordinate-actions{display:flex;gap:8px;flex-wrap:wrap}
 .app-location-coordinate-actions .btn{min-height:var(--app-touch-min,44px)}
-@media(max-width:560px){.app-location-coordinate-actions{display:grid;grid-template-columns:1fr}.app-location-coordinate-actions .btn{width:100%}}
+.app-now-candidate-static{cursor:default!important}
+.app-now-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--app-radio-line,#223545)}
+.app-now-card-actions .btn{min-height:var(--app-touch-min,44px);flex:1 1 128px}
+@media(max-width:560px){.app-location-coordinate-actions{display:grid;grid-template-columns:1fr}.app-location-coordinate-actions .btn{width:100%}.app-now-card-actions{display:grid;grid-template-columns:1fr 1fr}.app-now-card-actions .btn:last-child:nth-child(3){grid-column:1/-1}}
 html.night .app-location-coordinate-guard,.night-mode .app-location-coordinate-guard{background:#2b1b08;border-color:#a16207;color:#f8fafc}
 html.night .app-location-coordinate-guard p,.night-mode .app-location-coordinate-guard p{color:#cbd5e1}
