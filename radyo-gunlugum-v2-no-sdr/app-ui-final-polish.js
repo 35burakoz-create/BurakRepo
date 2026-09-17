@@ -1,5 +1,6 @@
 (()=>{
 const R=window.R;if(!R||R.__uiFinalPolish20260917)return;R.__uiFinalPolish20260917=true;
+function loadCss(){if(document.querySelector('link[data-ui-final-polish-css]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='app-ui-final-polish.css';l.dataset.uiFinalPolishCss='1';document.head.appendChild(l)}loadCss();
 const ICONS=Object.freeze({
  home:'<path d="M3.5 10.5 12 3.5l8.5 7v9a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1z"/>',
  now:'<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/>',
@@ -31,7 +32,7 @@ for(const event of ['route:changed','auth:changed','render:all','data:loaded'])R
 window.addEventListener('app:uimode',schedule);
 let observer=null;
 function observe(){if(observer||typeof MutationObserver==='undefined'||!document.body)return;observer=new MutationObserver(records=>{if(records.some(r=>r.addedNodes?.length))schedule()});observer.observe(document.body,{childList:true,subtree:true})}
-R.uiFinalPolish={icons:ICONS,svg,setIcon,syncIcons,schedule};
+R.uiFinalPolish={icons:ICONS,svg,setIcon,syncIcons,schedule,loadCss};
 R.features?.register?.('ui-final-polish',{ready:true,provider:'app-ui-final-polish'});
 setTimeout(()=>{syncIcons();observe()},0);
 })();
