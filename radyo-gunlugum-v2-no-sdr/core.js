@@ -1,5 +1,6 @@
 const R=window.R={};
 R.__coreBase=true;
+R.authRecoveryHint=/(?:^|[?#&])type=recovery(?:&|$)/.test(`${location.search||''}${location.hash||''}`);
 R.URL='https://mesbtntnclokgzgunept.supabase.co';
 R.KEY='sb_publishable_sUZxv1oXvj8y3oOKhXGNtw_BwoiREML';
 R.S=supabase.createClient(R.URL,R.KEY);
