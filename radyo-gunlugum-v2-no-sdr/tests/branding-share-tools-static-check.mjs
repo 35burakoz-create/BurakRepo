@@ -1,0 +1,30 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+
+const root=path.resolve(import.meta.dirname,'..');
+const read=name=>fs.readFileSync(path.join(root,name),'utf8');
+const boot=read('app-bootstrap.js');
+const sw=read('sw.js');
+const js=read('app-branding-share-tools.js');
+const css=read('app-branding-share-tools.css');
+
+new Function(js);
+assert(boot.includes("'app-branding-experience.js','app-branding-share-tools.js'"),'share tools must boot immediately after the base branding experience');
+assert(sw.includes("const SHARE_CARD_LAYOUT_TOOLS='20260917-6';"),'service worker must carry share-layout release marker');
+for(const asset of ['./app-branding-share-tools.js','./app-branding-share-tools.css'])assert(sw.includes(`'${asset}'`),`service worker must cache ${asset}`);
+assert(js.includes("new Set(['classic','dial','minimal'])"),'share cards must expose classic, dial and minimal layouts');
+assert(js.includes('Klasik')&&js.includes('Kadran')&&js.includes('Sade'),'layout selector must use clear Turkish labels');
+assert(js.includes('R.brandingExperience?.shareCardData?.(log)'),'layout renderer must reuse the privacy-filtered base card data');
+for(const privateField of ['location','latitude','longitude','notes','signal_strength','signal','transcript','program','qsl'])assert(!js.includes(`log?.${privateField}`),`layout tools must not read private field ${privateField}`);
+assert(js.includes("credentials:'omit'"),'layout background fetch must not forward ambient credentials');
+assert(js.includes("canvas.toBlob")&&js.includes("'image/png'"),'alternate layouts must render PNG files');
+assert(js.includes("save.dataset.shareSave='1'"),'share dialog must receive a save-card action');
+assert(js.includes("a.download=file.name")&&js.includes("a.click()"),'save-card action must trigger a real browser download');
+assert(js.includes('URL.revokeObjectURL')&&js.includes('revokeActive()'),'temporary preview/download object URLs must be cleaned up');
+assert(js.includes("window.addEventListener('click',onClick,true)"),'share tools must intercept native share before the base document handler');
+assert(js.includes("navigator.canShare?.({files:[file]})")&&js.includes('navigator.share(payload)'),'selected layout must be shareable as a file when supported');
+assert(js.includes("localStorage.setItem(LAYOUT_KEY,value)"),'selected card layout should persist locally');
+assert(css.includes('.app-branding-share-tools')&&css.includes('[data-share-save]'),'layout selector and save action must be styled');
+assert(css.includes('@media(max-width:620px)')&&css.includes('@media(max-width:420px)'),'share tools must adapt to small screens');
+console.log('branding-share-tools-static-check: ok');
