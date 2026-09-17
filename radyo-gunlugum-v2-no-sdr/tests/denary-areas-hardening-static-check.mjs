@@ -9,12 +9,13 @@ function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
 
 const offline=read('app-offline-service.js');
 const records=read('app-record-service.js');
+const scope=read('app-user-log-scope.js');
 const calendar=read('app-calendar-ui.js');
 const analysis=read('app-analysis-ui.js');
 const menu=read('app-menu-ui.js');
 
 for(const [file,src] of [
-  ['app-offline-service.js',offline],['app-record-service.js',records],
+  ['app-offline-service.js',offline],['app-record-service.js',records],['app-user-log-scope.js',scope],
   ['app-calendar-ui.js',calendar],['app-analysis-ui.js',analysis],['app-menu-ui.js',menu]
 ]){
   let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}
@@ -32,13 +33,14 @@ check('record edits remove canonical prior audio rather than trusting caller old
 check('record delete never falls back to a stale in-memory audio path',records.includes('if(q.data.audio_path)await removeAudio(q.data.audio_path')&&!records.includes('q.data.audio_path||log.audio_path'));
 check('storage deletion rejects paths outside the authenticated account folder',records.includes('function ownedAudioPath')&&records.includes('if(!ownedAudioPath(path,userId))'));
 
-check('calendar builds an account-scoped date index',calendar.includes('function dateIndex()')&&calendar.includes('x?.user_id!==userId')&&calendar.includes('dateCounts=next'));
+check('calendar builds a canonical account-scoped date index',calendar.includes('function dateIndex()')&&calendar.includes("typeof R.ownedLogs==='function'?R.ownedLogs():R.logs||[]")&&calendar.includes('dateCounts=next'));
 check('calendar date index is invalidated on data and account changes',calendar.includes("R.events?.on?.('data:loaded',()=>{invalidate()")&&calendar.includes("R.events?.on?.('auth:changed',()=>invalidate())"));
 check('calendar still rejects impossible Gregorian dates',calendar.includes('x.getUTCFullYear()===y')&&calendar.includes('x.getUTCMonth()===mo-1'));
 
-check('analysis is restricted to the active account and receiver bands',analysis.includes('function ownedLogs()')&&analysis.includes('x?.user_id===userId')&&analysis.includes('allowed.has(String(x?.band||'));
+check('analysis is restricted to canonical owned rows and receiver bands',analysis.includes('function ownedLogs()')&&analysis.includes("typeof R.ownedLogs==='function'?R.ownedLogs():R.logs||[]")&&analysis.includes('allowed.has(String(x?.band||'));
 check('analysis uses strict clock validation including minutes and seconds',analysis.includes('function validClockTime')&&analysis.includes('min>=0&&min<=59')&&analysis.includes('sec>=0&&sec<=59'));
 check('analysis predictions use strict validated hours',analysis.includes('const hour=validClockTime(x.time)'));
+check('canonical ownership rejects explicitly foreign rows',scope.includes('owner===userId')&&scope.includes('if(!userId)return false'));
 
 check('reminder menu update verifies an actual returned row',menu.includes(".select('id,enabled').maybeSingle()")&&menu.includes("if(!q.data)throw new Error('Hatırlatıcı bulunamadı veya bu hesaba ait değil.')"));
 check('reminder menu only mutates the active account cache row',menu.includes('x?.user_id===userId&&String(x.id)===String(reminderId)'));
@@ -46,7 +48,7 @@ check('reminder menu only mutates the active account cache row',menu.includes('x
 // Functional analysis checks: foreign accounts, unsupported bands and malformed times.
 {
   const R={
-    features:{register(){}},router:{register(){}},events:{on(){}},B:['MW','SW1'],me:{id:'u1'},
+    features:{register(){}},router:{register(){}},events:{on(){},emit(){}},store:{sync(){}},reportError(){throw new Error('ownership scope should install cleanly')},B:['MW','SW1'],me:{id:'u1'},
     logs:[
       {user_id:'u1',band:'MW',signal_strength:5,time:'03:99',station:'A'},
       {user_id:'u1',band:'SW1',signal_strength:3,time:'04:30',station:'B'},
@@ -55,19 +57,20 @@ check('reminder menu only mutates the active account cache row',menu.includes('x
     ]
   };
   const sandbox={window:{R},document:{querySelector(){return null}},Intl,Date,Math,Number,String,Array,Object,Map,Set,Promise,console,setTimeout(){return 0}};
-  vm.createContext(sandbox);vm.runInContext(analysis,sandbox,{filename:'app-analysis-ui.js'});
+  vm.createContext(sandbox);vm.runInContext(scope,sandbox,{filename:'app-user-log-scope.js'});vm.runInContext(analysis,sandbox,{filename:'app-analysis-ui.js'});
   const owned=R.analysisUI.ownedLogs();
   check('analysis functionally excludes foreign-account and unsupported-band rows',owned.length===2&&owned.every(x=>x.user_id==='u1')&&owned.every(x=>['MW','SW1'].includes(x.band)));
   check('analysis rejects 03:99 as an invalid clock time',R.analysisUI.validClockTime('03:99')===null);
   check('analysis accepts a real minute value',R.analysisUI.validClockTime('04:30')===4);
   check('analysis rejects invalid seconds',R.analysisUI.validClockTime('04:30:99')===null);
+  check('analysis reuses stable canonical owned-array identity',R.ownedLogs()===R.ownedLogs());
 }
 
 // Functional calendar checks: one pass index, account isolation and impossible dates.
 {
   class Element{}
   const R={
-    features:{register(){}},router:{register(){},current(){return'calendar'}},events:{on(){}},me:{id:'u1'},
+    features:{register(){}},router:{register(){},current(){return'calendar'}},events:{on(){},emit(){}},store:{sync(){}},reportError(){throw new Error('ownership scope should install cleanly')},me:{id:'u1'},
     logs:[
       {user_id:'u1',date:'2026-09-14'},
       {user_id:'u1',date:'2026-09-14'},
@@ -76,13 +79,15 @@ check('reminder menu only mutates the active account cache row',menu.includes('x
     ]
   };
   const sandbox={window:{R},document:{querySelector(){return null}},Element,Intl,Date,Math,Number,String,Array,Object,Map,Set,Promise,console,setTimeout(){return 0}};
-  vm.createContext(sandbox);vm.runInContext(calendar,sandbox,{filename:'app-calendar-ui.js'});
+  vm.createContext(sandbox);vm.runInContext(scope,sandbox,{filename:'app-user-log-scope.js'});vm.runInContext(calendar,sandbox,{filename:'app-calendar-ui.js'});
   const idx=R.calendarUI.dateIndex();
-  check('calendar functionally counts only active-account valid dates',idx.get('2026-09-14')===2&&idx.size===1);
+  check('calendar functionally counts only canonical owned valid dates',idx.get('2026-09-14')===2&&idx.size===1);
   check('calendar validator rejects February 30',R.calendarUI.validIsoDate('2026-02-30')===false);
+  const firstOwned=R.ownedLogs();
   R.logs=[{user_id:'u1',date:'2026-09-15'}];
   const next=R.calendarUI.dateIndex();
   check('calendar reindexes when the loaded log array changes',next.get('2026-09-15')===1&&!next.has('2026-09-14'));
+  check('calendar receives a new canonical array after runtime log assignment',R.ownedLogs()!==firstOwned);
 }
 
 // Functional record-service checks: caller-provided stale audio cannot delete unrelated files.
