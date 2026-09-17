@@ -6,7 +6,7 @@ const VALID=new Set(['home','now','log','audio','analysis','map','calendar','qsl
 const FILTER_IDS=['search','filterBand','filterDate','filterStatus','guideBand','guideFreq','guideSearch','calendarMonth'];
 const FORM_IDS=['logId','audioPath','date','time','band','frequency','station','language','country','contentType','program','location','latitude','longitude','signal','status','antennaDirection','antennaAngle','dialPosition','transcript','notes','qslStatus','qslContact','qslSentAt','qslReceivedAt','qslNotes'];
 function json(raw,fallback){try{return raw?JSON.parse(raw):fallback}catch{return fallback}}
-function readHash(){const h=decodeURIComponent(location.hash||'').replace(/^#/,'').replace(/^tab=/,'');return VALID.has(h)?h:null}
+function readHash(){let h='';try{h=decodeURIComponent(location.hash||'')}catch(error){R.reportError?.(error,'ui-state-hash',{silent:true});return null}h=h.replace(/^#/,'').replace(/^tab=/,'');return VALID.has(h)?h:null}
 const state={tab:readHash()||'home',nowMode:'ALL',filters:{},scroll:{}};
 let draftDirty=false,browserRouting=false,suppressDraftClear=false;
 function stateStorageKey(userId=R.me?.id){return userId?`${STATE_KEY}:${userId}`:null}
@@ -42,6 +42,6 @@ R.events?.on?.('data:loaded',()=>{restoreFilters();if(R.router?.current?.()==='n
 R.events?.on?.('auth:changed',x=>{const nextId=x?.user?.id||null,previousId=x?.previousUserId||null;if(previousId&&previousId!==nextId){saveDraft(previousId);save(previousId)}if(x?.authenticated){if(previousId&&previousId!==nextId)resetVisibleForm();applyStoredState(nextId);restoreFilters();restoreDraft();R.navigation.restore()}else{state.tab=readHash()||'home';state.nowMode='ALL';state.filters={};state.scroll={};setTimeout(resetVisibleForm,0)}});
 R.events?.on?.('bootstrap:ready',()=>{if(R.me){applyStoredState(R.me.id);restoreFilters();R.navigation.restore()}});
 clearLegacyState();clearLegacyDraft();if(R.me){applyStoredState(R.me.id);restoreFilters();restoreDraft();R.navigation.restore()}
-R.uiStatePersistence={saveDraft,restoreDraft,clearDraft,draftStorageKey,stateStorageKey,applyStoredState,setFilter,save,resetVisibleForm,restoreScroll,resetScroll};
+R.uiStatePersistence={saveDraft,restoreDraft,clearDraft,draftStorageKey,stateStorageKey,applyStoredState,setFilter,save,resetVisibleForm,restoreScroll,resetScroll,readHash};
 R.features?.register?.('ui-state',{ready:true,provider:'app-ui-state'});
 })();
