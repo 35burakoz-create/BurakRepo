@@ -23,7 +23,7 @@ function storageBucket(){return{
 globalThis.supabase={createClient(){return{
   auth:{
     getSession:async()=>({data:{session:{user}},error:null}),
-    onAuthStateChange(){return{data:{subscription:{unsubscribe(){}}}}},
+    onAuthStateChange(callback){queueMicrotask(()=>callback?.('INITIAL_SESSION',{user}));return{data:{subscription:{unsubscribe(){}}}}},
     signInWithPassword:async()=>({data:{user,session:{user}},error:null}),
     signUp:async()=>({data:{user,session:{user}},error:null}),
     signOut:async()=>({error:null}),
