@@ -56,3 +56,4 @@ assert(ai.includes('function confidenceLabel(value)'),'AI confidence must use qu
 assert(ai.includes('Teknik analiz bilgileri'),'AI model and exact percentage detail must be progressive disclosure');
 
 console.log('ui-ux-audit-p0-p1-static-check: ok');
+await import('./map-clustering-static-check.mjs');
