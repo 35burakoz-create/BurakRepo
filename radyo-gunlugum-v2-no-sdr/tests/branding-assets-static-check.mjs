@@ -74,3 +74,4 @@ for(const op of ['select','insert','update','delete'])assert(sql.includes(`radio
 assert((sql.match(/\(storage\.foldername\(name\)\)\[1\] = \(select auth\.uid\(\)\)::text/g)||[]).length>=5,'Storage policies must scope access to the user UUID folder');
 
 console.log('branding-assets-static-check: ok');
+await import('./branding-experience-static-check.mjs');
