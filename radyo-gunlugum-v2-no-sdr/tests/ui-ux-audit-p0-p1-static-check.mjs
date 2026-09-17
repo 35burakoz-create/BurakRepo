@@ -21,7 +21,7 @@ assert(sw.includes("'./app-ui-audit-polish.js'"),'audit polish must be available
 
 for(const [name,source] of [['map',map],['qsl',qsl],['ai',ai]]){
   assert(source.includes('function ownedLogs()'),`${name} UI must expose an active-account log scope`);
-  assert(source.includes('x?.user_id==null||x.user_id===userId'),`${name} UI must reject rows explicitly owned by another account`);
+  assert(source.includes('x?.user_id==null')&&source.includes('x.user_id===userId'),`${name} UI must preserve ownerless legacy rows while rejecting rows explicitly owned by another account`);
 }
 assert(qsl.includes('function logById(id){return ownedLogs()'),'QSL actions must resolve records inside the active-account scope');
 assert(ai.includes('const root=ensure(),logs=ownedLogs().filter(x=>x.audio_path)'),'AI record picker must use active-account logs only');
