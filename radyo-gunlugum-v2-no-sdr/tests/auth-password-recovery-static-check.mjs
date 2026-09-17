@@ -4,19 +4,24 @@ import assert from 'node:assert/strict';
 
 const root=path.resolve(import.meta.dirname,'..');
 const read=name=>fs.readFileSync(path.join(root,name),'utf8');
+const core=read('core.js');
 const boot=read('app-bootstrap.js');
 const sw=read('sw.js');
 const js=read('app-auth-recovery.js');
 const css=read('app-auth-recovery.css');
 
 new Function(js);
-assert(boot.includes("'app-auth-ui.js','app-auth-recovery.js'"),'password recovery must boot immediately after auth UI');
+assert(core.includes('R.authRecoveryHint=')&&core.includes('type=recovery'),'core must preserve only a boolean recovery callback hint before Supabase client initialization');
+assert(core.indexOf('R.authRecoveryHint=')<core.indexOf('supabase.createClient'),'recovery hint must be captured before auth client initialization can consume the callback URL');
+assert(boot.includes("'app-auth-service.js','app-auth-recovery.js'"),'password recovery must subscribe immediately after the auth service');
 assert(sw.includes("const AUTH_PASSWORD_RECOVERY='20260917-11';"),'service worker must carry auth recovery release marker');
 for(const asset of ['./app-auth-recovery.js','./app-auth-recovery.css'])assert(sw.includes(`'${asset}'`),`service worker must cache ${asset}`);
 assert(js.includes("button.textContent='Şifremi unuttum'"),'login UI must expose a password recovery action');
 assert(js.includes('R.S.auth.resetPasswordForEmail(email)'),'recovery request must use the current Supabase password-reset API');
 assert(js.includes('Bu adres bir hesapla eşleşiyorsa'),'success copy must avoid account enumeration');
 assert(js.includes("event==='PASSWORD_RECOVERY'")&&js.includes('openRecovery()'),'recovery callback must be driven by the Supabase PASSWORD_RECOVERY event');
+assert(js.includes('async function resumeRecoveryHint()')&&js.includes('R.S.auth.getSession()'),'a callback consumed before subscription must be recovered only after confirming an active session');
+assert(js.includes('R.authRecoveryHint=false'),'recovery URL hint must be one-shot and cleared after processing');
 assert(js.includes('R.S.auth.updateUser({password})'),'verified recovery session must update the password through Supabase Auth');
 assert(js.includes("password.length<8")&&js.includes("password!==confirm"),'new password must enforce length and confirmation before update');
 assert(js.includes('autocomplete=\"new-password\"'),'recovery inputs must support password-manager semantics');
@@ -24,6 +29,7 @@ assert(js.includes("dialog.setAttribute('role','dialog')")&&js.includes("dialog.
 assert(js.includes("data-auth-recovery-cancel>İptal ve çıkış")&&js.includes('await R.auth?.signOut?.()'),'canceling a recovery session must sign the user out rather than leave a recovery session active');
 assert(js.includes("submit.setAttribute('aria-busy','true')")&&js.includes("button.setAttribute('aria-busy','true')"),'network actions must expose busy state and duplicate-action locks');
 assert(!js.includes('localStorage')&&!js.includes('sessionStorage'),'password recovery must never persist passwords or recovery state in browser storage');
+assert(!core.includes('access_token')&&!core.includes('refresh_token'),'core must not capture or persist recovery tokens');
 assert(!js.includes('service_role')&&!js.includes('.auth.admin'),'client recovery must never use privileged auth APIs');
 assert(!js.includes('redirectTo:'),'recovery email should rely on the configured Supabase Site URL instead of guessing an unverified production host');
 assert(css.includes(':focus-visible')&&css.includes('min-height:44px'),'recovery controls must keep visible keyboard focus and touch targets');
