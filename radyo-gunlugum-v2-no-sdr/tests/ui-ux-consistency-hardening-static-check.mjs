@@ -63,6 +63,12 @@ check('MW candidates reuse guide matches for listen and prefill actions',ux.incl
 check('Now card normalization survives rerenders',ux.includes('new MutationObserver(scheduleNowNormalization)')&&ux.includes("'radio-console:mw-ready'")&&ux.includes("'render:all'"));
 check('explicit Now actions keep canonical touch targets on mobile',uxCss.includes('.app-now-card-actions .btn')&&uxCss.includes('min-height:var(--app-touch-min,44px)'));
 
+check('station detail gets primary listen and prefill actions from its guide match',ux.includes('function decorateStationDetail')&&ux.includes("nowButton('Dinlemeye başla'")&&ux.includes("nowButton('Kayıt formuna aktar'"));
+check('station detail action footer resolves the current schedule row safely',ux.includes('function stationDetailRow')&&ux.includes("root?.dataset?.detailSource||'current'")&&ux.includes('R.radioConsole?.guideMatch?.(row)'));
+check('station detail action footer survives detail rerenders',ux.includes('function watchStationDetail')&&ux.includes("stationDetailObserver.observe(document.body,{childList:true,subtree:true})"));
+check('station detail fallback explains unavailable direct actions',ux.includes('Bu istasyon henüz doğrudan bir yayın rehberi kaydına bağlanamadı.'));
+check('station detail actions are sticky and maintain touch targets',uxCss.includes('.app-station-detail-actions{position:sticky')&&uxCss.includes('.app-station-detail-actions .btn')&&uxCss.includes('var(--app-touch-min,44px)'));
+
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
 console.log(`\n${checks.length-failed.length}/${checks.length} UI/UX consistency hardening checks passed.`);
