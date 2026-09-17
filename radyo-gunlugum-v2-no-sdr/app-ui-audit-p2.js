@@ -31,6 +31,7 @@ document.addEventListener('click',onClick,true);
 R.events?.on?.('route:changed',x=>{if(x?.to==='atlas')setTimeout(()=>{observeAtlas();applyAtlasView()},35);if(x?.to==='analysis')scheduleAnalysis();if(x?.to==='calendar')setTimeout(ensureCalendarNav,0);if(x?.to==='audio')setTimeout(syncAudioFlow,0)});
 for(const event of ['store:updated','atlas:changed','listening:data'])R.events?.on?.(event,()=>{if(R.router?.current?.()==='atlas')scheduleAtlas()});
 R.events?.on?.('data:loaded',()=>{if(R.router?.current?.()==='analysis')scheduleAnalysis()});
+R.events?.on?.('render:all',()=>{const route=R.router?.current?.();if(route==='analysis')scheduleAnalysis();if(route==='atlas')scheduleAtlas();setTimeout(()=>{ensurePasswordToggle();ensureCalendarNav();syncAudioFlow()},0)});
 for(const event of ['audio:selected','audio:captured','audio:uploaded','form:reset'])R.events?.on?.(event,()=>setTimeout(syncAudioFlow,0));
 R.events?.on?.('auth:changed',()=>{resetPasswordVisibility();setTimeout(()=>{ensurePasswordToggle();syncAudioFlow()},0)});
 R.uiAuditP2={applyAtlasView,renderAnalysisPeriod,analysisLogs,setCalendarMonth,syncAudioFlow,ensurePasswordToggle};install();R.features?.register?.('ui-ux-audit-p2',{ready:true,provider:'app-ui-audit-p2'});
