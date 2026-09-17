@@ -7,19 +7,27 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const checks=[];
 function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
 
+const config=read('app-config.js');
 const bootstrap=read('app-bootstrap.js');
 const sw=read('sw.js');
 const scope=read('app-user-log-scope.js');
+const analysis=read('app-analysis-ui.js');
+const calendar=read('app-calendar-ui.js');
 const ux=read('app-ui-ux-consistency.js');
 const uxCss=read('app-ui-ux-consistency.css');
 
 new Function(scope);
 new Function(ux);
+check('PWA config has a unique build generation',config.includes("cacheVersion:'v385-build-20260917-19'")&&config.includes("buildId:'20260917-19'")&&config.includes('dataset.appBuild=config.buildId'));
+check('service worker cache name consumes the central cache generation',sw.includes('const CACHE=`radyo-${CFG.cacheVersion}`'));
 check('owned log scope boots between foundation and runtime',bootstrap.indexOf("'app-foundation.js'")<bootstrap.indexOf("'app-user-log-scope.js'")&&bootstrap.indexOf("'app-user-log-scope.js'")<bootstrap.indexOf("'app-runtime-core.js'"));
 check('owned log scope is a critical bootstrap module',bootstrap.includes("CRITICAL=new Set(['app-foundation.js','app-user-log-scope.js'"));
 check('owned log scope is cached as a critical PWA module',sw.includes("const OWNED_LOG_SCOPE='20260917-13'")&&sw.includes("'./app-user-log-scope.js'")&&sw.includes("'./app-foundation.js','./app-user-log-scope.js','./app-runtime-core.js'"));
-check('scope exposes canonical owned-row helpers',scope.includes('R.isOwnedRow=isOwnedRow')&&scope.includes('R.ownedLogs=')&&scope.includes('R.rawLogs='));
+check('scope exposes canonical owned-row helpers',scope.includes('R.isOwnedRow=isOwnedRow')&&scope.includes('R.ownedLogs=')&&scope.includes('R.rawLogs=')&&scope.includes('R.invalidateOwnedLogs=invalidate'));
 check('scope fails closed without an authenticated user',scope.includes('if(!userId)return false')&&scope.includes('if(!userId)return[]'));
+check('scope memoizes the current raw-list and account view',scope.includes('cache.rows===source&&cache.userId===userId&&cache.legacy===legacy')&&scope.includes('cache={rows:source,userId,legacy,value}'));
+check('analysis consumes canonical owned logs',analysis.includes("typeof R.ownedLogs==='function'?R.ownedLogs():R.logs||[]")&&!analysis.includes('x?.user_id===userId'));
+check('calendar consumes canonical owned logs',calendar.includes("typeof R.ownedLogs==='function'?R.ownedLogs():R.logs||[]")&&!calendar.includes('if(x?.user_id!==userId)continue'));
 
 const listeners=new Map();
 const R={
@@ -38,14 +46,19 @@ const R={
 const context={window:{R}};
 vm.createContext(context);
 vm.runInContext(scope,context);
-check('active account sees its rows plus ownerless legacy rows',JSON.stringify(R.logs.map(x=>x.id))==='[1,3,4]');
+const u1a=R.logs,u1b=R.logs;
+check('active account sees its rows plus ownerless legacy rows',JSON.stringify(u1a.map(x=>x.id))==='[1,3,4]');
+check('repeated reads reuse the same memoized owned array',u1a===u1b);
 R.me={id:'u2'};
-check('switching account immediately hides the previous account rows',JSON.stringify(R.logs.map(x=>x.id))==='[2,3,4]');
+const u2=R.logs;
+check('switching account immediately hides the previous account rows',JSON.stringify(u2.map(x=>x.id))==='[2,3,4]'&&u2!==u1a);
 R.me=null;
 check('signed-out state exposes no retained log rows',R.logs.length===0);
 R.me={id:'u1'};
 R.logs=[{id:5,user_id:'u2'},{id:6,user_id:'u1'}];
-check('new runtime assignments are filtered through the same contract',JSON.stringify(R.logs.map(x=>x.id))==='[6]'&&R.rawLogs().length===2);
+const assignedA=R.logs,assignedB=R.logs;
+check('new runtime assignments are filtered through the same contract',JSON.stringify(assignedA.map(x=>x.id))==='[6]'&&R.rawLogs().length===2);
+check('runtime assignment invalidates then rememoizes the owned view',assignedA===assignedB&&assignedA!==u1a);
 check('legacy rows can be explicitly excluded by callers',R.ownedLogs([{id:7},{id:8,user_id:'u1'}],'u1',{legacy:false}).map(x=>x.id).join(',')==='8');
 
 check('UI UX consistency layer boots after audit polish',bootstrap.indexOf("'app-ui-audit-polish.js'")<bootstrap.indexOf("'app-ui-ux-consistency.js'"));
