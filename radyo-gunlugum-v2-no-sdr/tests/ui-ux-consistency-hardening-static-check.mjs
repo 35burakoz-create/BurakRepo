@@ -69,6 +69,14 @@ check('station detail action footer survives detail rerenders',ux.includes('func
 check('station detail fallback explains unavailable direct actions',ux.includes('Bu istasyon henüz doğrudan bir yayın rehberi kaydına bağlanamadı.'));
 check('station detail actions are sticky and maintain touch targets',uxCss.includes('.app-station-detail-actions{position:sticky')&&uxCss.includes('.app-station-detail-actions .btn')&&uxCss.includes('var(--app-touch-min,44px)'));
 
+check('live and session signal controls are visually blanked on first render',ux.includes('function decorateSignalGroup')&&ux.includes("b.classList.remove('active')")&&ux.includes("group.dataset.uxSignalChosen=''"));
+check('signal buttons explicitly record user choice',ux.includes('function handleSignalCapture')&&ux.includes('group.dataset.uxSignalChosen=signalButton.dataset.appSignal||signalButton.dataset.sessionSignal'));
+check('heard and weak results are blocked until a signal is chosen',ux.includes("result.dataset.appResult==='none'")&&ux.includes('event.stopImmediatePropagation()')&&ux.includes('Duyulan bir sonuç için önce sinyal gücünü seç.'));
+check('no-heard result remains allowed without a signal score',ux.includes("result.dataset.appResult==='none'||result.dataset.sessionResult==='none'"));
+check('listening service has a defense-in-depth signal guard',ux.includes('function guardListeningService')&&ux.includes("result!=='none'&&!group.dataset.uxSignalChosen")&&ux.includes('Promise.reject(new Error'));
+check('signal guard runs in window capture before document handlers',ux.includes("window.addEventListener('click',handleSignalCapture,true)"));
+check('signal guidance is readable and error state is visible',uxCss.includes('.app-listen-signal-hint')&&uxCss.includes('#appListenState.error,#appSessionState.error'));
+
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
 console.log(`\n${checks.length-failed.length}/${checks.length} UI/UX consistency hardening checks passed.`);

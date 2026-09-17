@@ -10,6 +10,8 @@
 .app-station-detail-actions{position:sticky;bottom:0;z-index:2;display:flex;gap:8px;flex-wrap:wrap;margin:14px -1px -1px;padding:12px;background:color-mix(in srgb,var(--app-radio-panel,#0d1a25) 94%,transparent);border-top:1px solid var(--app-radio-line,#223545);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .app-station-detail-actions .btn{min-height:var(--app-touch-min,44px);flex:1 1 180px}
 .app-station-detail-action-note{display:block;width:100%;color:var(--app-radio-muted,#91a0ad);font-size:12.5px;line-height:1.5}
+.app-listen-signal-hint{margin:6px 0 0!important;color:var(--app-radio-muted,#91a0ad)!important;font-size:12.5px!important;line-height:1.4!important;text-align:left}
+#appListenState.error,#appSessionState.error{color:var(--app-radio-danger,#ff8276)!important}
 @media(max-width:560px){.app-location-coordinate-actions{display:grid;grid-template-columns:1fr}.app-location-coordinate-actions .btn{width:100%}.app-now-card-actions{display:grid;grid-template-columns:1fr 1fr}.app-now-card-actions .btn:last-child:nth-child(3){grid-column:1/-1}.app-station-detail-actions{display:grid;grid-template-columns:1fr}.app-station-detail-actions .btn{width:100%}}
 html.night .app-location-coordinate-guard,.night-mode .app-location-coordinate-guard{background:#2b1b08;border-color:#a16207;color:#f8fafc}
 html.night .app-location-coordinate-guard p,.night-mode .app-location-coordinate-guard p{color:#cbd5e1}
