@@ -45,6 +45,7 @@ assert(accessibility.includes("typeof window.showSaveFilePicker==='function'")&&
 assert(accessibility.includes('await anchorSave(file)')&&accessibility.includes('a.download=safeName(file)'),'save flow must fall back to a conventional PNG download');
 assert(accessibility.includes("replace(/[\\\\/:*?\"<>|\\u0000-\\u001f]/g,'-')"),'download filename must strip filesystem-invalid characters');
 assert(accessibility.includes("URL.revokeObjectURL(url),1800"),'enhanced fallback download URL must be revoked');
+assert(!accessibility.includes('fetch(')&&!accessibility.includes('supabase'),'accessibility layer must not add network or storage reads');
 assert(accessibilityCss.includes('.app-branding-share-sr')&&accessibilityCss.includes(':focus-visible'),'share accessibility must include a screen-reader-only status and visible keyboard focus');
 assert(accessibilityCss.includes('@media(prefers-reduced-motion:reduce)'),'share rendering feedback must respect reduced-motion preferences');
 console.log('branding-share-tools-static-check: ok');
