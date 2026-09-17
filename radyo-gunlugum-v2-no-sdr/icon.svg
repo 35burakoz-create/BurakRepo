@@ -1,13 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="116" fill="#173c29"/>
-  <circle cx="256" cy="272" r="156" fill="#f5f1df" opacity=".97"/>
-  <path d="M145 267a111 111 0 0 1 222 0" fill="none" stroke="#173c29" stroke-width="24" stroke-linecap="round"/>
-  <path d="M178 267a78 78 0 0 1 156 0" fill="none" stroke="#4f755d" stroke-width="20" stroke-linecap="round"/>
-  <path d="M256 274 344 181" stroke="#b6493c" stroke-width="14" stroke-linecap="round"/>
-  <circle cx="256" cy="274" r="19" fill="#173c29"/>
-  <rect x="155" y="325" width="202" height="44" rx="22" fill="#173c29"/>
-  <circle cx="190" cy="347" r="9" fill="#d9e6da"/>
-  <circle cx="223" cy="347" r="9" fill="#d9e6da"/>
-  <path d="M150 112 325 45" stroke="#f5f1df" stroke-width="17" stroke-linecap="round"/>
-  <circle cx="149" cy="112" r="13" fill="#f5f1df"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Radyo Günlüğüm uygulama simgesi">
+  <rect width="512" height="512" rx="112" fill="#eef4f8"/>
+  <rect x="54" y="120" width="404" height="274" rx="38" fill="#0d2a44"/>
+  <rect x="68" y="134" width="376" height="246" rx="28" fill="#123451"/>
+  <path d="M102 109 398 68" fill="none" stroke="#b8c6d3" stroke-width="14" stroke-linecap="round"/>
+  <path d="M102 109 398 68" fill="none" stroke="#f8fbfd" stroke-width="6" stroke-linecap="round" opacity=".9"/>
+  <circle cx="96" cy="110" r="12" fill="#8fa1b1"/>
+  <circle cx="404" cy="67" r="13" fill="#8fa1b1"/>
+  <g fill="#061a2b">
+    <circle cx="105" cy="190" r="7"/><circle cx="130" cy="190" r="7"/><circle cx="155" cy="190" r="7"/><circle cx="180" cy="190" r="7"/><circle cx="205" cy="190" r="7"/>
+    <circle cx="105" cy="216" r="7"/><circle cx="130" cy="216" r="7"/><circle cx="155" cy="216" r="7"/><circle cx="180" cy="216" r="7"/><circle cx="205" cy="216" r="7"/>
+    <circle cx="105" cy="242" r="7"/><circle cx="130" cy="242" r="7"/><circle cx="155" cy="242" r="7"/><circle cx="180" cy="242" r="7"/><circle cx="205" cy="242" r="7"/>
+    <circle cx="105" cy="268" r="7"/><circle cx="130" cy="268" r="7"/><circle cx="155" cy="268" r="7"/><circle cx="180" cy="268" r="7"/><circle cx="205" cy="268" r="7"/>
+    <circle cx="105" cy="294" r="7"/><circle cx="130" cy="294" r="7"/><circle cx="155" cy="294" r="7"/><circle cx="180" cy="294" r="7"/><circle cx="205" cy="294" r="7"/>
+    <circle cx="105" cy="320" r="7"/><circle cx="130" cy="320" r="7"/><circle cx="155" cy="320" r="7"/><circle cx="180" cy="320" r="7"/><circle cx="205" cy="320" r="7"/>
+  </g>
+  <rect x="244" y="164" width="154" height="146" rx="16" fill="#c4ced6"/>
+  <rect x="254" y="174" width="134" height="126" rx="10" fill="#f6f1e4"/>
+  <g stroke="#71808c" stroke-width="3" opacity=".8">
+    <path d="M266 206h110"/><path d="M266 230h110"/><path d="M266 254h110"/><path d="M266 278h110"/>
+    <path d="M286 188v100"/><path d="M322 188v100"/><path d="M358 188v100"/>
+  </g>
+  <g fill="#31485b">
+    <rect x="269" y="188" width="12" height="5" rx="2"/><rect x="289" y="188" width="12" height="5" rx="2"/><rect x="309" y="188" width="12" height="5" rx="2"/><rect x="329" y="188" width="12" height="5" rx="2"/><rect x="349" y="188" width="12" height="5" rx="2"/>
+  </g>
+  <path d="M333 180v112" stroke="#f4b94f" stroke-width="5"/>
+  <circle cx="438" cy="232" r="39" fill="#071625"/>
+  <circle cx="438" cy="232" r="27" fill="#162d43"/>
+  <circle cx="438" cy="232" r="14" fill="#27455f"/>
+  <rect x="246" y="326" width="158" height="28" rx="12" fill="#071625"/>
+  <rect x="272" y="331" width="33" height="18" rx="6" fill="#263f55"/>
+  <rect x="320" y="331" width="33" height="18" rx="6" fill="#263f55"/>
+  <rect x="86" y="150" width="122" height="10" rx="5" fill="#f4f2ec" opacity=".92"/>
 </svg>
