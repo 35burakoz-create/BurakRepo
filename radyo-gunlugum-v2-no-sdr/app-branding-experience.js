@@ -1,6 +1,6 @@
 (()=>{
 const R=window.R;if(!R||R.__brandingExperience20260917)return;R.__brandingExperience20260917=true;
-const FALLBACKS={splash:'assets/branding/r9012-splash.svg',share_cover:'assets/branding/r9012-share-cover.svg'},SPLASH_MIN_MS=420,SPLASH_FAILSAFE_MS=3200;
+const FALLBACKS={splash:'assets/branding/r9012-splash.svg',share_cover:'assets/branding/r9012-share-cover.svg'},STATIC_SOCIAL_COVER='assets/branding/r9012-og-cover.png',SPLASH_MIN_MS=420,SPLASH_FAILSAFE_MS=3200;
 let splashStarted=performance.now(),splashEl=null,shareDialog=null,shareOverlay=null,shareFile=null,shareCoverUrl='',observer=null,authRevision=0;
 const $=s=>document.querySelector(s),esc=v=>R.esc?R.esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -10,7 +10,7 @@ function fallback(key){return FALLBACKS[key]||'icon.svg'}
 async function resolve(key){patchFallbacks();try{return await R.brandingAssets?.resolve?.(key)||fallback(key)}catch(error){R.reportError?.(error,`branding-experience-${key}`,{silent:true});return fallback(key)}}
 function ensureMeta(property,content){let meta=document.head.querySelector(`meta[property="${property}"]`);if(!meta){meta=document.createElement('meta');meta.setAttribute('property',property);document.head.appendChild(meta)}meta.setAttribute('content',content)}
 function ensureNameMeta(name,content){let meta=document.head.querySelector(`meta[name="${name}"]`);if(!meta){meta=document.createElement('meta');meta.setAttribute('name',name);document.head.appendChild(meta)}meta.setAttribute('content',content)}
-function installShareMeta(){const cover=new URL(fallback('share_cover'),location.href).href;ensureMeta('og:type','website');ensureMeta('og:title','Radyo Günlüğüm');ensureMeta('og:description','TECSUN R-9012 için kişisel radyo günlüğü, yayın rehberi ve saha asistanı');ensureMeta('og:image',cover);ensureNameMeta('twitter:card','summary_large_image');ensureNameMeta('twitter:title','Radyo Günlüğüm');ensureNameMeta('twitter:image',cover)}
+function installShareMeta(){const cover=new URL(STATIC_SOCIAL_COVER,location.href).href,description='TECSUN R-9012 için kişisel radyo günlüğü, yayın rehberi ve saha asistanı';ensureMeta('og:locale','tr_TR');ensureMeta('og:type','website');ensureMeta('og:title','Radyo Günlüğüm');ensureMeta('og:description',description);ensureMeta('og:image',cover);ensureMeta('og:image:type','image/png');ensureMeta('og:image:width','1200');ensureMeta('og:image:height','630');ensureMeta('og:image:alt','TECSUN R-9012 ile Radyo Günlüğüm');ensureNameMeta('twitter:card','summary_large_image');ensureNameMeta('twitter:title','Radyo Günlüğüm');ensureNameMeta('twitter:description',description);ensureNameMeta('twitter:image',cover);ensureNameMeta('twitter:image:alt','TECSUN R-9012 ile Radyo Günlüğüm')}
 function ensureSplash(){if(splashEl?.isConnected)return splashEl;splashEl=document.createElement('div');splashEl.id='appBrandingSplash';splashEl.className='app-branding-splash';splashEl.setAttribute('role','status');splashEl.setAttribute('aria-live','polite');splashEl.innerHTML=`<div class="app-branding-splash-card"><div class="app-branding-splash-visual"><img src="${fallback('splash')}" alt="TECSUN R-9012 radyo görseli"></div><div class="app-branding-splash-copy"><span>TECSUN R-9012 · SAHA ASİSTANI</span><b>Radyo Günlüğüm</b><small>Yayın rehberi ve kişisel dinleme arşivi hazırlanıyor…</small><i aria-hidden="true"></i></div></div>`;document.body.prepend(splashEl);return splashEl}
 async function refreshSplash(){const el=ensureSplash(),img=el.querySelector('img'),url=await resolve('splash');if(img&&el.isConnected&&url)img.src=url;return url}
 function hideSplash(){const el=splashEl;if(!el?.isConnected)return;el.classList.add('is-leaving');setTimeout(()=>{if(el.isConnected)el.remove();if(splashEl===el)splashEl=null},260)}
@@ -39,6 +39,6 @@ R.events?.on?.('bootstrap:ready',()=>{patchFallbacks();refreshAuthBranding();fin
 R.events?.on?.('auth:changed',()=>{patchFallbacks();refreshAuthBranding();decorateRecords()});
 R.events?.on?.('branding:changed',({assetKey}={})=>{patchFallbacks();if(assetKey==='splash')refreshAuthBranding();if(assetKey==='share_cover'&&shareDialog){const id=shareDialog?._recordId;closeShare({restore:false});if(id)openShare(id)}});
 setTimeout(()=>{if(splashEl?.isConnected)hideSplash()},SPLASH_FAILSAFE_MS);
-R.brandingExperience={fallbacks:FALLBACKS,patchFallbacks,refreshSplash,refreshAuthBranding,decorateRecords,openShare,closeShare,shareCopy};
+R.brandingExperience={fallbacks:FALLBACKS,staticSocialCover:STATIC_SOCIAL_COVER,patchFallbacks,refreshSplash,refreshAuthBranding,decorateRecords,openShare,closeShare,shareCopy};
 R.features?.register?.('branding-experience',{ready:true,provider:'app-branding-experience'});
 })();
