@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import './ui-ux-consistency-hardening-static-check.mjs';
+import './ui-ux-flow-polish-static-check.mjs';
 
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
