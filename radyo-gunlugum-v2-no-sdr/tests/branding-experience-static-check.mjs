@@ -19,6 +19,7 @@ assert(boot.indexOf("'app-foundation.js'")<boot.indexOf("'app-branding-experienc
 assert(boot.indexOf("'app-branding-experience.js'")<boot.indexOf("'app-auth-service.js'"),'splash must mount before auth/data startup work');
 assert(sw.includes("const BRANDING_ENTRY_SHARE='20260917-3';"),'service worker must carry splash/share release marker');
 assert(sw.includes("const STATIC_SOCIAL_PREVIEW='20260917-4';"),'service worker must carry static social preview release marker');
+assert(sw.includes("const DYNAMIC_LISTENING_SHARE_CARD='20260917-5';"),'service worker must carry dynamic share-card release marker');
 for(const asset of ['./app-branding-experience.js','./app-branding-experience.css','./assets/branding/r9012-splash.svg','./assets/branding/r9012-share-cover.svg','./assets/branding/r9012-og.png'])assert(sw.includes(`'${asset}'`),`service worker must cache ${asset}`);
 assert(js.includes("splash:'assets/branding/r9012-splash.svg'"),'splash slot must have an R-9012 packaged fallback');
 assert(js.includes("share_cover:'assets/branding/r9012-share-cover.svg'"),'share_cover slot must have an R-9012 packaged fallback');
@@ -29,8 +30,22 @@ assert(js.includes("dataAuthBranding='1'")||js.includes("dataset.authBranding='1
 assert(js.includes("button.dataset.brandingShare=id"),'journal records must receive a share action without changing stored data');
 assert(js.includes("navigator.share")&&js.includes("navigator.clipboard.writeText"),'sharing must support native share with a copy fallback');
 assert(js.includes("location.origin}${location.pathname}"),'shared app URL must exclude query strings and hashes');
-const shareCopy=js.slice(js.indexOf('function shareCopy'),js.indexOf('function decorateRecord'));
-for(const privateField of ['location','latitude','longitude','notes','signal_strength','transcript'])assert(!shareCopy.includes(`log?.${privateField}`),`default share text must not include ${privateField}`);
+const shareCopy=js.slice(js.indexOf('function shareCopy'),js.indexOf('function shareCardData'));
+const shareCardData=js.slice(js.indexOf('function shareCardData'),js.indexOf('function decorateRecord'));
+for(const privateField of ['location','latitude','longitude','notes','signal_strength','signal','transcript','program','qsl']){
+  assert(!shareCopy.includes(`log?.${privateField}`),`default share text must not include ${privateField}`);
+  assert(!shareCardData.includes(`log?.${privateField}`),`dynamic share card data must not include ${privateField}`);
+}
+assert(js.includes('CARD_W=1200,CARD_H=630'),'dynamic share cards must render at 1200×630');
+assert(js.includes("canvas.toBlob")&&js.includes("'image/png'"),'dynamic share card must be rendered as PNG');
+assert(js.includes('async function dynamicCardFile(log,coverUrl)'),'dynamic listening-card renderer must exist');
+assert(js.includes("const {station,frequency,band,when}=shareCardData(log)"),'renderer must consume the privacy-filtered card data object');
+assert(js.includes("new File([blob],`radyo-gunlugum-${slug}.png`"),'dynamic card must be handed to Web Share as a PNG File');
+assert(js.includes('shareFile=dynamic')&&js.includes("navigator.canShare?.({files:[shareFile]})"),'native share must prefer the generated listening-card file when supported');
+assert(js.includes("sharePreviewUrl=URL.createObjectURL(dynamic)"),'share dialog must preview the generated dynamic card');
+assert(js.includes('URL.revokeObjectURL?.(sharePreviewUrl)'),'dynamic-card preview URLs must be revoked when replaced or closed');
+assert(js.includes("Kart hazırlanıyor…")&&js.includes("Dinamik dinleme kartı"),'share UI must disclose dynamic-card preparation and completion');
+assert(js.includes("Konum, kişisel notlar ve sinyal bilgisi paylaşım metnine veya görseline eklenmez."),'share UI must state image privacy scope');
 assert(js.includes("credentials:'omit'"),'share-cover fetch must not forward ambient credentials');
 assert(js.includes("installShareMeta(){const cover=new URL(fallback('share_cover')"),'runtime social metadata must remain durable and must not use expiring signed URLs');
 for(const marker of [
