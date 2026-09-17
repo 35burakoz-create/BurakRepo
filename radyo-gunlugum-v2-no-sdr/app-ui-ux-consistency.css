@@ -1,0 +1,9 @@
+.app-location-coordinate-guard{display:grid;gap:10px;margin:8px 0 2px;padding:12px;border:1px solid var(--app-warning,#d97706);border-radius:14px;background:var(--app-warning-soft,#fffbeb);color:var(--app-text,#111827)}
+.app-location-coordinate-guard[hidden]{display:none!important}
+.app-location-coordinate-guard b{display:block;font-size:13px;line-height:1.35}
+.app-location-coordinate-guard p{margin:4px 0 0;color:var(--app-text-secondary,#475569);font-size:12.5px;line-height:1.5}
+.app-location-coordinate-actions{display:flex;gap:8px;flex-wrap:wrap}
+.app-location-coordinate-actions .btn{min-height:var(--app-touch-min,44px)}
+@media(max-width:560px){.app-location-coordinate-actions{display:grid;grid-template-columns:1fr}.app-location-coordinate-actions .btn{width:100%}}
+html.night .app-location-coordinate-guard,.night-mode .app-location-coordinate-guard{background:#2b1b08;border-color:#a16207;color:#f8fafc}
+html.night .app-location-coordinate-guard p,.night-mode .app-location-coordinate-guard p{color:#cbd5e1}
