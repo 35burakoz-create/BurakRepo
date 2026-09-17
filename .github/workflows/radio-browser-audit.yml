@@ -1,0 +1,45 @@
+name: Radio Browser Audit
+
+on:
+  pull_request:
+    paths:
+      - 'radyo-gunlugum-v2-no-sdr/**'
+      - '.github/workflows/radio-browser-audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'radyo-gunlugum-v2-no-sdr/**'
+      - '.github/workflows/radio-browser-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chromium-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: radyo-gunlugum-v2-no-sdr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser-audit dependencies
+        run: npm install --no-save --no-audit --no-fund @playwright/test@1.63.0 axe-core@4.13.0
+      - name: Install Chromium and system dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Run responsive browser, visual and accessibility audit
+        run: npx playwright test -c tests/browser/playwright.config.mjs
+      - name: Upload browser audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: radio-browser-audit-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results/browser-audit
+          if-no-files-found: warn
+          retention-days: 14
