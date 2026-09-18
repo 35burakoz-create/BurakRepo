@@ -10,6 +10,11 @@
   /* Typography */
   --app-font-sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --app-font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  --app-font-caption:12.5px;
+  --app-font-compact-label:11.5px;
+  --app-line-readable:1.45;
+  --app-icon-sm:18px;
+  --app-icon-md:20px;
 
   /* Core light surfaces */
   --app-bg:#f7f8fc;

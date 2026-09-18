@@ -8,19 +8,23 @@ const boot=read('app-bootstrap.js');
 const sw=read('sw.js');
 const html=read('index.html');
 const js=read('app-branding-experience.js');
+const social=read('app-social-meta-runtime.js');
 const css=read('app-branding-experience.css');
 const splash=read('assets/branding/r9012-splash.svg');
 const cover=read('assets/branding/r9012-share-cover.svg');
 const og=fs.readFileSync(path.join(root,'assets/branding/r9012-og.png'));
 
 new Function(js);
+new Function(social);
 assert(boot.includes("'app-branding-experience.js'"),'branding experience must be booted');
 assert(boot.indexOf("'app-foundation.js'")<boot.indexOf("'app-branding-experience.js'"),'branding experience must load after foundation events');
-assert(boot.indexOf("'app-branding-experience.js'")<boot.indexOf("'app-auth-service.js'"),'splash must mount before auth/data startup work');
+assert(boot.indexOf("'app-branding-experience.js'")<boot.indexOf("'app-social-meta-runtime.js'"),'runtime social metadata must load after the branding experience');
+assert(boot.indexOf("'app-social-meta-runtime.js'")<boot.indexOf("'app-auth-service.js'"),'runtime social metadata must settle before auth/data startup work');
 assert(sw.includes("const BRANDING_ENTRY_SHARE='20260917-3';"),'service worker must carry splash/share release marker');
 assert(sw.includes("const STATIC_SOCIAL_PREVIEW='20260917-4';"),'service worker must carry static social preview release marker');
 assert(sw.includes("const DYNAMIC_LISTENING_SHARE_CARD='20260917-5';"),'service worker must carry dynamic share-card release marker');
-for(const asset of ['./app-branding-experience.js','./app-branding-experience.css','./assets/branding/r9012-splash.svg','./assets/branding/r9012-share-cover.svg','./assets/branding/r9012-og.png'])assert(sw.includes(`'${asset}'`),`service worker must cache ${asset}`);
+assert(sw.includes("const RUNTIME_SOCIAL_META='20260917-9';"),'service worker must carry runtime social metadata release marker');
+for(const asset of ['./app-branding-experience.js','./app-social-meta-runtime.js','./app-branding-experience.css','./assets/branding/r9012-splash.svg','./assets/branding/r9012-share-cover.svg','./assets/branding/r9012-og.png'])assert(sw.includes(`'${asset}'`),`service worker must cache ${asset}`);
 assert(js.includes("splash:'assets/branding/r9012-splash.svg'"),'splash slot must have an R-9012 packaged fallback');
 assert(js.includes("share_cover:'assets/branding/r9012-share-cover.svg'"),'share_cover slot must have an R-9012 packaged fallback');
 assert(js.includes("R.brandingAssets?.resolve?.(key)"),'custom private branding must resolve through the signed-url branding manager');
@@ -47,7 +51,12 @@ assert(js.includes('URL.revokeObjectURL?.(sharePreviewUrl)'),'dynamic-card previ
 assert(js.includes("Kart hazırlanıyor…")&&js.includes("Dinamik dinleme kartı"),'share UI must disclose dynamic-card preparation and completion');
 assert(js.includes("Konum, kişisel notlar ve sinyal bilgisi paylaşım metnine veya görseline eklenmez."),'share UI must state image privacy scope');
 assert(js.includes("credentials:'omit'"),'share-cover fetch must not forward ambient credentials');
-assert(js.includes("installShareMeta(){const cover=new URL(fallback('share_cover')"),'runtime social metadata must remain durable and must not use expiring signed URLs');
+assert(social.includes("IMAGE_PATH='assets/branding/r9012-og.png'"),'runtime social metadata must use the packaged raster OG image');
+assert(social.includes('new URL(IMAGE_PATH,document.baseURI||location.href).href'),'runtime social metadata must make the raster image absolute on the active host');
+assert(social.includes("property('og:image',image)")&&social.includes("named('twitter:image',image)"),'Open Graph and Twitter must share the same raster runtime image');
+assert(social.includes("property('og:image:type','image/png')")&&social.includes("property('og:image:width','1200')")&&social.includes("property('og:image:height','630')"),'runtime raster metadata must disclose PNG dimensions');
+assert(social.includes("R.events?.on?.('branding:changed',install)"),'custom branding changes must not replace the durable crawler-safe runtime image');
+assert(!social.includes('share_cover')&&!social.includes('brandingAssets')&&!social.includes('supabase.co'),'runtime social metadata must never depend on private or expiring branding URLs');
 for(const marker of [
   '<meta property="og:type" content="website">',
   '<meta property="og:title" content="Radyo Günlüğüm">',
@@ -70,4 +79,5 @@ assert(css.includes('@media(prefers-reduced-motion:reduce)'),'startup animation 
 assert(splash.includes('viewBox="0 0 1242 2208"')&&splash.includes('TECSUN R-9012')&&splash.includes('Radyo Günlüğüm'),'packaged splash must preserve the requested portrait R-9012 identity');
 assert(cover.includes('viewBox="0 0 1200 628"')&&cover.includes('TECSUN R-9012')&&cover.includes('Radyo Günlüğüm'),'packaged share cover must preserve the requested 1200×628 R-9012 identity');
 
+await import('./branding-share-tools-static-check.mjs');
 console.log('branding-experience-static-check: ok');

@@ -1,5 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import './ui-ux-consistency-hardening-static-check.mjs';
+import './ui-ux-flow-polish-static-check.mjs';
+import './ui-ux-analytics-drilldown-static-check.mjs';
+import './ui-ux-search-catalog-static-check.mjs';
+import './ui-final-polish-static-check.mjs';
 
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
@@ -31,3 +36,4 @@ for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
 console.log(`\n${checks.length-failed.length}/${checks.length} newly-audited-area checks passed.`);
 if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
+await import('./ui-ux-audit-p2-static-check.mjs');

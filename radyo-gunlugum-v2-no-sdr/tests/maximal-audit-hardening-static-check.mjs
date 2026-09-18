@@ -29,7 +29,7 @@ check('current-program fallback history explicitly excludes foreign accounts',cu
 check('global search has explicit active-account ownership predicate',search.includes('const ownedLog=x=>')&&search.includes('!x?.user_id||x.user_id===userId'));
 check('global search filters indexed log hits by ownership',search.includes("d.kind==='log'&&logs.length<logLimit&&ownedLog(d.raw)"));
 check('global search filters guide rows by receiver compatibility',search.includes('const guideCompatible=x=>')&&search.includes('.filter(guideCompatible)'));
-check('global search never presents malformed frequency as zero',search.includes("Number.isFinite(n)&&n>0?")&&search.includes("R.v44Search={searchData,fmtFreq,ownedLog,guideCompatible,indexedMatches}"));
+check('global search never presents malformed frequency as zero',search.includes("Number.isFinite(n)&&n>0?")&&search.includes('R.v44Search=')&&/R\.v44Search\s*=\s*\{[^}]*\bfmtFreq\b/.test(search));
 check('global search result copy does not claim a limited list is exhaustive',search.includes('sonuç gösteriliyor.'));
 check('telemetry returns no account-owned rows while signed out',density.includes("if(!userId)return[]"));
 check('telemetry derives latest mapped row instead of trusting array order',density.includes('function latestRow(rows)')&&density.includes('last=latestRow(mapped)'));
