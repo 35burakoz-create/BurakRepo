@@ -113,21 +113,21 @@ check('PWA updater clears activation timeout with stale worker',pwa.includes('fu
 {
   const handlers={};const deleted=[];let fail=()=>false;
   const cache={async put(){},async match(){return null}};
-  const caches={async open(){return cache},async delete(key){deleted.push(key);return true},async keys(){return['radyo-old','radyo-test']}};
+  const caches={async open(){return cache},async delete(key){deleted.push(key);return true},async keys(){return['radyo-old','radyo-test-test-build']}};
   const fetch=async url=>{const bad=fail(String(url));return{ok:!bad,status:bad?503:200,clone(){return this}}};
   const self={location:{href:'https://radio.test/'},clients:{async claim(){}},addEventListener(name,fn){handlers[name]=fn},skipWaiting(){}};
-  const sandbox={self,caches,fetch,importScripts(){},globalThis:null,RADIO_APP_CONFIG:{cacheVersion:'test'},URL,Promise,Set,Error,console,Response:{error(){return{}}}};sandbox.globalThis=sandbox;
+  const sandbox={self,caches,fetch,importScripts(){},globalThis:null,RADIO_APP_CONFIG:{cacheVersion:'test',buildId:'test-build'},URL,Promise,Set,Error,console,Response:{error(){return{}}}};sandbox.globalThis=sandbox;
   vm.createContext(sandbox);vm.runInContext(sw,sandbox,{filename:'sw.js'});
   async function installRejected(){let promise;handlers.install({waitUntil(p){promise=p}});try{await promise;return false}catch{return true}}
   fail=url=>url.includes('app-smart-analyzer.js');deleted.length=0;
   check('missing required local JS rejects new service-worker install',await installRejected());
-  check('failed required local JS deletes incomplete new cache',deleted.includes('radyo-test'));
+  check('failed required local JS deletes incomplete new cache',deleted.includes('radyo-test-test-build'));
   fail=url=>url.includes('@supabase/supabase-js@2.116.0');deleted.length=0;
   check('missing pinned Supabase client rejects new service-worker install',await installRejected());
-  check('failed Supabase dependency deletes incomplete new cache',deleted.includes('radyo-test'));
+  check('failed Supabase dependency deletes incomplete new cache',deleted.includes('radyo-test-test-build'));
   fail=url=>url.includes('leaflet.css');deleted.length=0;
   check('optional Leaflet stylesheet failure does not block an otherwise complete update',!(await installRejected()));
-  check('optional external failure does not delete the complete new cache',!deleted.includes('radyo-test'));
+  check('optional external failure does not delete the complete new cache',!deleted.includes('radyo-test-test-build'));
 }
 
 // Functional stale waiting-worker cleanup.

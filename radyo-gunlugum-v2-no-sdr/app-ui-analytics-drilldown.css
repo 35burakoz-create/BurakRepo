@@ -1,0 +1,6 @@
+[data-analytics-drilldown]{cursor:pointer;border-radius:10px;outline:none;transition:background .14s ease,box-shadow .14s ease}
+[data-analytics-drilldown]:hover{background:var(--app-surface-soft,#f8fafc)}
+[data-analytics-drilldown]:focus-visible{box-shadow:var(--app-focus,0 0 0 4px rgba(79,70,229,.11));background:var(--app-surface-soft,#f8fafc)}
+.app-atlas-journal-link{width:100%;min-height:var(--app-touch-min,44px);margin:-2px 0 10px}
+html.night [data-analytics-drilldown],.night-mode [data-analytics-drilldown]{color:inherit}
+@media(prefers-reduced-motion:reduce){[data-analytics-drilldown]{transition:none}}

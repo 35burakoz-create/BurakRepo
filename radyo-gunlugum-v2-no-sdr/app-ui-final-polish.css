@@ -1,0 +1,94 @@
+/* Final UI polish — canonical compact typography, icon sizing, focus and reduced motion. */
+
+/* Information-bearing compact text should stay readable on real phones. */
+.v38-head p,
+.v38-meta,
+.v38-row-main span,
+.v38-today span,
+.v38-nowtitle p,
+.v38-item .meta,
+.v38-item details summary,
+.v38-detail,
+.v38-logbar p,
+.v38-mini small,
+.app-smart-card p,
+.app-smart-card .small,
+.app-upcoming-row span,
+.am-card p,
+.am-head p,
+.v41-head p,
+.v41-band-card p,
+.v41-band-meta,
+.v41-forecast small,
+.v44-result small,
+.v38-menu-row small,
+.app-location-coordinate-guard p,
+.app-listen-signal-hint,
+.app-station-detail-action-note,
+.app-quick-location-note{
+  font-size:var(--app-font-caption,12.5px)!important;
+  line-height:var(--app-line-readable,1.45)!important;
+}
+
+/* True compact labels may remain smaller, but use one canonical floor. */
+.v38-kicker,
+.v38-band,
+.v38-score,
+.v38-dock button,
+#appDesktopNav button,
+.v41-live,
+.v44-result-type,
+.app-listen-band{
+  font-size:var(--app-font-compact-label,11.5px)!important;
+}
+
+/* One vector icon language across mobile dock, desktop rail and top search. */
+.app-nav-svg{
+  display:block;
+  width:var(--app-icon-md,20px);
+  height:var(--app-icon-md,20px);
+  margin:0 auto;
+  color:currentColor;
+  vector-effect:non-scaling-stroke;
+}
+.v42-top-search .app-nav-svg{width:var(--app-icon-sm,18px);height:var(--app-icon-sm,18px);margin:0}
+#v38Dock .plus .app-nav-svg,#appDesktopNav .desktop-quick .app-nav-svg{width:24px;height:24px}
+
+/* Keyboard focus should be visible and consistent on primary navigation and new audit actions. */
+#v38Dock button:focus-visible,
+#appDesktopNav button:focus-visible,
+.v42-top-search:focus-visible,
+.app-now-card-actions .btn:focus-visible,
+.app-station-detail-actions .btn:focus-visible,
+[data-analysis-drill]:focus-visible,
+[data-atlas-journal]:focus-visible{
+  outline:2px solid var(--app-primary,#4f46e5)!important;
+  outline-offset:3px!important;
+  box-shadow:var(--app-focus,0 0 0 4px rgba(79,70,229,.11))!important;
+}
+
+@media(max-width:480px){
+  .v38-meta,
+  .v38-row-main span,
+  .v38-item .meta,
+  .v38-detail,
+  .app-smart-card p,
+  .am-card p,
+  .v41-band-card p,
+  .v44-result small{font-size:var(--app-font-caption,12.5px)!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .app-nav-svg,
+  #v38Dock button,
+  #appDesktopNav button,
+  .v42-top-search,
+  .app-now-card-actions .btn,
+  .app-station-detail-actions .btn,
+  [data-analysis-drill],
+  [data-atlas-journal]{
+    transition:none!important;
+    animation:none!important;
+    scroll-behavior:auto!important;
+  }
+}

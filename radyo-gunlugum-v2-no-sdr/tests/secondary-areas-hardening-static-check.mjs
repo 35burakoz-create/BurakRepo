@@ -8,6 +8,7 @@ const checks=[];
 function check(name,ok,detail=''){checks.push([name,!!ok,detail]);if(!ok)process.exitCode=1}
 
 const user=read('app-user-services.js');
+const scope=read('app-user-log-scope.js');
 const calendar=read('app-calendar-ui.js');
 const analysis=read('app-analysis-ui.js');
 const mapUI=read('app-map-ui.js');
@@ -16,7 +17,7 @@ const backup=read('app-backup.js');
 const menu=read('app-menu-ui.js');
 
 for(const [file,src] of [
-  ['app-user-services.js',user],['app-calendar-ui.js',calendar],['app-analysis-ui.js',analysis],
+  ['app-user-services.js',user],['app-user-log-scope.js',scope],['app-calendar-ui.js',calendar],['app-analysis-ui.js',analysis],
   ['app-map-ui.js',mapUI],['app-atlas-ui.js',atlasUI],['app-backup.js',backup],['app-menu-ui.js',menu]
 ]){
   let ok=true,detail='';try{new vm.Script(src,{filename:file})}catch(error){ok=false;detail=error.message}
@@ -41,7 +42,8 @@ check('calendar aggregation no longer uses permissive startsWith date matching',
 check('calendar delegated clicks tolerate non-Element targets',calendar.includes('e.target instanceof Element?e.target:null'));
 check('analysis rejects signal values outside personal 1-5 scale',analysis.includes('Number.isFinite(v)&&v>=1&&v<=5'));
 check('analysis rejects malformed legacy clock values',analysis.includes('function validClockTime')&&analysis.includes('h>=0&&h<=23')&&analysis.includes('min>=0&&min<=59')&&analysis.includes('sec>=0&&sec<=59'));
-check('analysis is account and receiver-band scoped',analysis.includes('function ownedLogs()')&&analysis.includes('x?.user_id===userId')&&analysis.includes('allowed.has(String(x?.band||'));
+check('analysis uses canonical account scope and receiver-band scope',analysis.includes('function ownedLogs()')&&analysis.includes("typeof R.ownedLogs==='function'?R.ownedLogs():R.logs||[]")&&analysis.includes('allowed.has(String(x?.band||'));
+check('canonical ownership rejects explicitly foreign rows',scope.includes('owner===userId')&&scope.includes('if(!userId)return false'));
 
 // Map and atlas lifecycle.
 check('map delayed renders carry an invalidation generation',mapUI.includes('renderGeneration')&&mapUI.includes('function scheduleRender'));
@@ -119,14 +121,18 @@ check('diagnostic isolation is executed from auth transition',menu.includes('iso
       {user_id:'u1',band:'SW99',signal_strength:1,time:'05:10'},
       {user_id:'u2',band:'MW',signal_strength:1,time:'06:10'}
     ],
-    router:{register(){}},events:{on(){}},features:{register(){}}
+    router:{register(){}},events:{on(){},emit(){}},store:{sync(){}},features:{register(){}},reportError(){throw new Error('ownership scope should install cleanly')}
   };
   const document={querySelector:s=>s==='#analysisCards'?card:null};
   const sandbox={window:{R},document,Math,Number,String,Array,Object,Map,Set,Promise,console,setTimeout(){return 0}};
-  vm.createContext(sandbox);vm.runInContext(analysis,sandbox,{filename:'app-analysis-ui.js'});R.analysisUI.render();
+  vm.createContext(sandbox);
+  vm.runInContext(scope,sandbox,{filename:'app-user-log-scope.js'});
+  vm.runInContext(analysis,sandbox,{filename:'app-analysis-ui.js'});
+  R.analysisUI.render();
   check('analytics average ignores corrupt, foreign and unsupported-band signal rows',card.innerHTML.includes('<b>3.3</b>'));
   check('analytics clock validator rejects impossible minute values',R.analysisUI.validClockTime('03:99')===null);
   check('analytics owned rows exclude foreign account and unsupported band',R.analysisUI.ownedLogs().length===5);
+  check('analytics canonical scope preserves stable owned-array identity',R.ownedLogs()===R.ownedLogs());
 }
 
 // Functional backup ownership and CSV neutralization.
