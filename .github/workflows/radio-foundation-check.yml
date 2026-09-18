@@ -18,9 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: PWA build generation diff guard
+        env:
+          PWA_DIFF_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node radyo-gunlugum-v2-no-sdr/tests/pwa-build-generation-diff-check.mjs
       - name: JavaScript syntax checks
         shell: bash
         run: |
