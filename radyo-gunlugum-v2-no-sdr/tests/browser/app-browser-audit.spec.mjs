@@ -62,6 +62,25 @@ test('authenticated shell boots with the correct responsive navigation',async({p
   expect(pageErrors,'uncaught browser errors during shell boot').toEqual([]);
 });
 
+test('responsive shell follows live viewport width across the 960px boundary',async({page})=>{
+  const pageErrors=await boot(page);
+  await page.setViewportSize({width:1200,height:800});
+  await expect(page.locator('html')).toHaveAttribute('data-ui-mode','desktop');
+  await expect(page.locator('#appDesktopNav')).toBeVisible();
+  await expect(page.locator('#v38Dock')).toHaveCount(0);
+  await page.setViewportSize({width:700,height:900});
+  await expect(page.locator('html')).toHaveAttribute('data-ui-mode','mobile');
+  await expect(page.locator('#v38Dock')).toBeVisible();
+  await expect(page.locator('#appDesktopNav')).toHaveCount(0);
+  await assertNoHorizontalOverflow(page);
+  await page.setViewportSize({width:1100,height:800});
+  await expect(page.locator('html')).toHaveAttribute('data-ui-mode','desktop');
+  await expect(page.locator('#appDesktopNav')).toBeVisible();
+  await expect(page.locator('#v38Dock')).toHaveCount(0);
+  await assertNoHorizontalOverflow(page);
+  expect(pageErrors,'uncaught browser errors during live viewport changes').toEqual([]);
+});
+
 test('all application routes render one view without horizontal overflow',async({page})=>{
   const pageErrors=await boot(page);
   const routes=await page.evaluate(()=>window.R.router.routes());
