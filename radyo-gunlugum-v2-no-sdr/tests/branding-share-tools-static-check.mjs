@@ -34,6 +34,7 @@ assert(js.includes("window.addEventListener('click',onClick,true)"),'share tools
 assert(js.includes("navigator.canShare?.({files:[file]})")&&js.includes('navigator.share(payload)'),'selected layout must be shareable as a file when supported');
 assert(js.includes("localStorage.setItem(LAYOUT_KEY,value)"),'selected card layout should persist locally');
 assert(css.includes('.app-branding-share-tools')&&css.includes('[data-share-save]'),'layout selector and save action must be styled');
+assert(css.includes('var(--app-touch-min,44px)')&&!css.includes('min-height:42px'),'share layout selector must meet the canonical touch-target minimum');
 assert(css.includes('@media(max-width:620px)')&&css.includes('@media(max-width:420px)'),'share tools must adapt to small screens');
 
 assert(accessibility.includes("badge.setAttribute('role','status')")&&accessibility.includes("badge.setAttribute('aria-live','polite')"),'dynamic preview status must be announced politely to assistive technology');
@@ -48,6 +49,6 @@ assert(accessibility.includes('await anchorSave(file)')&&accessibility.includes(
 assert(accessibility.includes("replace(/[\\\\/:*?\"<>|\\u0000-\\u001f]/g,'-')"),'download filename must strip filesystem-invalid characters');
 assert(accessibility.includes("URL.revokeObjectURL(url),1800"),'enhanced fallback download URL must be revoked');
 assert(!accessibility.includes('fetch(')&&!accessibility.includes('supabase'),'accessibility layer must not add network or storage reads');
-assert(accessibilityCss.includes('.app-branding-share-sr')&&accessibilityCss.includes(':focus-visible'),'share accessibility must include a screen-reader-only status and visible keyboard focus');
+assert(accessibilityCss.includes('.app-branding-share-sr')&&accessibilityCss.includes(':focus-visible')&&accessibilityCss.includes('var(--app-radio-focus-ring-width,3px)')&&accessibilityCss.includes('var(--app-radio-focus-ring-offset,2px)'),'share accessibility must use canonical radio focus tokens');
 assert(accessibilityCss.includes('@media(prefers-reduced-motion:reduce)'),'share rendering feedback must respect reduced-motion preferences');
 console.log('branding-share-tools-static-check: ok');

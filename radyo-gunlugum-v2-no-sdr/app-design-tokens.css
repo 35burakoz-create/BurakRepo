@@ -60,6 +60,10 @@
   --app-shadow-card:0 14px 40px rgba(15,23,42,.08);
   --app-shadow-panel:0 28px 80px rgba(15,23,42,.18);
   --app-focus:0 0 0 4px rgba(79,70,229,.11);
+  --app-focus-ring-width:2px;
+  --app-focus-ring-offset:3px;
+  --app-radio-focus-ring-width:3px;
+  --app-radio-focus-ring-offset:2px;
 
   /* Shared layer contract */
   --app-layer-base:0;
