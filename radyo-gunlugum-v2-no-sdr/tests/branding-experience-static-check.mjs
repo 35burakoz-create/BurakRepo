@@ -70,4 +70,5 @@ assert(css.includes('@media(prefers-reduced-motion:reduce)'),'startup animation 
 assert(splash.includes('viewBox="0 0 1242 2208"')&&splash.includes('TECSUN R-9012')&&splash.includes('Radyo Günlüğüm'),'packaged splash must preserve the requested portrait R-9012 identity');
 assert(cover.includes('viewBox="0 0 1200 628"')&&cover.includes('TECSUN R-9012')&&cover.includes('Radyo Günlüğüm'),'packaged share cover must preserve the requested 1200×628 R-9012 identity');
 
+await import('./branding-share-tools-static-check.mjs');
 console.log('branding-experience-static-check: ok');
