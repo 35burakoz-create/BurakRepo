@@ -115,3 +115,16 @@ html.night #v38Sheet .v38-menu-empty p,.night-mode #v38Sheet .v38-menu-empty p{c
 html.night #v38Sheet .v38-menu-footer,.night-mode #v38Sheet .v38-menu-footer{background:linear-gradient(180deg,rgba(15,23,42,0),rgba(15,23,42,.98) 30%)}
 html.night #v38Sheet .v38-menu-footer .btn,.night-mode #v38Sheet .v38-menu-footer .btn{background:#21161b!important;border-color:#5b2b32!important;color:#fca5a5!important}
 @media(prefers-reduced-motion:reduce){#v38Sheet .v38-menu-row,#v38Sheet .v38-menu-group summary:after,#v38Sheet .v38-menu-row.is-busy .v38-menu-tail i,#v38Sheet .v42-menu-search{transition:none!important;animation:none!important}}
+
+#v38Sheet .v38-local-data{display:grid;gap:14px}
+#v38Sheet .v38-local-data-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#v38Sheet .v38-local-data-card{padding:14px;border:1px solid var(--app-line,#e5e7eb);border-radius:15px;background:var(--app-surface,#fff)}
+#v38Sheet .v38-local-data-card span{display:block;color:var(--app-muted,#64748b);font-size:var(--app-font-caption,12.5px);line-height:var(--app-line-readable,1.45)}
+#v38Sheet .v38-local-data-card b{display:block;margin-top:5px;color:var(--app-text-strong,#0f172a);font-size:18px}
+#v38Sheet .v38-local-data-note,#v38Sheet .v38-local-data-warning{padding:14px;border:1px solid var(--app-line,#e5e7eb);border-radius:15px;background:var(--app-surface-soft,#f8fafc)}
+#v38Sheet .v38-local-data-note strong,#v38Sheet .v38-local-data-warning strong{display:block;color:var(--app-text-strong,#0f172a)}
+#v38Sheet .v38-local-data-note p,#v38Sheet .v38-local-data-warning p{margin:6px 0 0;color:var(--app-muted,#64748b);font-size:var(--app-font-caption,12.5px);line-height:var(--app-line-readable,1.45)}
+#v38Sheet .v38-local-data-warning{border-color:color-mix(in srgb,var(--app-danger,#dc2626) 30%,var(--app-line,#e5e7eb));background:color-mix(in srgb,var(--app-danger,#dc2626) 5%,var(--app-surface,#fff))}
+#v38Sheet .v38-local-data-clear{width:100%;min-height:var(--app-touch-min,44px);background:var(--app-danger,#dc2626)!important;border-color:var(--app-danger,#dc2626)!important;color:#fff!important;font-weight:800!important}
+#v38Sheet .v38-local-data-clear:disabled{opacity:.55!important;cursor:default!important}
+@media(max-width:520px){#v38Sheet .v38-local-data-grid{grid-template-columns:1fr}}

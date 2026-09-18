@@ -104,6 +104,32 @@ test('map provides an actionable fallback while offline',async({page,context})=>
   }
 });
 
+test('local device data control clears only the active draft and offline queue',async({page})=>{
+  const pageErrors=await boot(page);
+  const setup=await page.evaluate(async()=>{
+    const userId=window.R.me.id,key=window.R.uiStatePersistence.draftStorageKey(userId);
+    localStorage.setItem(key,JSON.stringify({at:Date.now(),values:{notes:'browser audit taslağı'}}));
+    await window.R.offline.queueLog({date:'2026-09-18',time:'12:00',band:'MW',frequency:1000,station:'Offline Test'});
+    return{key,pending:await window.R.offline.count(userId)};
+  });
+  expect(setup.pending).toBe(1);
+  await page.evaluate(()=>window.R.menuUI.open());
+  await page.locator('#v38Sheet [data-action="local-data"]').click();
+  await expect(page.locator('#v38Sheet[data-menu-view="local-data"]')).toBeVisible();
+  await expect(page.locator('#v38Sheet')).toContainText('Buluttaki Günlük kayıtların, favorilerin, ayarların ve hatırlatıcıların değişmez.');
+  await expect(page.locator('#v38Sheet')).toContainText('1 kayıt');
+  await page.locator('#v38Sheet [data-action="local-data-confirm"]').click();
+  await expect(page.locator('#v38Sheet[data-menu-view="local-data-confirm"]')).toBeVisible();
+  await expect(page.locator('#v38Sheet')).toContainText('Bu işlem geri alınamaz.');
+  await page.locator('#v38Sheet [data-action="local-data-clear"]').click();
+  await expect(page.locator('#v38Sheet[data-menu-view="local-data"]')).toBeVisible();
+  const after=await page.evaluate(async key=>({draft:localStorage.getItem(key),pending:await window.R.offline.count(window.R.me.id)}),setup.key);
+  expect(after.draft).toBeNull();
+  expect(after.pending).toBe(0);
+  await expect(page.locator('#v38Sheet')).toContainText('Temizlenecek yerel veri yok');
+  expect(pageErrors,'uncaught browser errors during local-device data cleanup').toEqual([]);
+});
+
 test('home surface has no critical axe violations and produces light/dark visual artifacts',async({page},testInfo)=>{
   const pageErrors=await boot(page);
   await go(page,'home');
