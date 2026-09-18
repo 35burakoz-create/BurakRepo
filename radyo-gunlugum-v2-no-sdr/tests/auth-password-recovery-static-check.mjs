@@ -32,6 +32,6 @@ assert(!js.includes('localStorage')&&!js.includes('sessionStorage'),'password re
 assert(!core.includes('access_token')&&!core.includes('refresh_token'),'core must not capture or persist recovery tokens');
 assert(!js.includes('service_role')&&!js.includes('.auth.admin'),'client recovery must never use privileged auth APIs');
 assert(!js.includes('redirectTo:'),'recovery email should rely on the configured Supabase Site URL instead of guessing an unverified production host');
-assert(css.includes(':focus-visible')&&css.includes('min-height:44px'),'recovery controls must keep visible keyboard focus and touch targets');
+assert(css.includes(':focus-visible')&&css.includes('var(--app-touch-min,44px)')&&css.includes('var(--app-radio-focus-ring-width,3px)'),'recovery controls must consume canonical touch and focus tokens');
 assert(css.includes('@media(max-width:520px)'),'recovery dialog must adapt to phones');
 console.log('auth-password-recovery-static-check: ok');

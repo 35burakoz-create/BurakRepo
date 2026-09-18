@@ -62,8 +62,8 @@
 .app-station-detail-actions .btn:focus-visible,
 [data-analysis-drill]:focus-visible,
 [data-atlas-journal]:focus-visible{
-  outline:2px solid var(--app-primary,#4f46e5)!important;
-  outline-offset:3px!important;
+  outline:var(--app-focus-ring-width,2px) solid var(--app-primary,#4f46e5)!important;
+  outline-offset:var(--app-focus-ring-offset,3px)!important;
   box-shadow:var(--app-focus,0 0 0 4px rgba(79,70,229,.11))!important;
 }
 

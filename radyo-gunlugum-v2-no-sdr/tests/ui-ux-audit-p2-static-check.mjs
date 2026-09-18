@@ -39,8 +39,8 @@ assert(js.includes('İşlem, Günlük formundaki kaydı kaydettiğinde tamamlan�
 
 assert(!/\bfetch\s*\(/.test(js),'P2 UX layer must not add network requests');
 assert(!/supabase/i.test(js)&&!js.includes('R.S.'),'P2 UX layer must not read or write Supabase directly');
-assert(css.includes('.app-p2-segmented')&&css.includes('min-height:44px'),'new segmented controls must preserve touch targets');
+assert(css.includes('.app-p2-segmented')&&css.includes('var(--app-touch-min,44px)'),'new segmented controls must consume the canonical touch-target token');
 assert(css.includes('.app-p2-audio-steps')&&css.includes('@media(max-width:720px)'),'audio steps must adapt to mobile widths');
-assert(css.includes(':focus-visible'),'new controls must preserve visible keyboard focus');
+assert(css.includes(':focus-visible')&&css.includes('var(--app-radio-focus-ring-width,3px)')&&css.includes('var(--app-radio-focus-ring-offset,2px)'),'new controls must preserve visible keyboard focus through canonical radio focus tokens');
 
 console.log('ui-ux-audit-p2-static-check: ok');
