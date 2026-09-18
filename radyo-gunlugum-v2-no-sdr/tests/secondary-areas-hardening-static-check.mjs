@@ -185,3 +185,4 @@ for(const [name,ok,detail] of checks)console.log(`${ok?'✓':'✗'} ${name}${det
 const failed=checks.filter(([,ok])=>!ok);
 console.log(`\n${checks.length-failed.length}/${checks.length} secondary-area hardening checks passed.`);
 if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
+await import('./map-offline-fallback-static-check.mjs');

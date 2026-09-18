@@ -89,6 +89,21 @@ test('all application routes render one view without horizontal overflow',async(
   expect(pageErrors,'uncaught browser errors while traversing routes').toEqual([]);
 });
 
+test('map provides an actionable fallback while offline',async({page,context})=>{
+  const pageErrors=await boot(page);
+  await context.setOffline(true);
+  try{
+    await go(page,'map');
+    await expect(page.locator('#map .app-map-fallback')).toBeVisible();
+    await expect(page.locator('#map .app-map-fallback')).toContainText('Harita zemini çevrimdışı kullanılamıyor.');
+    await expect(page.locator('#map [data-map-open-log]')).toBeVisible();
+    await assertNoHorizontalOverflow(page);
+    expect(pageErrors,'uncaught browser errors during offline map fallback').toEqual([]);
+  }finally{
+    await context.setOffline(false);
+  }
+});
+
 test('home surface has no critical axe violations and produces light/dark visual artifacts',async({page},testInfo)=>{
   const pageErrors=await boot(page);
   await go(page,'home');
