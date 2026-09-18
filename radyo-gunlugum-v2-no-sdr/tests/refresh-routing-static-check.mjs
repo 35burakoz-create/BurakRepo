@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
 
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
@@ -22,6 +23,8 @@ check('router can stage any known route before its UI module loads',router.inclu
 check('UI state is scoped to the authenticated user',state.includes("STATE_KEY='radio-ui-state-v40'")&&state.includes('`${STATE_KEY}:${userId}`'));
 check('empty URL restores the last valid account route',state.includes("state.tab=hash||(VALID.has(saved.tab)?saved.tab:'home')"));
 check('invalid persisted routes still fall back to home',state.includes("VALID.has(saved.tab)?saved.tab:'home'"));
+check('malformed URL hashes fail closed instead of throwing',state.includes("catch(error){R.reportError?.(error,'ui-state-hash',{silent:true});return null}"));
+check('UI state exports its canonical hash parser for regression checks',state.includes('resetScroll,readHash}'));
 check('legacy boot redirect guard removed',!state.includes('bootGuardUntil'));
 check('route restore does not depend on appView visibility',state.includes("restore(){if(!R.me)return null;")&&!state.includes("$('#appView')?.classList.contains('hidden')"));
 check('authenticated session loads account state before restoring route',state.includes('applyStoredState(nextId);restoreFilters();restoreDraft();R.navigation.restore()'));
@@ -29,6 +32,24 @@ check('route is re-entered after all modules register',state.includes('applyStor
 check('slow fallback timer removed',!state.includes('3900')&&!state.includes('setTimeout(()=>{bootGuardUntil'));
 check('route fix has a non-legacy PWA cache identity',/cacheVersion:'v385-core-boundary-(?!20260907-1)[^']+'/.test(config));
 check('service worker navigation remains network first',sw.includes("if(req.mode==='navigate')")&&sw.includes("fetch(req,{cache:'no-store'})"));
+
+// Functional malformed-hash regression: a broken percent escape must not prevent UI state from booting.
+{
+  const reports=[];
+  const R={me:null,events:{on(){}},features:{register(){}},reportError:(error,source)=>reports.push({error,source}),router:{current:()=> 'home'}};
+  const document={querySelector(){return null},getElementById(){return null},addEventListener(){},visibilityState:'visible'};
+  const localStorage={getItem(){return null},setItem(){},removeItem(){}};
+  const location={hash:'#tab=%E0%A4%A',href:'https://app.example/#tab=%E0%A4%A'};
+  const history={pushState(){},replaceState(){}};
+  const window={R,addEventListener(){},scrollTo(){}};
+  const sandbox={window,R,document,localStorage,location,history,URL,Date,Math,Number,String,Array,Object,Map,Set,Promise,console,setTimeout(){return 0}};
+  vm.createContext(sandbox);
+  let threw=false;try{vm.runInContext(state,sandbox,{filename:'app-ui-state.js'})}catch{threw=true}
+  check('UI state boots successfully with malformed encoded hash',!threw&&R.uiState?.tab==='home');
+  check('malformed encoded hash is reported for diagnostics',reports.some(x=>x.source==='ui-state-hash'));
+  location.hash='#tab=now';
+  check('valid hash still parses after malformed hash recovery',R.uiStatePersistence?.readHash?.()==='now');
+}
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(x=>!x[1]);
