@@ -183,3 +183,12 @@ input:not([type="checkbox"]):not([type="radio"]),select{min-height:var(--app-tou
   .app-qsl-backlog-row .btn{width:100%}
   .app-ai-candidate-action{align-items:stretch}
 }
+
+/* Harita internet/Leaflet/boş-veri durumlarında gri bir alan bırakmasın. */
+.app-map-fallback{height:100%;min-height:320px;display:grid;place-content:center;justify-items:center;gap:14px;padding:24px;text-align:center;background:var(--app-surface-soft,#f8fafc);color:var(--app-text,#111827)}
+.app-map-fallback>div:first-child{max-width:560px}.app-map-fallback strong{display:block;font-size:18px;color:var(--app-text-strong,#0f172a)}.app-map-fallback p{margin:6px 0 0;color:var(--app-muted,#64748b);line-height:1.5}
+.app-map-fallback-list{width:min(560px,100%);max-height:250px;overflow:auto;display:grid;gap:7px;padding:4px;text-align:left}
+.app-map-fallback-row{display:grid;gap:2px;padding:9px 11px;border:1px solid var(--app-line,#e5e7eb);border-radius:12px;background:var(--app-surface,#fff)}
+.app-map-fallback-row span,.app-map-fallback-row small{color:var(--app-muted,#64748b);font-size:var(--app-font-caption,12.5px);line-height:var(--app-line-readable,1.45)}
+.app-map-fallback .btn{min-height:var(--app-touch-min,44px)}
+@media(max-width:520px){.app-map-fallback{padding:18px 12px}.app-map-fallback-list{max-height:300px}.app-map-fallback .btn{width:100%}}
