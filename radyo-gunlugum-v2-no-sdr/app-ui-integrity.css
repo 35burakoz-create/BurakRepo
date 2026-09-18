@@ -99,3 +99,87 @@ html.night .am-browse-status{
 }
 .night-mode .am-browse-status b,
 html.night .am-browse-status b{color:var(--app-text,#f8fafc)}
+
+/* 2026-09-17 geniş UI/UX audit: etkileşim tabanı bütün uygulamada aynı olsun. */
+.btn,
+.auth-tab,
+.v38-menu-row,
+.v42-link,
+.v44-submit,
+.v44-clear,
+.cal-day,
+.app-qsl-step,
+.app-listen-modal-close,
+.app-listen-close,
+.v38-close,
+.v44-close{
+  min-height:var(--app-touch-min,44px)!important;
+}
+.v38-close,
+.v44-close,
+.app-listen-modal-close,
+.app-listen-close{
+  min-width:var(--app-touch-min,44px)!important;
+}
+input:not([type="checkbox"]):not([type="radio"]),select{min-height:var(--app-touch-min,44px)}
+
+/* 10–11 px mikro metin yalnız dekoratif etiketlerde kalsın; bilgi taşıyan metinler okunabilir olsun. */
+.hint,
+.small,
+.v38-item .meta,
+.v38-item details summary,
+.v38-logbar p,
+.v42-section-head p,
+.v42-dashboard span,
+.v38-menu-row small,
+.app-listen-meta,
+.app-listen-label,
+.app-listen-state,
+.app-ai-card p,
+.app-ai-audio span,
+.app-ai-candidate small,
+.app-qsl-backlog-row span,
+.app-qsl-verification-note{
+  font-size:12.5px!important;
+  line-height:1.45!important;
+}
+
+/* QSL merkezi: süreç önce, ayrıntı sonra. */
+.app-qsl-intro{margin:0 0 14px!important}
+.app-qsl-active{display:grid;gap:14px}
+.qsl-item{padding:16px;border:1px solid var(--app-line);border-radius:18px;background:var(--app-surface)}
+.app-qsl-progress{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:14px 0}
+.app-qsl-step{display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--app-line);border-radius:12px;background:var(--app-surface-soft);color:var(--app-muted);font-size:12px;cursor:pointer}
+.app-qsl-step>span{display:grid;place-items:center;width:23px;height:23px;border-radius:999px;border:1px solid currentColor;font-size:11px}
+.app-qsl-step.is-complete{color:var(--app-success);background:var(--app-success-soft)}
+.app-qsl-step.is-current{box-shadow:var(--app-focus);border-color:var(--app-primary);color:var(--app-primary)}
+.app-qsl-primary-actions,.app-qsl-contact-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.app-qsl-contact-box{margin-top:10px}
+.app-qsl-details{margin-top:12px}
+.app-qsl-details>summary,.app-qsl-backlog>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
+.app-qsl-details label{display:grid;gap:6px;margin-top:10px}
+.app-qsl-backlog{margin-top:16px;border:1px solid var(--app-line);border-radius:16px;background:var(--app-surface)}
+.app-qsl-backlog>summary{justify-content:space-between;padding:0 14px}
+.app-qsl-backlog>summary span{color:var(--app-muted)}
+.app-qsl-backlog>div{border-top:1px solid var(--app-line)}
+.app-qsl-backlog-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-top:1px solid var(--app-line-soft)}
+.app-qsl-backlog-row:first-child{border-top:0}
+.app-qsl-backlog-row b,.app-qsl-backlog-row span{display:block}
+.app-qsl-empty{padding:18px;border:1px dashed var(--app-line);border-radius:16px;background:var(--app-surface-soft)}
+.app-qsl-empty p{margin:5px 0 0;color:var(--app-muted)}
+
+/* AI sonucu: nitelik ana bilgi, yüzde ve model ayrıntısı ikincil bilgi. */
+.app-ai-summary-pills{display:flex;gap:8px;flex-wrap:wrap}
+.app-ai-candidate-action{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.app-ai-candidate-action .btn{margin-top:0!important}
+.app-ai-tech{margin-top:12px;border-top:1px solid var(--app-line);padding-top:8px}
+.app-ai-tech summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--app-muted);font-weight:700}
+
+@media(max-width:560px){
+  .app-qsl-progress{grid-template-columns:1fr}
+  .app-qsl-step{justify-content:flex-start;padding:0 12px}
+  .app-qsl-primary-actions .btn,.app-qsl-contact-actions .btn{flex:1 1 100%}
+  .app-qsl-backlog-row{align-items:stretch;flex-direction:column}
+  .app-qsl-backlog-row .btn{width:100%}
+  .app-ai-candidate-action{align-items:stretch}
+}

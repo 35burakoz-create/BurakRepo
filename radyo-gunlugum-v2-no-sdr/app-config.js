@@ -20,12 +20,14 @@ const config=Object.freeze({
   timezone:'Europe/Istanbul',
   locale:'tr-TR',
   cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52',
+  buildId:'20260917-19',
   origin:Object.freeze({name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36}),
   receiver:Object.freeze({model:'TECSUN R-9012',bands})
 });
 globalThis.RADIO_APP_CONFIG=config;
 if(typeof document!=='undefined'){
   document.documentElement.dataset.appVersion=config.version;
+  document.documentElement.dataset.appBuild=config.buildId;
   document.title=`Radyo Günlüğüm ${config.displayVersion}`;
 }
 })();
