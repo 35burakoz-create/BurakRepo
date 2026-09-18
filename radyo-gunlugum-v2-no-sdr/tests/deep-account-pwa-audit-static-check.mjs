@@ -106,3 +106,4 @@ for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
 const failed=checks.filter(([,ok])=>!ok);
 console.log(`\n${checks.length-failed.length}/${checks.length} account/PWA/calendar audit checks passed.`);
 if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
+await import('./auth-password-recovery-static-check.mjs');
