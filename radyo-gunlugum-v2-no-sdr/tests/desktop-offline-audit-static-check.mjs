@@ -7,6 +7,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const checks=[];
 function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
 
+const config=read('app-config.js');
 const uiMode=read('app-ui-mode.js');
 const desktop=read('app-desktop.css');
 const shell=read('app-shell-core.js');
@@ -27,31 +28,45 @@ for(const [file,src] of [['app-ui-mode.js',uiMode],['app-shell-core.js',shell],[
 }
 
 function simulateUiMode({ua='',uaMobile=false,platform='',touch=0,standalone=false,coarse=false,fine=false,screenWidth=1920,screenHeight=1080,innerWidth=1280,innerHeight=720}={}){
-  const rootEl={dataset:{},classList:{toggle(){}}};
+  const rootEl={dataset:{},clientWidth:innerWidth,classList:{toggle(){}}};
   const navigator={userAgent:ua,userAgentData:{mobile:uaMobile},platform,maxTouchPoints:touch,standalone:false};
-  const listeners=[];
-  const window={R:{},navigator,screen:{width:screenWidth,height:screenHeight},innerWidth,innerHeight,matchMedia(q){return{matches:q==='(display-mode: standalone)'?standalone:q==='(pointer: coarse)'?coarse:q==='(pointer: fine)'?fine:false,addEventListener(){}}},dispatchEvent(e){listeners.push(e)},addEventListener(){}};
+  const events=[],handlers={};
+  const window={R:{},navigator,screen:{width:screenWidth,height:screenHeight},innerWidth,innerHeight,matchMedia(q){return{matches:q==='(display-mode: standalone)'?standalone:q==='(pointer: coarse)'?coarse:q==='(pointer: fine)'?fine:false,addEventListener(){}}},dispatchEvent(e){events.push(e)},addEventListener(type,fn){handlers[type]=fn}};
   const sandbox={window,document:{documentElement:rootEl},navigator,CustomEvent:class{constructor(type,init){this.type=type;this.detail=init?.detail}},Object,Number,String,Math,console};
   vm.createContext(sandbox);vm.runInContext(uiMode,sandbox,{filename:'app-ui-mode.js'});
-  return{state:window.R.uiMode.state,root:rootEl,events:listeners};
+  return{state:()=>window.R.uiMode.state,root:rootEl,events,handlers,window,api:window.R.uiMode};
 }
 
 {
   const d=simulateUiMode({ua:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',fine:true,screenWidth:1920,screenHeight:1080,innerWidth:520,innerHeight:700});
-  check('narrow desktop browser stays desktop instead of becoming mobile',d.state.mode==='desktop'&&d.state.context==='browser'&&d.root.dataset.uiMode==='desktop');
+  check('narrow desktop browser uses mobile shell by viewport',d.state().mode==='mobile'&&d.state().context==='browser'&&d.root.dataset.uiMode==='mobile');
+  check('UI mode exposes the shared desktop breakpoint',d.api.desktopMinWidth===960&&d.state().desktopMinWidth===960);
   const p=simulateUiMode({ua:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Mobile',touch:5,standalone:true,coarse:true,screenWidth:390,screenHeight:844,innerWidth:844,innerHeight:390});
-  check('landscape installed phone stays mobile app',p.state.mode==='mobile'&&p.state.context==='app'&&p.root.dataset.uiMode==='mobile');
+  check('landscape installed phone stays mobile app below 960px',p.state().mode==='mobile'&&p.state().context==='app'&&p.root.dataset.uiMode==='mobile');
   const a=simulateUiMode({ua:'Mozilla/5.0 (Linux; Android 16; Pixel) Mobile',uaMobile:true,touch:5,coarse:true,screenWidth:412,screenHeight:915,innerWidth:915,innerHeight:412});
-  check('wide landscape Android browser remains mobile hardware',a.state.mode==='mobile');
-  const t=simulateUiMode({ua:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',touch:10,coarse:true,fine:true,screenWidth:1366,screenHeight:768});
-  check('touch capable computer with fine pointer remains desktop',t.state.mode==='desktop');
-  const i=simulateUiMode({ua:'Mozilla/5.0 (Macintosh; Intel Mac OS X)',platform:'MacIntel',touch:5,coarse:true,fine:false,screenWidth:1024,screenHeight:1366});
-  check('touch iPad style device remains mobile',i.state.mode==='mobile');
+  check('wide landscape Android browser remains mobile below 960px',a.state().mode==='mobile'&&a.state().mobileHardware===true);
+  const t=simulateUiMode({ua:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',touch:10,coarse:true,fine:true,screenWidth:1366,screenHeight:768,innerWidth:1366});
+  check('touch capable wide computer uses desktop shell',t.state().mode==='desktop');
+  const i=simulateUiMode({ua:'Mozilla/5.0 (Macintosh; Intel Mac OS X)',platform:'MacIntel',touch:5,coarse:true,fine:false,screenWidth:1024,screenHeight:1366,innerWidth:1024});
+  check('large iPad-style viewport can use desktop shell while retaining touch metadata',i.state().mode==='desktop'&&i.state().mobileHardware===true&&i.state().coarse===true);
+  const r=simulateUiMode({ua:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',fine:true,innerWidth:1200,innerHeight:800});
+  check('wide viewport starts desktop',r.state().mode==='desktop');
+  r.window.innerWidth=700;r.root.clientWidth=700;r.handlers.resize?.();
+  check('resize below breakpoint switches to mobile shell',r.state().mode==='mobile'&&r.root.dataset.uiMode==='mobile');
+  r.window.innerWidth=1100;r.root.clientWidth=1100;r.handlers.resize?.();
+  check('resize above breakpoint switches back to desktop shell',r.state().mode==='desktop'&&r.root.dataset.uiMode==='desktop');
+  check('mode changes emit app:uimode events',r.events.filter(x=>x.type==='app:uimode').length>=3);
 }
 
+check('UI mode layout decision is viewport-first',uiMode.includes('const DESKTOP_MIN_WIDTH=960')&&uiMode.includes("mode:compactViewport?'mobile':'desktop'"));
+check('UI mode listens for live viewport changes',uiMode.includes("window.addEventListener('resize',apply"));
 check('UI mode contract loads before other bootstrap modules',boot.includes("const MODULES=[\n'app-ui-mode.js','app-foundation.js'"));
 check('UI mode contract is a critical bootstrap module',boot.includes("'app-ui-mode.js'" )&&boot.includes('const CRITICAL=new Set'));
 check('UI mode contract is cached and critical offline',sw.includes("'./app-ui-mode.js'")&&sw.match(/const CRITICAL=\[[^\]]*'\.\/app-ui-mode\.js'/s));
+check('viewport layout release marker is present',sw.includes("UI_MODE_VIEWPORT_LAYOUT='20260918-3'"));
+const configBuild=config.match(/buildId:'([^']+)'/)?.[1];
+const swBuild=sw.match(/PWA_CACHE_GENERATION='([^']+)'/)?.[1];
+check('PWA cache generation matches app build id',!!configBuild&&configBuild===swBuild);
 check('desktop stylesheet is loaded after shell polish',shell.includes("css('app-desktop.css','appDesktopCss')"));
 check('desktop stylesheet is cached for installed PWA',sw.includes("'./app-desktop.css'"));
 check('desktop styling is explicitly scoped to desktop mode',desktop.includes('html[data-ui-mode="desktop"] body')&&desktop.includes('html[data-ui-mode="desktop"] #appDesktopNav'));
