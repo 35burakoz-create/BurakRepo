@@ -182,11 +182,22 @@ test('system diagnostics keeps technical data collapsed and warns before sharing
 test('compact information typography survives legacy CSS overrides',async({page})=>{
   const pageErrors=await boot(page);
   await go(page,'analysis');
-  const sizes=await page.evaluate(()=>({
-    ident:parseFloat(getComputedStyle(document.querySelector('.app-density-ident span')).fontSize),
-    metric:parseFloat(getComputedStyle(document.querySelector('.app-density-metric span')).fontSize),
-    mix:parseFloat(getComputedStyle(document.querySelector('.app-density-mix em')).fontSize)
-  }));
+  const sizes=await page.evaluate(()=>{
+    const ident=document.querySelector('.app-density-ident span');
+    const metric=document.querySelector('.app-density-metric span');
+    const probe=document.createElement('div');
+    probe.className='app-density-mix';
+    probe.innerHTML='<em>SW5 1</em>';
+    document.body.appendChild(probe);
+    const mix=probe.querySelector('em');
+    const result={
+      ident:parseFloat(getComputedStyle(ident).fontSize),
+      metric:parseFloat(getComputedStyle(metric).fontSize),
+      mix:parseFloat(getComputedStyle(mix).fontSize)
+    };
+    probe.remove();
+    return result;
+  });
   expect(sizes.ident,'density identity explanation size').toBeGreaterThanOrEqual(12.5);
   expect(sizes.metric,'density metric explanation size').toBeGreaterThanOrEqual(12.5);
   expect(sizes.mix,'density mix label size').toBeGreaterThanOrEqual(11.5);
