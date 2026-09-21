@@ -22,6 +22,8 @@ for(const [name,src] of [['core.js',core],['app-bootstrap.js',bootstrap],['app-c
 
 check('shared frequency formatter rejects malformed and non-positive values',core.includes("if(!Number.isFinite(n)||n<=0)return''"));
 check('bootstrap exposes optional-module recovery after ready',bootstrap.includes('function recover()')&&bootstrap.includes('failed.size?recover()')&&bootstrap.includes("window.addEventListener('online'"));
+check('bootstrap stops cleanly when a required external library is unavailable',bootstrap.includes('||R.dependencyError)return'));
+check('core exposes a single accessible Supabase dependency failure instead of cascading module errors',core.includes("R.dependencyError={key:'supabase'")&&core.includes("id='appDependencyFatal'")&&core.includes("data-app-dependency-error','supabase'"));
 check('bootstrap has a bounded startup preload budget',bootstrap.includes('const STARTUP_PRELOAD=[')&&bootstrap.includes('for(const src of STARTUP_PRELOAD)')&&!bootstrap.includes('function preload(){for(const src of MODULES)'));
 check('startup preload keeps critical shell but excludes heavy optional features',bootstrap.includes("'app-home-ui.js','app-now-ui.js'")&&!/STARTUP_PRELOAD=\[[^\]]*app-ai-ui\.js/.test(bootstrap)&&!/STARTUP_PRELOAD=\[[^\]]*app-atlas-ui\.js/.test(bootstrap)&&!/STARTUP_PRELOAD=\[[^\]]*app-memory\.js/.test(bootstrap));
 check('bootstrap forced recovery replaces a failed stale script',bootstrap.includes('if(force&&old){old.remove?.();old=null}')&&bootstrap.includes("await load(src,{force:true})"));

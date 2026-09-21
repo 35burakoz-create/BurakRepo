@@ -1,5 +1,5 @@
 (()=>{
-const R=window.R;if(!R||R.__bootstrap387)return;R.__bootstrap387=true;
+const R=window.R;if(!R||R.__bootstrap387||R.dependencyError)return;R.__bootstrap387=true;
 const MODULES=[
 'app-ui-mode.js','app-foundation.js','app-user-log-scope.js','app-branding-experience.js','app-branding-share-tools.js','app-branding-share-accessibility.js','app-social-meta-runtime.js','app-toast.js','app-pwa-install.js','app-runtime-core.js','app-auth-service.js','app-auth-recovery.js','app-router-core.js','app-ui-state.js','app-auth-ui.js',
 'app-broadcast-locale.js','app-station-intelligence.js','app-station-streams.js','app-current-programs.js','app-guide-service.js','app-language-service.js','app-qsl-service.js','app-record-service.js','app-record-integrity.js','app-offline-service.js','app-smart-analyzer.js',

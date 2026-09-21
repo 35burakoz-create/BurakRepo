@@ -9,8 +9,8 @@ const supabaseMock=fs.readFileSync(fileURLToPath(new URL('./supabase-browser-moc
 const leafletMock=fs.readFileSync(fileURLToPath(new URL('./leaflet-browser-mock.js',import.meta.url)),'utf8');
 const expectedRoutes=['home','now','log','audio','analysis','map','calendar','qsl','guide','smart','atlas','ai','memory','propagation'];
 
-async function installNetworkMocks(page){
-  await page.route(/https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2\.116\.0(?:\/.*)?/,route=>route.fulfill({status:200,contentType:'application/javascript',body:supabaseMock}));
+async function installNetworkMocks(page,{supabaseMode='mock'}={}){
+  await page.route(/https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2\.116\.0(?:\/.*)?/,route=>supabaseMode==='abort'?route.abort('failed'):route.fulfill({status:200,contentType:'application/javascript',body:supabaseMock}));
   await page.route(/https:\/\/unpkg\.com\/leaflet@1\.9\.4\/dist\/leaflet\.js(?:\?.*)?/,route=>route.fulfill({status:200,contentType:'application/javascript',body:leafletMock}));
   await page.route(/https:\/\/unpkg\.com\/leaflet@1\.9\.4\/dist\/leaflet\.css(?:\?.*)?/,route=>route.fulfill({status:200,contentType:'text/css',body:''}));
   await page.route(/https:\/\/services\.swpc\.noaa\.gov\/.*/,route=>route.fulfill({status:200,contentType:'application/json',body:'[]'}));
@@ -41,6 +41,20 @@ async function go(page,route){
   await expect(visible).toHaveCount(1);
   await assertNoHorizontalOverflow(page);
 }
+
+test('Supabase CDN failure degrades to one accessible dependency error without boot cascade',async({page})=>{
+  await installNetworkMocks(page,{supabaseMode:'abort'});
+  const pageErrors=[];
+  page.on('pageerror',error=>pageErrors.push(String(error?.message||error)));
+  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#appDependencyFatal')).toBeVisible();
+  await expect(page.locator('#appDependencyFatal')).toContainText('Uygulama bileşeni yüklenemedi');
+  await expect(page.locator('html')).toHaveAttribute('data-app-dependency-error','supabase');
+  const state=await page.evaluate(()=>({dependency:window.R?.dependencyError?.key||null,bootstrap:!!window.R?.bootstrap}));
+  expect(state.dependency).toBe('supabase');
+  expect(state.bootstrap,'bootstrap must not start after a required dependency failure').toBe(false);
+  expect(pageErrors,'dependency failure should be handled without uncaught page errors').toEqual([]);
+});
 
 test('authenticated shell boots with the correct responsive navigation',async({page},testInfo)=>{
   const pageErrors=await boot(page);
