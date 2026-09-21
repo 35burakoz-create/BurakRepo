@@ -1,6 +1,6 @@
 (()=>{
 const R=window.R;if(!R||R.__qslUI386)return;R.__qslUI386=true;const $=s=>document.querySelector(s),esc=v=>R.esc?R.esc(v):String(v??'');
-const LABELS={none:'Başlatılmadı',planned:'Gönderilecek',sent:'Gönderildi',received:'Yanıt geldi'};const contactResults=new Map(),mutationFlights=new Map();
+const LABELS={none:'Başlatılmadı',planned:'Planlandı',sent:'Gönderildi',received:'Yanıt geldi'};const contactResults=new Map(),mutationFlights=new Map();
 function ownedLogs(){const userId=R.me?.id||null;if(!userId)return[];return(R.logs||[]).filter(x=>x?.user_id==null||x.user_id===userId)}
 function logById(id){return ownedLogs().find(x=>String(x.id)===String(id))||null}
 function formatQslDate(value){const raw=String(value||'').slice(0,10),m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:esc(value||'')}

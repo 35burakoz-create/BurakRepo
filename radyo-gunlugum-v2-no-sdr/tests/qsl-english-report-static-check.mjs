@@ -38,6 +38,7 @@ const kbs={station_name:'KBS WORLD Radio - English Service',aliases:['KBS World 
 check('contact scoring recognizes exact station aliases',R.qslService.contactScore(kbs,{station:'KBS World Radio',country:'Güney Kore'})>=100);
 check('QSL UI exposes verified contact lookup',ui.includes('İletişim bilgisi bul')&&ui.includes('E-posta taslağını aç')&&ui.includes('Resmî formu aç'));
 check('QSL UI exposes English-only programme details',ui.includes('Program ayrıntıları (İngilizce, isteğe bağlı)')&&ui.includes('Bu alan İngilizce olmalıdır'));
+check('QSL planned label is consistent across center and log form',ui.includes("planned:'Planlandı'")&&index.includes('<option value="planned">Planlandı</option>')&&!ui.includes("planned:'Gönderilecek'"));
 check('contact service queries curated station directory',qsl.includes("from('radio_station_contacts')")&&qsl.includes('suggestContact')&&qsl.includes('saveContact'));
 check('QSL UI explains backward correction and exposes reset',ui.includes('Durumu düzeltmek için doğru aşamaya dokun.')&&ui.includes('Süreci sıfırla')&&ui.includes('data-qsl-action="none"'));
 check('QSL UI renders sent and received dates near status',ui.includes('qsl_sent_at')&&ui.includes('qsl_received_at')&&ui.includes('app-qsl-status-dates'));
@@ -62,14 +63,23 @@ check('QSL draft received preserves sent date and defaults response',receivedDra
 let reverseRejected=false;try{R.qslService.normalizeTrackingDraft('received','2026-09-22','2026-09-21','2026-09-21')}catch{reverseRejected=true}
 check('QSL draft rejects response before sent date',reverseRejected);
 
-let statusPatch=null;
+let statusPatch=null,currentTracking={qsl_sent_at:'2026-09-10',qsl_received_at:'2026-09-20'};
 R.me={id:'user-1'};
 R.clock={today:()=> '2026-09-21'};
 R.load=async()=>{};
-R.S={from(table){check('QSL status writes target radio_logs',table==='radio_logs');return{update(patch){statusPatch=patch;const chain={eq(){return chain},select(){return chain},async maybeSingle(){return{data:{id:'log-1',user_id:'user-1',...patch},error:null}}};return chain}}}};
+R.S={from(table){check('QSL status writes target radio_logs',table==='radio_logs');return{
+ select(){const chain={eq(){return chain},async maybeSingle(){return{data:{id:'log-1',user_id:'user-1',...currentTracking},error:null}}};return chain},
+ update(patch){statusPatch=patch;const chain={eq(){return chain},select(){return chain},async maybeSingle(){return{data:{id:'log-1',user_id:'user-1',...patch},error:null}}};return chain}
+}}};
 await R.qslService.setStatus('log-1','none');
 check('QSL reset returns status to none',statusPatch?.qsl_status==='none');
 check('QSL reset clears sent and received dates',statusPatch?.qsl_sent_at===null&&statusPatch?.qsl_received_at===null);
+currentTracking={qsl_sent_at:'2026-09-10',qsl_received_at:'2026-09-20'};statusPatch=null;
+await R.qslService.setStatus('log-1','sent');
+check('QSL backward correction preserves original sent date',statusPatch?.qsl_status==='sent'&&statusPatch?.qsl_sent_at==='2026-09-10'&&statusPatch?.qsl_received_at===null);
+currentTracking={qsl_sent_at:'2026-09-10',qsl_received_at:'2026-09-20'};statusPatch=null;
+await R.qslService.setStatus('log-1','received');
+check('QSL repeated received status preserves historical dates',statusPatch?.qsl_status==='received'&&statusPatch?.qsl_sent_at==='2026-09-10'&&statusPatch?.qsl_received_at==='2026-09-20');
 let invalidRejected=false;try{await R.qslService.setStatus('log-1','invalid')}catch{invalidRejected=true}
 check('QSL status service still rejects unknown states',invalidRejected);
 const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*-(\d{8})-(\d+)'/);check('QSL contact release has fresh PWA generation',!!cache&&Number(cache[1])>=20260910&&Number(cache[2])>=14);

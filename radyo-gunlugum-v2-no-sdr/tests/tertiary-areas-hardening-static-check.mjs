@@ -29,8 +29,8 @@ check('QSL validates real calendar dates',qsl.includes('function strictDate(valu
 check('QSL validates real clock times',qsl.includes('function strictTime(value)')&&qsl.includes('Number(m[2])<=59'));
 check('QSL contact directory is paged instead of silently capped at 1000',qsl.includes('MAX_CONTACT_ROWS=5000')&&qsl.includes('.range(from,from+CONTACT_PAGE_SIZE-1)')&&!qsl.includes('.limit(1000)'));
 check('QSL malformed contacts cannot be persisted',qsl.includes('EMAIL_RE.test(email)?email:url')&&qsl.includes('geçerli bir e-posta adresi veya HTTPS'));
-check('QSL planned state clears stale sent and received dates',qsl.includes("{qsl_status:'planned',qsl_sent_at:null,qsl_received_at:null}"));
-check('QSL sent state clears stale received date',qsl.includes("{qsl_status:'sent',qsl_sent_at:today,qsl_received_at:null}"));
+check('QSL planned state clears stale sent and received dates',qsl.includes("if(value==='none'||value==='planned')return{qsl_status:value,qsl_sent_at:null,qsl_received_at:null}"));
+check('QSL sent state clears stale received date',qsl.includes("if(value==='sent')return{qsl_status:'sent',qsl_sent_at:sent||today,qsl_received_at:null}"));
 check('QSL record mutations are serialized per account and log',qslUI.includes('mutationFlights=new Map()')&&qslUI.includes('const key=`${userId}|${id}`')&&qslUI.includes('mutationFlights.has(key)'));
 
 // Achievement and collection legacy-data guards.
