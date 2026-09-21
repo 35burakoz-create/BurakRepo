@@ -35,9 +35,9 @@ check('smart analyzer reuses canonical target adjustment',smart.includes('canoni
 
 // Atomic PWA update integrity.
 check('service worker requires every local JavaScript module',sw.includes("REQUIRED_LOCAL=new Set(LOCAL.filter(u=>u.endsWith('.js')"));
-check('service worker treats pinned Supabase client as required external dependency',sw.includes('REQUIRED_EXTERNAL=new Set([EXTERNAL[0]])'));
+check('service worker treats external libraries as opportunistic cache entries',!sw.includes('REQUIRED_EXTERNAL')&&sw.includes("yerel uygulama önbelleği korunuyor"));
 check('service worker deletes incomplete new cache when a required local module fails',sw.includes('requiredLocalFailed.length')&&sw.includes('PWA uygulama modülleri önbelleğe alınamadı'));
-check('service worker deletes incomplete new cache when required external dependency fails',sw.includes('requiredExternalFailed.length')&&sw.includes('PWA zorunlu dış bağımlılığı önbelleğe alınamadı'));
+check('service worker does not roll back a complete local cache for an external CDN failure',!sw.includes('requiredExternalFailed')&&!sw.includes('PWA zorunlu dış bağımlılığı önbelleğe alınamadı'));
 check('PWA updater forgets redundant waiting workers',pwa.includes("if(worker.state==='redundant'){forgetWaiting(worker);return}"));
 check('PWA updater clears activation timeout with stale worker',pwa.includes('function forgetWaiting(worker=null)')&&pwa.includes('activationTimer=null;close()'));
 
@@ -123,8 +123,8 @@ check('PWA updater clears activation timeout with stale worker',pwa.includes('fu
   check('missing required local JS rejects new service-worker install',await installRejected());
   check('failed required local JS deletes incomplete new cache',deleted.includes('radyo-test-test-build'));
   fail=url=>url.includes('@supabase/supabase-js@2.116.0');deleted.length=0;
-  check('missing pinned Supabase client rejects new service-worker install',await installRejected());
-  check('failed Supabase dependency deletes incomplete new cache',deleted.includes('radyo-test-test-build'));
+  check('missing pinned Supabase client no longer rejects an otherwise complete service-worker install',!(await installRejected()));
+  check('failed Supabase CDN cache does not delete the complete local cache',!deleted.includes('radyo-test-test-build'));
   fail=url=>url.includes('leaflet.css');deleted.length=0;
   check('optional Leaflet stylesheet failure does not block an otherwise complete update',!(await installRejected()));
   check('optional external failure does not delete the complete new cache',!deleted.includes('radyo-test-test-build'));
