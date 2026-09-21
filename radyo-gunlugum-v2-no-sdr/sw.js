@@ -2,7 +2,7 @@ importScripts('./app-config.js');
 const CFG=globalThis.RADIO_APP_CONFIG||{cacheVersion:'v385-core-boundary-20260907-1',buildId:'legacy'};
 const BUILD_ID=String(CFG.buildId||'legacy').trim()||'legacy';
 const CACHE=`radyo-${CFG.cacheVersion}-${BUILD_ID}`;
-const PWA_CACHE_GENERATION='20260921-3';
+const PWA_CACHE_GENERATION='20260921-4';
 const RADIO_INTELLIGENCE_POLISH='20260916-5';
 const STATION_DETAIL_ACCESSIBILITY='20260916-6';
 const FAVORITES_DISCOVERY='20260916-7';
