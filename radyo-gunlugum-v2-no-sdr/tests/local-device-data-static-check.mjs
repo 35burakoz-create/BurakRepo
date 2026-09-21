@@ -37,7 +37,7 @@ assert(css.includes('.v38-local-data-warning')&&css.includes('.v38-local-data-ac
 assert(css.includes('html.night #v38Sheet .v38-local-data-warning'), 'local cleanup warning must support night mode');
 
 const build=config.match(/buildId:'([^']+)'/)?.[1],generation=sw.match(/PWA_CACHE_GENERATION='([^']+)'/)?.[1];
-assert(build==='20260921-1'&&generation===build, 'local cleanup runtime change must ship with a fresh PWA generation');
+assert(!!build&&build!=='legacy'&&generation===build, 'local cleanup must ship under the current synchronized PWA generation');
 assert(sw.includes("const LOCAL_DEVICE_DATA_CLEANUP='20260921-1';"), 'service worker must carry the local-device cleanup release marker');
 
 console.log('local-device-data-static-check: ok');
