@@ -16,6 +16,8 @@ assert(js.includes('Paylaşmadan önce içeriği gözden geçir.'),'copy confirm
 assert(css.includes('.foundation-diag-details>summary')&&css.includes(':focus-visible'),'technical disclosure must remain keyboard accessible');
 assert(css.includes('width:var(--app-touch-min,44px)')&&css.includes('height:var(--app-touch-min,44px)'),'diagnostics close action must meet the canonical touch target');
 assert(css.includes('.foundation-diag-privacy')&&css.includes('var(--app-font-caption,12.5px)'),'privacy note must use canonical readable microcopy');
-assert(config.includes("buildId:'20260921-5'"),'cached diagnostics runtime change must advance buildId');
-assert(sw.includes("PWA_CACHE_GENERATION='20260921-5'")&&sw.includes("DIAGNOSTICS_PRIVACY_UI='20260921-5'"),'service worker generation and diagnostics marker must match the release');
+const buildId=config.match(/buildId:'([^']+)'/)?.[1];
+const generation=sw.match(/PWA_CACHE_GENERATION='([^']+)'/)?.[1];
+assert(buildId&&generation&&buildId===generation,'current app buildId and PWA cache generation must remain aligned after diagnostics changes');
+assert(sw.includes("DIAGNOSTICS_PRIVACY_UI='20260921-5'"),'service worker must retain the diagnostics privacy release marker');
 console.log('diagnostics-privacy-static-check: ok');

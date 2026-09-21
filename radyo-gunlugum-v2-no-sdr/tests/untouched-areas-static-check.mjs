@@ -6,6 +6,7 @@ import './ui-ux-analytics-drilldown-static-check.mjs';
 import './ui-ux-search-catalog-static-check.mjs';
 import './ui-final-polish-static-check.mjs';
 import './diagnostics-privacy-static-check.mjs';
+import './micro-typography-static-check.mjs';
 
 const root=path.resolve(process.cwd(),'radyo-gunlugum-v2-no-sdr');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
