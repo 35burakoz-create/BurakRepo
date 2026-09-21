@@ -89,11 +89,13 @@
             <label class="span2">Konuşma dökümü<textarea id="transcript" rows="4"></textarea></label>
             <label class="span2">Notlar<textarea id="notes" rows="4" placeholder="Sinyal dalgalanması, parazit, anons vb."></textarea></label>
             <fieldset class="span2 qsl-fieldset"><legend>QSL takibi</legend><div class="form-grid compact">
-              <label>QSL durumu<select id="qslStatus"><option value="none">Yok</option><option value="planned">Gönderilecek</option><option value="sent">Gönderildi</option><option value="received">Yanıt geldi</option></select></label>
-              <label>İletişim / e-posta<input id="qslContact"></label>
+              <label>QSL durumu<select id="qslStatus"><option value="none">Başlatılmadı</option><option value="planned">Planlandı</option><option value="sent">Gönderildi</option><option value="received">Yanıt geldi</option></select></label>
+              <label>İletişim / e-posta<input id="qslContact" placeholder="E-posta veya resmî HTTPS iletişim formu"></label>
               <label>Gönderim tarihi<input id="qslSentAt" type="date"></label>
               <label>Yanıt tarihi<input id="qslReceivedAt" type="date"></label>
-              <label class="span2">QSL notu<input id="qslNotes"></label>
+              <p id="qslTrackingHint" class="hint span2 app-qsl-form-hint" aria-live="polite">QSL süreci başlamadı; gönderim ve yanıt tarihleri kaydedilmez.</p>
+              <label class="span2">Program ayrıntıları (İngilizce)<input id="qslNotes" placeholder="Example: station identification, news bulletin, music…"></label>
+              <p class="hint span2 app-qsl-form-copy">Bu alan İngilizce QSL raporunda kullanılır. Türkçe serbest notlar için yukarıdaki Notlar alanını kullan.</p>
             </div></fieldset>
             <div class="span2 suggestion-strip" id="formSuggestionStrip">Frekans ve saati girdikten sonra akıllı eşleştirme özelliğini kullanabilirsin.</div>
             <div class="span2 row-actions"><button id="saveBtn" class="btn primary" type="submit">Kaydı ekle</button><span id="formMsg" class="msg" role="status" aria-live="polite"></span></div>

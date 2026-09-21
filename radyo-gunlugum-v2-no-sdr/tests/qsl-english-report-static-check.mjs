@@ -11,7 +11,10 @@ const qsl=read('app-qsl-service.js');
 const ui=read('app-qsl-ui.js');
 const config=read('app-config.js');
 const integrity=read('app-ui-integrity.css');
-for(const [file,src] of [['app-qsl-service.js',qsl],['app-qsl-ui.js',ui]]){let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)}
+const logForm=read('app-log-form-ui.js');
+const logFormCss=read('app-log-form.css');
+const index=read('index.html');
+for(const [file,src] of [['app-qsl-service.js',qsl],['app-qsl-ui.js',ui],['app-log-form-ui.js',logForm]]){let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)}
 
 const R={guideService:{wallTimeToInstant:(date,time)=>date==='2026-09-10'&&time==='04:30'?new Date('2026-09-10T01:30:00Z'):new Date(`${date}T00:00:00Z`)},features:{register(){}},events:{emit(){}}};
 const sandbox={window:{R},globalThis:null,Intl,Date,Math,Number,String,Array,Object,Set,Promise,console};sandbox.globalThis=sandbox;sandbox.RADIO_APP_CONFIG={timezone:'Europe/Istanbul',origin:{name:'Bozköy, Torbalı, İzmir'},receiver:{model:'TECSUN R-9012'}};vm.createContext(sandbox);vm.runInContext(qsl,sandbox,{filename:'app-qsl-service.js'});
@@ -38,6 +41,22 @@ check('contact service queries curated station directory',qsl.includes("from('ra
 check('QSL UI explains backward correction and exposes reset',ui.includes('Durumu düzeltmek için doğru aşamaya dokun.')&&ui.includes('Süreci sıfırla')&&ui.includes('data-qsl-action="none"'));
 check('QSL UI renders sent and received dates near status',ui.includes('qsl_sent_at')&&ui.includes('qsl_received_at')&&ui.includes('app-qsl-status-dates'));
 check('QSL step and reset controls keep 44px mobile targets',integrity.includes('.app-qsl-step{')&&integrity.includes('min-height:44px')&&integrity.includes('.app-qsl-reset{min-height:44px!important')&&integrity.includes('.app-qsl-reset{width:100%}'));
+check('log form uses consistent QSL status labels',index.includes('<option value="none">Başlatılmadı</option>')&&index.includes('<option value="planned">Planlandı</option>')&&!index.includes('<option value="none">Yok</option>'));
+check('log form labels qsl_notes as English programme details',index.includes('Program ayrıntıları (İngilizce)')&&index.includes('Bu alan İngilizce QSL raporunda kullanılır.'));
+check('log form exposes live tracking guidance',index.includes('id="qslTrackingHint"')&&logForm.includes('function syncQslFields')&&logForm.includes("qslStatus.addEventListener('change'"));
+check('log form disables inactive QSL dates and keeps 44px controls',logFormCss.includes('#tab-log .qsl-fieldset input:disabled')&&logFormCss.includes('#tab-log .qsl-fieldset input,#tab-log .qsl-fieldset select{min-height:44px}'));
+check('log form blocks Turkish text from English QSL details',logForm.includes("QSL program ayrıntılarını İngilizce yaz. Türkçe metin İngilizce rapora eklenmez."));
+
+const noneDraft=R.qslService.normalizeTrackingDraft('none','2026-09-10','2026-09-20','2026-09-21');
+check('QSL draft none clears both dates',noneDraft.qsl_sent_at===null&&noneDraft.qsl_received_at===null);
+const plannedDraft=R.qslService.normalizeTrackingDraft('planned','2026-09-10','2026-09-20','2026-09-21');
+check('QSL draft planned clears both dates',plannedDraft.qsl_sent_at===null&&plannedDraft.qsl_received_at===null);
+const sentDraft=R.qslService.normalizeTrackingDraft('sent',null,'2026-09-20','2026-09-21');
+check('QSL draft sent defaults sent date and clears response',sentDraft.qsl_sent_at==='2026-09-21'&&sentDraft.qsl_received_at===null);
+const receivedDraft=R.qslService.normalizeTrackingDraft('received','2026-09-10',null,'2026-09-21');
+check('QSL draft received preserves sent date and defaults response',receivedDraft.qsl_sent_at==='2026-09-10'&&receivedDraft.qsl_received_at==='2026-09-21');
+let reverseRejected=false;try{R.qslService.normalizeTrackingDraft('received','2026-09-22','2026-09-21','2026-09-21')}catch{reverseRejected=true}
+check('QSL draft rejects response before sent date',reverseRejected);
 
 let statusPatch=null;
 R.me={id:'user-1'};
