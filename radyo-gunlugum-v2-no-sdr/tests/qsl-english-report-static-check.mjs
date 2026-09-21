@@ -10,6 +10,7 @@ function check(name,ok){checks.push([name,!!ok]);if(!ok)process.exitCode=1}
 const qsl=read('app-qsl-service.js');
 const ui=read('app-qsl-ui.js');
 const config=read('app-config.js');
+const integrity=read('app-ui-integrity.css');
 for(const [file,src] of [['app-qsl-service.js',qsl],['app-qsl-ui.js',ui]]){let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)}
 
 const R={guideService:{wallTimeToInstant:(date,time)=>date==='2026-09-10'&&time==='04:30'?new Date('2026-09-10T01:30:00Z'):new Date(`${date}T00:00:00Z`)},features:{register(){}},events:{emit(){}}};
@@ -34,6 +35,20 @@ check('contact scoring recognizes exact station aliases',R.qslService.contactSco
 check('QSL UI exposes verified contact lookup',ui.includes('İletişim bilgisi bul')&&ui.includes('E-posta taslağını aç')&&ui.includes('Resmî formu aç'));
 check('QSL UI exposes English-only programme details',ui.includes('Program ayrıntıları (İngilizce, isteğe bağlı)')&&ui.includes('Bu alan İngilizce olmalıdır'));
 check('contact service queries curated station directory',qsl.includes("from('radio_station_contacts')")&&qsl.includes('suggestContact')&&qsl.includes('saveContact'));
+check('QSL UI explains backward correction and exposes reset',ui.includes('Durumu düzeltmek için doğru aşamaya dokun.')&&ui.includes('Süreci sıfırla')&&ui.includes('data-qsl-action="none"'));
+check('QSL UI renders sent and received dates near status',ui.includes('qsl_sent_at')&&ui.includes('qsl_received_at')&&ui.includes('app-qsl-status-dates'));
+check('QSL step and reset controls keep 44px mobile targets',integrity.includes('.app-qsl-step{')&&integrity.includes('min-height:44px')&&integrity.includes('.app-qsl-reset{min-height:44px!important')&&integrity.includes('.app-qsl-reset{width:100%}'));
+
+let statusPatch=null;
+R.me={id:'user-1'};
+R.clock={today:()=> '2026-09-21'};
+R.load=async()=>{};
+R.S={from(table){check('QSL status writes target radio_logs',table==='radio_logs');return{update(patch){statusPatch=patch;const chain={eq(){return chain},select(){return chain},async maybeSingle(){return{data:{id:'log-1',user_id:'user-1',...patch},error:null}}};return chain}}}};
+await R.qslService.setStatus('log-1','none');
+check('QSL reset returns status to none',statusPatch?.qsl_status==='none');
+check('QSL reset clears sent and received dates',statusPatch?.qsl_sent_at===null&&statusPatch?.qsl_received_at===null);
+let invalidRejected=false;try{await R.qslService.setStatus('log-1','invalid')}catch{invalidRejected=true}
+check('QSL status service still rejects unknown states',invalidRejected);
 const cache=config.match(/cacheVersion:'v385-core-boundary-[^']*-(\d{8})-(\d+)'/);check('QSL contact release has fresh PWA generation',!!cache&&Number(cache[1])>=20260910&&Number(cache[2])>=14);
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);const failed=checks.filter(x=>!x[1]);console.log(`\n${checks.length-failed.length}/${checks.length} QSL English/contact checks passed.`);if(failed.length)console.error('Failed:',failed.map(([name])=>name).join(', '));
