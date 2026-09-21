@@ -20,7 +20,7 @@ const config=Object.freeze({
   timezone:'Europe/Istanbul',
   locale:'tr-TR',
   cacheVersion:'v385-core-boundary-radio-intelligence-20260915-52',
-  buildId:'20260921-9',
+  buildId:'20260921-10',
   origin:Object.freeze({name:'Bozköy, Torbalı, İzmir',lat:38.151,lon:27.36}),
   receiver:Object.freeze({model:'TECSUN R-9012',bands})
 });
