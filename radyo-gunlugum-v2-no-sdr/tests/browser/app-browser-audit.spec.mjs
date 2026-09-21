@@ -179,6 +179,23 @@ test('system diagnostics keeps technical data collapsed and warns before sharing
   expect(pageErrors,'uncaught browser errors in system diagnostics').toEqual([]);
 });
 
+test('compact information typography survives legacy CSS overrides',async({page})=>{
+  const pageErrors=await boot(page);
+  await go(page,'analysis');
+  const sizes=await page.evaluate(()=>({
+    ident:parseFloat(getComputedStyle(document.querySelector('.app-density-ident span')).fontSize),
+    metric:parseFloat(getComputedStyle(document.querySelector('.app-density-metric span')).fontSize),
+    mix:parseFloat(getComputedStyle(document.querySelector('.app-density-mix em')).fontSize)
+  }));
+  expect(sizes.ident,'density identity explanation size').toBeGreaterThanOrEqual(12.5);
+  expect(sizes.metric,'density metric explanation size').toBeGreaterThanOrEqual(12.5);
+  expect(sizes.mix,'density mix label size').toBeGreaterThanOrEqual(11.5);
+  await go(page,'calendar');
+  const calendarSize=await page.locator('#tab-calendar .cal-head').first().evaluate(node=>parseFloat(getComputedStyle(node).fontSize));
+  expect(calendarSize,'calendar header size').toBeGreaterThanOrEqual(11.5);
+  expect(pageErrors,'uncaught browser errors during typography audit').toEqual([]);
+});
+
 test('Now and Journal surfaces render stable visual artifacts',async({page},testInfo)=>{
   const pageErrors=await boot(page);
   await go(page,'now');

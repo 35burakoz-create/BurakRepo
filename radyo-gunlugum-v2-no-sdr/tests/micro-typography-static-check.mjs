@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 const root=path.resolve(import.meta.dirname,'..');
 const read=name=>fs.readFileSync(path.join(root,name),'utf8');
 const css=read('app-page-density.css');
+const audit=read('app-audit-polish.css');
 const config=read('app-config.js');
 const sw=read('sw.js');
 assert(css.includes('.app-density-ident span{display:block;margin-top:4px;color:#cbd5e1;font-size:var(--app-font-caption,12.5px);line-height:var(--app-line-readable,1.45)}'),'density identity explanation must use readable caption typography');
@@ -12,6 +13,9 @@ assert(css.includes('.app-density-metric span{margin-top:4px;font-size:var(--app
 assert(css.includes('.app-density-mix em{font-style:normal;font-size:var(--app-font-compact-label,11.5px)'),'dense mix labels must use the canonical compact-label floor');
 assert(css.includes('#tab-calendar .cal-head{font-size:var(--app-font-compact-label,11.5px)'),'calendar headings must use the canonical compact-label floor');
 assert(css.includes('.app-density-ident small{font-size:9.5px')&&css.includes('.app-density-mix>span{font-size:9px'),'pure decorative kickers may remain intentionally compact');
+assert(audit.includes('.app-density-ident span,.app-density-metric span{')&&audit.includes('font-size:var(--app-font-caption,12.5px)!important'),'legacy audit polish must not override information text below the canonical caption size');
+assert(audit.includes('.app-density-mix em,#tab-calendar .cal-head{')&&audit.includes('font-size:var(--app-font-compact-label,11.5px)!important'),'legacy audit polish must align compact labels with the canonical floor');
+assert(!audit.includes('.app-density-ident span{font-size:11.5px!important')&&!audit.includes('.app-density-metric span{\n  font-size:11px!important'),'stale micro-type overrides must stay removed');
 const buildId=config.match(/buildId:'([^']+)'/)?.[1];
 const generation=sw.match(/PWA_CACHE_GENERATION='([^']+)'/)?.[1];
 assert(buildId&&generation&&buildId===generation,'current app buildId and PWA cache generation must remain aligned after typography changes');
