@@ -12,7 +12,7 @@ function dependencyFatal(message){
     const title=document.createElement('h2');title.textContent='Uygulama bileşeni yüklenemedi';title.style.margin='0 0 8px';
     const text=document.createElement('p');text.textContent=message;text.style.cssText='margin:0 0 14px;color:#475569;line-height:1.5';
     const hint=document.createElement('p');hint.textContent='Yerel PWA dosyaların korunur. Bağlantı düzeldiğinde sayfayı yeniden yükleyebilirsin.';hint.style.cssText='margin:0 0 14px;color:#64748b;font-size:13px;line-height:1.5';
-    const button=document.createElement('button');button.type='button';button.textContent='Yeniden yükle';button.style.cssText='border:0;border-radius:12px;background:#4f46e5;color:#fff;font-weight:800;padding:12px 16px;min-height:44px';button.onclick=()=>location.reload();
+    const button=document.createElement('button');button.type='button';button.textContent='Yeniden yükle';button.style.cssText='border:0;border-radius:12px;background:#4f46e5;color:#fff;font-weight:800;padding:12px 16px;min-height:44px';button.addEventListener?.('click',()=>location.reload());
     card.append(title,text,hint,button);wrap.append(card);document.body?.append(wrap);button.focus?.();
   }catch{}
 }
