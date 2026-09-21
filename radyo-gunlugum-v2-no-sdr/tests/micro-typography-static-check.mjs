@@ -12,6 +12,8 @@ assert(css.includes('.app-density-metric span{margin-top:4px;font-size:var(--app
 assert(css.includes('.app-density-mix em{font-style:normal;font-size:var(--app-font-compact-label,11.5px)'),'dense mix labels must use the canonical compact-label floor');
 assert(css.includes('#tab-calendar .cal-head{font-size:var(--app-font-compact-label,11.5px)'),'calendar headings must use the canonical compact-label floor');
 assert(css.includes('.app-density-ident small{font-size:9.5px')&&css.includes('.app-density-mix>span{font-size:9px'),'pure decorative kickers may remain intentionally compact');
-assert(config.includes("buildId:'20260921-6'"),'cached typography change must advance buildId');
-assert(sw.includes("PWA_CACHE_GENERATION='20260921-6'")&&sw.includes("MICRO_TYPOGRAPHY_READABILITY='20260921-6'"),'service worker generation and typography marker must match');
+const buildId=config.match(/buildId:'([^']+)'/)?.[1];
+const generation=sw.match(/PWA_CACHE_GENERATION='([^']+)'/)?.[1];
+assert(buildId&&generation&&buildId===generation,'current app buildId and PWA cache generation must remain aligned after typography changes');
+assert(sw.includes("MICRO_TYPOGRAPHY_READABILITY='20260921-6'"),'service worker must retain the micro-typography release marker');
 console.log('micro-typography-static-check: ok');
