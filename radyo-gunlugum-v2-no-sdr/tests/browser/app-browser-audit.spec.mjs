@@ -62,6 +62,19 @@ test('authenticated shell boots with the correct responsive navigation',async({p
   expect(pageErrors,'uncaught browser errors during shell boot').toEqual([]);
 });
 
+test('startup preload budget stays bounded and avoids heavy optional modules',async({page})=>{
+  const pageErrors=await boot(page);
+  const preload=await page.evaluate(()=>({
+    declared:[...(window.R?.bootstrap?.startupPreload||[])],
+    links:[...document.querySelectorAll('link[data-app-preload]')].map(x=>x.dataset.appPreload)
+  }));
+  expect(preload.declared.length,'startup preload budget').toBeLessThanOrEqual(16);
+  expect(preload.links.length,'rendered preload links').toBe(preload.declared.length);
+  for(const critical of ['app-foundation.js','app-runtime-core.js','app-auth-service.js','app-router-core.js','app-auth-ui.js'])expect(preload.declared).toContain(critical);
+  for(const heavy of ['app-ai-ui.js','app-atlas-ui.js','app-memory.js','app-map-ui.js'])expect(preload.declared).not.toContain(heavy);
+  expect(pageErrors,'uncaught browser errors during bounded preload boot').toEqual([]);
+});
+
 test('responsive shell follows live viewport width across the 960px boundary',async({page})=>{
   const pageErrors=await boot(page);
   await page.setViewportSize({width:1200,height:800});

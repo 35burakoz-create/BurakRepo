@@ -22,6 +22,8 @@ for(const [name,src] of [['core.js',core],['app-bootstrap.js',bootstrap],['app-c
 
 check('shared frequency formatter rejects malformed and non-positive values',core.includes("if(!Number.isFinite(n)||n<=0)return''"));
 check('bootstrap exposes optional-module recovery after ready',bootstrap.includes('function recover()')&&bootstrap.includes('failed.size?recover()')&&bootstrap.includes("window.addEventListener('online'"));
+check('bootstrap has a bounded startup preload budget',bootstrap.includes('const STARTUP_PRELOAD=[')&&bootstrap.includes('for(const src of STARTUP_PRELOAD)')&&!bootstrap.includes('function preload(){for(const src of MODULES)'));
+check('startup preload keeps critical shell but excludes heavy optional features',bootstrap.includes("'app-home-ui.js','app-now-ui.js'")&&!/STARTUP_PRELOAD=\[[^\]]*app-ai-ui\.js/.test(bootstrap)&&!/STARTUP_PRELOAD=\[[^\]]*app-atlas-ui\.js/.test(bootstrap)&&!/STARTUP_PRELOAD=\[[^\]]*app-memory\.js/.test(bootstrap));
 check('bootstrap forced recovery replaces a failed stale script',bootstrap.includes('if(force&&old){old.remove?.();old=null}')&&bootstrap.includes("await load(src,{force:true})"));
 check('bootstrap recovery emits and redraws only after recovered modules',bootstrap.includes("emit?.('bootstrap:recovered'")&&bootstrap.includes("R.renderAll?.('bootstrap-recovered')"));
 check('guide loader probes row 50001 instead of rejecting exact boundary',current.includes('.range(MAX_GUIDE_ROWS,MAX_GUIDE_ROWS)')&&current.includes('if((probe.data||[]).length)return{data:null,error:new Error'));
