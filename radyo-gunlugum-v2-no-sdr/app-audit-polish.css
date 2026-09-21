@@ -3,16 +3,23 @@
 /* Teknik panel karakterini korurken 8–10 px mikro metinleri gerçek telefonda okunabilir seviyeye taşı. */
 .v42-console-id span,.v42-radio-scale span,.v42-section-kicker,.v42-week-head small,
 .v42-week-day>b,.v42-week-day>span,.v42-now-summary small,.v42-now-summary span,
-.app-density-ident small,.app-density-metric small,.app-density-mix>span,.app-density-mix em,
-#tab-map .section-head:after,#tab-calendar .cal-head{
+.app-density-ident small,.app-density-metric small,.app-density-mix>span,
+#tab-map .section-head:after{
   font-size:10.5px!important;
   line-height:1.35!important;
 }
-.v42-console-id small,.v42-console-live small,.app-density-metric span{
+.v42-console-id small,.v42-console-live small{
   font-size:11px!important;
   line-height:1.4!important;
 }
-.app-density-ident span{font-size:11.5px!important;line-height:1.45!important}
+.app-density-ident span,.app-density-metric span{
+  font-size:var(--app-font-caption,12.5px)!important;
+  line-height:var(--app-line-readable,1.45)!important;
+}
+.app-density-mix em,#tab-calendar .cal-head{
+  font-size:var(--app-font-compact-label,11.5px)!important;
+  line-height:var(--app-line-readable,1.45)!important;
+}
 .app-smart-summary span,.app-cal-hint,.app-listen-mini-main small,.app-listen-mini-main span,
 .app-listen-row span{font-size:11px!important;line-height:1.4!important}
 

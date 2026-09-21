@@ -179,6 +179,34 @@ test('system diagnostics keeps technical data collapsed and warns before sharing
   expect(pageErrors,'uncaught browser errors in system diagnostics').toEqual([]);
 });
 
+test('compact information typography survives legacy CSS overrides',async({page})=>{
+  const pageErrors=await boot(page);
+  await go(page,'analysis');
+  const sizes=await page.evaluate(()=>{
+    const ident=document.querySelector('.app-density-ident span');
+    const metric=document.querySelector('.app-density-metric span');
+    const probe=document.createElement('div');
+    probe.className='app-density-mix';
+    probe.innerHTML='<em>SW5 1</em>';
+    document.body.appendChild(probe);
+    const mix=probe.querySelector('em');
+    const result={
+      ident:parseFloat(getComputedStyle(ident).fontSize),
+      metric:parseFloat(getComputedStyle(metric).fontSize),
+      mix:parseFloat(getComputedStyle(mix).fontSize)
+    };
+    probe.remove();
+    return result;
+  });
+  expect(sizes.ident,'density identity explanation size').toBeGreaterThanOrEqual(12.5);
+  expect(sizes.metric,'density metric explanation size').toBeGreaterThanOrEqual(12.5);
+  expect(sizes.mix,'density mix label size').toBeGreaterThanOrEqual(11.5);
+  await go(page,'calendar');
+  const calendarSize=await page.locator('#tab-calendar .cal-head').first().evaluate(node=>parseFloat(getComputedStyle(node).fontSize));
+  expect(calendarSize,'calendar header size').toBeGreaterThanOrEqual(11.5);
+  expect(pageErrors,'uncaught browser errors during typography audit').toEqual([]);
+});
+
 test('Now and Journal surfaces render stable visual artifacts',async({page},testInfo)=>{
   const pageErrors=await boot(page);
   await go(page,'now');
