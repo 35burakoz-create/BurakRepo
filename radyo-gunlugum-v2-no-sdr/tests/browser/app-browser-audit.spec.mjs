@@ -62,6 +62,21 @@ test('authenticated shell boots with the correct responsive navigation',async({p
   expect(pageErrors,'uncaught browser errors during shell boot').toEqual([]);
 });
 
+
+test('layout mode follows viewport width instead of device identity',async({page},testInfo)=>{
+  test.skip(!/^(laptop|desktop)-/.test(testInfo.project.name),'desktop-UA resize contract');
+  const pageErrors=await boot(page);
+  await page.setViewportSize({width:700,height:844});
+  await expect(page.locator('html')).toHaveAttribute('data-ui-mode','mobile');
+  await expect(page.locator('#v38Dock')).toBeVisible();
+  await expect(page.locator('#appDesktopNav')).toHaveCount(0);
+  await page.setViewportSize({width:1100,height:800});
+  await expect(page.locator('html')).toHaveAttribute('data-ui-mode','desktop');
+  await expect(page.locator('#appDesktopNav')).toBeVisible();
+  await expect(page.locator('#v38Dock')).toHaveCount(0);
+  expect(pageErrors,'uncaught browser errors during viewport mode switch').toEqual([]);
+});
+
 test('all application routes render one view without horizontal overflow',async({page})=>{
   const pageErrors=await boot(page);
   const routes=await page.evaluate(()=>window.R.router.routes());
