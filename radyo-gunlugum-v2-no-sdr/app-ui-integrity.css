@@ -171,6 +171,8 @@ input:not([type="checkbox"]):not([type="radio"]),select{min-height:var(--app-tou
 .app-qsl-backlog-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-top:1px solid var(--app-line-soft)}
 .app-qsl-backlog-row:first-child{border-top:0}
 .app-qsl-backlog-row b,.app-qsl-backlog-row span{display:block}
+.qsl-item,.app-qsl-backlog-row{scroll-margin-block:96px}
+.qsl-item.app-qsl-focus,.app-qsl-backlog-row.app-qsl-focus{outline:3px solid rgba(79,70,229,.28);outline-offset:3px;box-shadow:0 0 0 6px rgba(79,70,229,.08)}
 .app-qsl-empty{padding:18px;border:1px dashed var(--app-line);border-radius:16px;background:var(--app-surface-soft)}
 .app-qsl-empty p{margin:5px 0 0;color:var(--app-muted)}
 
