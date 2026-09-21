@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+
+const root=path.resolve(import.meta.dirname,'..');
+const read=name=>fs.readFileSync(path.join(root,name),'utf8');
+const js=read('app-foundation.js');
+const css=read('app-foundation.css');
+const config=read('app-config.js');
+const sw=read('sw.js');
+new Function(js);
+assert(js.includes('<details class="foundation-diag-block foundation-diag-details">'),'technical diagnostics must be collapsed by default');
+assert(js.includes('id="foundationDiagPrivacy"')&&js.includes('role="note"'),'diagnostics must show a privacy review note');
+assert(js.includes('aria-describedby="foundationDiagPrivacy"'),'copy action must reference the privacy note');
+assert(js.includes('Paylaşmadan önce içeriği gözden geçir.'),'copy confirmation must remind the user to review diagnostics');
+assert(css.includes('.foundation-diag-details>summary')&&css.includes(':focus-visible'),'technical disclosure must remain keyboard accessible');
+assert(css.includes('width:var(--app-touch-min,44px)')&&css.includes('height:var(--app-touch-min,44px)'),'diagnostics close action must meet the canonical touch target');
+assert(css.includes('.foundation-diag-privacy')&&css.includes('var(--app-font-caption,12.5px)'),'privacy note must use canonical readable microcopy');
+assert(config.includes("buildId:'20260921-5'"),'cached diagnostics runtime change must advance buildId');
+assert(sw.includes("PWA_CACHE_GENERATION='20260921-5'")&&sw.includes("DIAGNOSTICS_PRIVACY_UI='20260921-5'"),'service worker generation and diagnostics marker must match the release');
+console.log('diagnostics-privacy-static-check: ok');
