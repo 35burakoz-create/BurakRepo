@@ -115,3 +115,19 @@ html.night #v38Sheet .v38-menu-empty p,.night-mode #v38Sheet .v38-menu-empty p{c
 html.night #v38Sheet .v38-menu-footer,.night-mode #v38Sheet .v38-menu-footer{background:linear-gradient(180deg,rgba(15,23,42,0),rgba(15,23,42,.98) 30%)}
 html.night #v38Sheet .v38-menu-footer .btn,.night-mode #v38Sheet .v38-menu-footer .btn{background:#21161b!important;border-color:#5b2b32!important;color:#fca5a5!important}
 @media(prefers-reduced-motion:reduce){#v38Sheet .v38-menu-row,#v38Sheet .v38-menu-group summary:after,#v38Sheet .v38-menu-row.is-busy .v38-menu-tail i,#v38Sheet .v42-menu-search{transition:none!important;animation:none!important}}
+
+#v38Sheet .v38-local-data-summary{display:grid;gap:14px}
+#v38Sheet .v38-local-data-summary>div:first-child{padding:15px;border:1px solid var(--menu-line,#e5e7eb);border-radius:16px;background:var(--menu-soft,#f8fafc)}
+#v38Sheet .v38-local-data-summary small{display:block;color:#6366f1;font-size:10.5px;font-weight:900;letter-spacing:.12em}
+#v38Sheet .v38-local-data-summary h3{margin:5px 0 0;font-size:18px}
+#v38Sheet .v38-local-data-summary p{margin:6px 0 0;color:var(--menu-muted,#64748b);font-size:var(--app-font-caption,12.5px);line-height:var(--app-line-readable,1.45)}
+#v38Sheet .v38-local-data-warning{padding:14px 15px;border:1px solid #fed7aa;border-radius:16px;background:#fff7ed;color:#9a3412}
+#v38Sheet .v38-local-data-warning b{display:block;font-size:13px}
+#v38Sheet .v38-local-data-warning p{color:#9a3412}
+#v38Sheet .v38-local-data-actions{display:flex;justify-content:flex-end}
+#v38Sheet .v38-local-data-actions .btn{min-height:var(--app-touch-min,44px)}
+#v38Sheet .v38-local-data-actions .btn.danger{background:#b91c1c!important;border-color:#991b1b!important;color:#fff!important}
+html.night #v38Sheet .v38-local-data-summary>div:first-child,.night-mode #v38Sheet .v38-local-data-summary>div:first-child{background:#111827;border-color:#334155}
+html.night #v38Sheet .v38-local-data-warning,.night-mode #v38Sheet .v38-local-data-warning{background:#2b1712;border-color:#7c2d12;color:#fdba74}
+html.night #v38Sheet .v38-local-data-warning p,.night-mode #v38Sheet .v38-local-data-warning p{color:#fdba74}
+@media(max-width:520px){#v38Sheet .v38-local-data-actions{display:grid}#v38Sheet .v38-local-data-actions .btn{width:100%}}

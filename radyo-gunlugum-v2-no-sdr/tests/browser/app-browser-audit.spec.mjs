@@ -104,6 +104,22 @@ test('map provides an actionable fallback while offline',async({page,context})=>
   }
 });
 
+test('local-device cleanup explains scope and completes without cloud deletion',async({page})=>{
+  const pageErrors=await boot(page);
+  await page.evaluate(()=>window.R.menuUI.localData());
+  const sheet=page.locator('#v38Sheet');
+  await expect(sheet).toBeVisible();
+  await expect(sheet).toContainText('Yalnız bu cihazdaki veriler temizlenir.');
+  await expect(sheet).toContainText('Buluttaki Günlük, Favoriler, Ayarlar ve Hatırlatıcılar silinmez.');
+  const clear=sheet.locator('[data-action="local-data-clear"]');
+  await expect(clear).toBeVisible();
+  const box=await clear.boundingBox();
+  expect(box?.height||0,'local cleanup touch height').toBeGreaterThanOrEqual(44);
+  await clear.click();
+  await expect(page.locator('#v38Sheet')).toContainText(/temizlenecek yerel veri yok|Yerel veri durumu/);
+  expect(pageErrors,'uncaught browser errors during local-device cleanup').toEqual([]);
+});
+
 test('home surface has no critical axe violations and produces light/dark visual artifacts',async({page},testInfo)=>{
   const pageErrors=await boot(page);
   await go(page,'home');
