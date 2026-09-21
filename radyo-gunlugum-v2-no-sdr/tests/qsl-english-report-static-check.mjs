@@ -58,6 +58,14 @@ const plannedDraft=R.qslService.normalizeTrackingDraft('planned','2026-09-10','2
 check('QSL draft planned clears both dates',plannedDraft.qsl_sent_at===null&&plannedDraft.qsl_received_at===null);
 const sentDraft=R.qslService.normalizeTrackingDraft('sent',null,'2026-09-20','2026-09-21');
 check('QSL draft sent defaults sent date and clears response',sentDraft.qsl_sent_at==='2026-09-21'&&sentDraft.qsl_received_at===null);
+const legacyNoneDraft=R.qslService.normalizeTrackingDraft('none','bozuk-tarih','yine-bozuk','2026-09-21');
+check('QSL none repairs irrelevant malformed legacy dates',legacyNoneDraft.qsl_sent_at===null&&legacyNoneDraft.qsl_received_at===null);
+const legacyPlannedDraft=R.qslService.normalizeTrackingDraft('planned','2026-99-99','not-a-date','2026-09-21');
+check('QSL planned repairs irrelevant malformed legacy dates',legacyPlannedDraft.qsl_sent_at===null&&legacyPlannedDraft.qsl_received_at===null);
+const legacySentDraft=R.qslService.normalizeTrackingDraft('sent','2026-09-10','not-a-date','2026-09-21');
+check('QSL sent ignores stale malformed received date',legacySentDraft.qsl_sent_at==='2026-09-10'&&legacySentDraft.qsl_received_at===null);
+let badSentRejected=false;try{R.qslService.normalizeTrackingDraft('sent','not-a-date',null,'2026-09-21')}catch{badSentRejected=true}
+check('QSL sent still rejects malformed active sent date',badSentRejected);
 const receivedDraft=R.qslService.normalizeTrackingDraft('received','2026-09-10',null,'2026-09-21');
 check('QSL draft received preserves sent date and defaults response',receivedDraft.qsl_sent_at==='2026-09-10'&&receivedDraft.qsl_received_at==='2026-09-21');
 let reverseRejected=false;try{R.qslService.normalizeTrackingDraft('received','2026-09-22','2026-09-21','2026-09-21')}catch{reverseRejected=true}

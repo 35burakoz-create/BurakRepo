@@ -113,6 +113,8 @@ check('offline sync aborts safely after account transition',offline.includes("if
 check('offline UI updates only for the active account',offline.includes('if(R.me?.id===userId){if(synced)'));
 check('offline journal submits are coalesced per account',offline.includes('formQueueFlights=new Map()')&&offline.includes('formQueueFlights.has(userId)')&&offline.includes('formQueueFlights.set(userId,true)'));
 check('offline form result never resets a different account form',offline.includes("if(R.me?.id===userId){R.reset?.()"));
+check('offline sync normalizes queued QSL state before cloud upsert',offline.includes('function normalizeQueuedLogBody')&&offline.includes('R.qslService?.normalizeTrackingDraft')&&offline.includes('body=normalizeQueuedLogBody(x.body,userId,id)'));
+check('offline sync leaves unnormalizable rows pending instead of uploading them',offline.includes("'offline-sync-normalize'")&&offline.includes('continue}const q=await R.S.from(\'radio_logs\').upsert'));
 
 check('atlas has canonical coordinate range validator',atlas.includes('function validCoords(lat,lon)')&&atlas.includes('a>=-90&&a<=90')&&atlas.includes('b>=-180&&b<=180'));
 check('atlas manual origin rejects impossible coordinates',atlas.includes("if(!validCoords(lat,lon))throw new Error"));
@@ -140,6 +142,21 @@ check('CSV export blocks duplicate desktop clicks',backup.includes('csv.disabled
   check('atlas frequency validator rejects non-finite and non-positive values',R.atlas.validFrequency('bad')===false&&R.atlas.validFrequency(0)===false&&R.atlas.validFrequency(9500)===true);
   const antipodal=R.atlas.distance([0,0],[0,180]);
   check('atlas antipodal distance remains finite',Number.isFinite(antipodal)&&antipodal>20000&&antipodal<20100);
+}
+
+{
+  const R={
+    me:{id:'u1'},
+    qslService:{normalizeTrackingDraft(status,sent,received){if(status==='none'||status==='planned')return{qsl_status:status,qsl_sent_at:null,qsl_received_at:null};if(status==='sent')return{qsl_status:'sent',qsl_sent_at:sent||'2026-09-21',qsl_received_at:null};return{qsl_status:'received',qsl_sent_at:sent||null,qsl_received_at:received||'2026-09-21'}}},
+    events:{emit(){},on(){}},features:{register(){}},reportError(){}
+  };
+  const window={R,indexedDB:{},addEventListener(){}},document={querySelector(){return null}},navigator={onLine:true};
+  const sandbox={window,document,navigator,indexedDB:{},crypto:{randomUUID:()=> 'q1'},Date,Math,Number,String,Array,Object,Map,Set,Promise,Error,console,setTimeout(){return 0}};
+  vm.createContext(sandbox);vm.runInContext(offline,sandbox,{filename:'app-offline-service.js'});
+  const repaired=R.offline.normalizeQueuedLogBody({qsl_status:'planned',qsl_sent_at:'2026-01-01',qsl_received_at:'2026-02-01'},'u1','q1');
+  check('functional offline normalization clears stale planned QSL dates',repaired.qsl_status==='planned'&&repaired.qsl_sent_at===null&&repaired.qsl_received_at===null&&repaired.user_id==='u1'&&repaired.offline_queue_id==='q1');
+  const sent=R.offline.normalizeQueuedLogBody({qsl_status:'sent',qsl_sent_at:'2026-09-10',qsl_received_at:'2026-09-20'},'u1','q2');
+  check('functional offline normalization preserves sent date and clears stale response',sent.qsl_sent_at==='2026-09-10'&&sent.qsl_received_at===null);
 }
 
 for(const [name,ok] of checks)console.log(`${ok?'✓':'✗'} ${name}`);
