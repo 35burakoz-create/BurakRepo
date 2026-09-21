@@ -12,9 +12,10 @@ const ui=read('app-qsl-ui.js');
 const config=read('app-config.js');
 const integrity=read('app-ui-integrity.css');
 const logForm=read('app-log-form-ui.js');
+const logUi=read('app-log-ui.js');
 const logFormCss=read('app-log-form.css');
 const index=read('index.html');
-for(const [file,src] of [['app-qsl-service.js',qsl],['app-qsl-ui.js',ui],['app-log-form-ui.js',logForm]]){let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)}
+for(const [file,src] of [['app-qsl-service.js',qsl],['app-qsl-ui.js',ui],['app-log-form-ui.js',logForm],['app-log-ui.js',logUi]]){let ok=true;try{new vm.Script(src,{filename:file})}catch{ok=false}check(`syntax ${file}`,ok)}
 
 const R={guideService:{wallTimeToInstant:(date,time)=>date==='2026-09-10'&&time==='04:30'?new Date('2026-09-10T01:30:00Z'):new Date(`${date}T00:00:00Z`)},features:{register(){}},events:{emit(){}}};
 const sandbox={window:{R},globalThis:null,Intl,Date,Math,Number,String,Array,Object,Set,Promise,console};sandbox.globalThis=sandbox;sandbox.RADIO_APP_CONFIG={timezone:'Europe/Istanbul',origin:{name:'Bozköy, Torbalı, İzmir'},receiver:{model:'TECSUN R-9012'}};vm.createContext(sandbox);vm.runInContext(qsl,sandbox,{filename:'app-qsl-service.js'});
@@ -46,6 +47,9 @@ check('log form labels qsl_notes as English programme details',index.includes('P
 check('log form exposes live tracking guidance',index.includes('id="qslTrackingHint"')&&logForm.includes('function syncQslFields')&&logForm.includes("qslStatus.addEventListener('change'"));
 check('log form disables inactive QSL dates and keeps 44px controls',logFormCss.includes('#tab-log .qsl-fieldset input:disabled')&&logFormCss.includes('#tab-log .qsl-fieldset input,#tab-log .qsl-fieldset select{min-height:44px}'));
 check('log form blocks Turkish text from English QSL details',logForm.includes("QSL program ayrıntılarını İngilizce yaz. Türkçe metin İngilizce rapora eklenmez."));
+check('journal QSL action uses canonical QSL record focus helper',logUi.includes("R.qslUI?.focusRecord?.(q.dataset.qsl)")&&!logUi.includes('data-qsl-id'));
+check('QSL focus helper targets canonical data-qslitem records',ui.includes('function focusRecord(id)')&&ui.includes('[data-qslitem=')&&ui.includes("closest?.('.app-qsl-backlog')")&&ui.includes('backlog.open=true'));
+check('QSL navigated target receives visible focus treatment',integrity.includes('.qsl-item.app-qsl-focus,.app-qsl-backlog-row.app-qsl-focus')&&integrity.includes('scroll-margin-block:96px'));
 
 const noneDraft=R.qslService.normalizeTrackingDraft('none','2026-09-10','2026-09-20','2026-09-21');
 check('QSL draft none clears both dates',noneDraft.qsl_sent_at===null&&noneDraft.qsl_received_at===null);
