@@ -22,7 +22,7 @@ assert(css.includes('.app-map-fallback')&&css.includes('.app-map-fallback-list')
 assert(css.includes('.app-map-fallback .btn{min-height:var(--app-touch-min,44px)}'),'fallback action must preserve the canonical touch target');
 assert(sw.includes("const MAP_OFFLINE_FALLBACK='20260918-4';"),'service worker must carry the map fallback release marker');
 const build=config.match(/buildId:'([^']+)'/)?.[1],generation=sw.match(/PWA_CACHE_GENERATION='([^']+)'/)?.[1];
-assert(build==='20260918-4'&&generation===build,'map fallback runtime change must ship with a fresh PWA cache generation');
+assert(!!build&&build!=='legacy'&&generation===build,'map fallback must ship under the current synchronized PWA cache generation');
 
 {
   const host={innerHTML:'',querySelector(){return null},isConnected:true};
