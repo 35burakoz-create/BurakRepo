@@ -162,6 +162,23 @@ test('home surface has no critical axe violations and produces light/dark visual
   expect(pageErrors,'uncaught browser errors during visual/a11y audit').toEqual([]);
 });
 
+test('system diagnostics keeps technical data collapsed and warns before sharing',async({page})=>{
+  const pageErrors=await boot(page);
+  await page.evaluate(()=>window.R.openDiagnostics());
+  const dialog=page.locator('#foundationDiag');
+  await expect(dialog).toBeVisible();
+  const details=dialog.locator('details.foundation-diag-details');
+  await expect(details).toBeVisible();
+  await expect(details).not.toHaveAttribute('open',/.+/);
+  const note=dialog.locator('#foundationDiagPrivacy');
+  await expect(note).toContainText('Paylaşmadan önce gözden geçir');
+  await expect(dialog.locator('[data-foundation-copy]')).toHaveAttribute('aria-describedby','foundationDiagPrivacy');
+  const closeBox=await dialog.locator('.foundation-diag-close').boundingBox();
+  expect(closeBox?.width||0,'diagnostics close width').toBeGreaterThanOrEqual(44);
+  expect(closeBox?.height||0,'diagnostics close height').toBeGreaterThanOrEqual(44);
+  expect(pageErrors,'uncaught browser errors in system diagnostics').toEqual([]);
+});
+
 test('Now and Journal surfaces render stable visual artifacts',async({page},testInfo)=>{
   const pageErrors=await boot(page);
   await go(page,'now');
