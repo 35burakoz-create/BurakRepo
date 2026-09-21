@@ -95,6 +95,15 @@
 .app-log-advanced-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 12px 12px;border-top:1px solid #eef2f7}
 .app-log-advanced-grid>.span2,.app-log-advanced-grid>fieldset{grid-column:1/-1}
 
+/* QSL formu: durum ve tarih alanları aynı veri sözleşmesini görünür biçimde izlesin. */
+#tab-log .qsl-fieldset{border-style:solid!important;border-color:#dbe2ea!important;background:#fff}
+#tab-log .qsl-fieldset legend{color:#475569!important}
+#tab-log .qsl-fieldset input,#tab-log .qsl-fieldset select{min-height:44px}
+#tab-log .qsl-fieldset input:disabled{background:#f1f5f9!important;color:#94a3b8!important;border-color:#e2e8f0!important;cursor:not-allowed}
+#tab-log .app-qsl-form-hint,#tab-log .app-qsl-form-copy{margin:0!important;font-size:11.5px!important;line-height:1.45!important;overflow-wrap:anywhere}
+#tab-log .app-qsl-form-hint{padding:8px 10px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;color:#475569!important}
+#tab-log .app-qsl-form-copy{color:#64748b!important}
+
 /* Gece görünümü. */
 html.night #tab-log,.night-mode #tab-log{--log-line:#334155;--log-soft:#0f172a;--log-muted:#94a3b8;--log-accent:#818cf8;--log-accent-soft:#252456;--log-danger:#fda4af}
 html.night #tab-log .records-card .filters,.night-mode #tab-log .records-card .filters{background:#0f172a;border-color:#334155}
@@ -114,6 +123,10 @@ html.night #tab-log #formMsg.is-error,.night-mode #tab-log #formMsg.is-error{bac
 html.night #tab-log #formMsg.is-success,.night-mode #tab-log #formMsg.is-success{background:#082f2b;border-color:#065f46;color:#a7f3d0}
 html.night .app-log-advanced,.night-mode .app-log-advanced{background:#0f172a;border-color:#334155}
 html.night .app-log-advanced-grid,.night-mode .app-log-advanced-grid{border-color:#263246}
+html.night #tab-log .qsl-fieldset,.night-mode #tab-log .qsl-fieldset{background:#111827;border-color:#334155!important}
+html.night #tab-log .qsl-fieldset legend,.night-mode #tab-log .qsl-fieldset legend{color:#cbd5e1!important}
+html.night #tab-log .qsl-fieldset input:disabled,.night-mode #tab-log .qsl-fieldset input:disabled{background:#0f172a!important;color:#64748b!important;border-color:#334155!important}
+html.night #tab-log .app-qsl-form-hint,.night-mode #tab-log .app-qsl-form-hint{background:#0f172a;border-color:#334155;color:#cbd5e1!important}
 
 @media(min-width:960px){
   html[data-ui-mode="desktop"] #tab-log.v38-form-open .two-col{grid-template-columns:minmax(340px,.9fr) minmax(0,1.35fr)!important;gap:16px!important}
