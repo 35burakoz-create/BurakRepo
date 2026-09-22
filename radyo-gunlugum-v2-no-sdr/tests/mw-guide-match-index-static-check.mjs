@@ -13,11 +13,11 @@ let syntax=true,syntaxDetail='';
 try{new vm.Script(service,{filename:'app-radio-console-service.js'})}catch(error){syntax=false;syntaxDetail=error.message}
 check('radio console service syntax',syntax,syntaxDetail);
 check('service indexes cached MW rows by schedule id',service.includes('rowByScheduleId=new Map()')&&service.includes('function indexRows(')&&service.includes('rowByScheduleId.get(key)'));
-check('service indexes eligible MW guide entries by id frequency and station identity keys',service.includes('guideById=new Map()')&&service.includes('guideByFrequencyFirst=new Map()')&&service.includes('guideByFrequencyName=new Map()')&&service.includes('function stationKeys('));
+check('service indexes eligible MW guide entries by id and only unambiguous fallback keys',service.includes('guideById=new Map()')&&service.includes('guideByFrequencyUnique=new Map()')&&service.includes('guideByFrequencyNameUnique=new Map()')&&service.includes('frequencyCounts=new Map()')&&service.includes('nameCounts=new Map()')&&service.includes('function stationKeys('));
 check('station identity keeps both Turkish-aware and generic lowercase keys',service.includes("toLocaleLowerCase('tr-TR')")&&service.includes('raw.toLowerCase()')&&service.includes('tr===generic?[tr]:[tr,generic]'));
-check('guide matching preserves direct id then frequency-name then frequency fallback priority',service.indexOf('guideById.get(')<service.indexOf('guideByFrequencyName.get(')&&service.indexOf('guideByFrequencyName.get(')<service.indexOf('guideByFrequencyFirst.get('));
+check('guide matching preserves direct id then unique frequency-name then unique frequency fallback priority',service.indexOf('guideById.get(')<service.indexOf('guideByFrequencyNameUnique.get(')&&service.indexOf('guideByFrequencyNameUnique.get(')<service.indexOf('guideByFrequencyUnique.get('));
 check('guide index is lazily rebuilt and explicitly invalidated by guide/store data events',service.includes('function ensureGuideIndex(){if(guideIndexDirty)rebuildGuideIndex()}')&&service.includes("R.events?.on?.('guide:data-ready',invalidateGuideIndex)")&&service.includes("R.events?.on?.('data:loaded',invalidateGuideIndex)")&&service.includes("R.events?.on?.('store:updated',invalidateGuideIndex)"));
-check('service worker carries MW guide-match index signature',sw.includes("MW_GUIDE_MATCH_INDEX='20260916-11'"));
+check('service worker carries MW guide-match index and ambiguity-guard signatures',sw.includes("MW_GUIDE_MATCH_INDEX='20260916-11'")&&sw.includes("MW_GUIDE_MATCH_AMBIGUITY='20260922-1'"));
 
 const handlers=new Map();
 const on=(name,fn)=>{const list=handlers.get(name)||[];list.push(fn);handlers.set(name,list)};
@@ -28,6 +28,9 @@ const guideEntries=[
   {id:'first-600',entry_type:'station_target',mode:'MW',frequency:600,station:'Başka İstasyon'},
   {id:'named-600',entry_type:'station_target',mode:'MW',frequency:600,station:'Test Radio'},
   {id:'turkish-650',entry_type:'station_target',mode:'MW',frequency:650,station:'IŞIK FM'},
+  {id:'unique-700',entry_type:'station_target',mode:'MW',frequency:700,station:'Tek Frekans'},
+  {id:'dup-name-a',entry_type:'station_target',mode:'MW',frequency:800,station:'Aynı Radyo'},
+  {id:'dup-name-b',entry_type:'station_target',mode:'MW',frequency:800,station:'Aynı Radyo'},
   {id:'blocked-600',entry_type:'station_target',mode:'MW',frequency:600,station:'Test Radio',blocked:true},
   {id:'sw-600',entry_type:'station_target',mode:'SW',frequency:600,station:'Test Radio'}
 ];
@@ -56,10 +59,14 @@ check('runtime direct guide id wins even when row frequency differs',direct?.id=
 const firstBuildChecks=compatibilityChecks;
 const named=R.radioConsole.guideMatch({schedule_id:'missing',frequency:600,canonical_name:'TEST RADIO'});
 const turkish=R.radioConsole.guideMatch({schedule_id:'missing-tr',frequency:650,canonical_name:'Işık FM'});
-const fallback=R.radioConsole.guideMatch({schedule_id:'missing-2',frequency:600,canonical_name:'Bilinmeyen'});
+const ambiguousFrequency=R.radioConsole.guideMatch({schedule_id:'missing-2',frequency:600,canonical_name:'Bilinmeyen'});
+const uniqueFrequency=R.radioConsole.guideMatch({schedule_id:'missing-unique',frequency:700,canonical_name:'Bilinmeyen'});
+const ambiguousName=R.radioConsole.guideMatch({schedule_id:'missing-name',frequency:800,canonical_name:'Aynı Radyo'});
 check('runtime generic case identity matches imported uppercase Latin station name',named?.id==='named-600');
 check('runtime Turkish-aware identity still matches dotted/dotless I station name',turkish?.id==='turkish-650');
-check('runtime frequency fallback preserves first eligible guide entry',fallback?.id==='first-600');
+check('runtime ambiguous frequency-only fallback fails closed',ambiguousFrequency===null);
+check('runtime unique frequency-only fallback remains available',uniqueFrequency?.id==='unique-700');
+check('runtime duplicate frequency-name identity also fails closed',ambiguousName===null);
 check('runtime repeated guide matches reuse built index without rescanning compatibility',compatibilityChecks===firstBuildChecks);
 
 emit('guide:data-ready',{});
