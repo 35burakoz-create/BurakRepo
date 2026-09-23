@@ -5,12 +5,11 @@ on:
     paths:
       - 'radyo-gunlugum-v2-no-sdr/**'
       - '.github/workflows/radio-browser-audit.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'radyo-gunlugum-v2-no-sdr/**'
-      - '.github/workflows/radio-browser-audit.yml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -42,4 +41,4 @@ jobs:
             playwright-report
             test-results/browser-audit
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 3
